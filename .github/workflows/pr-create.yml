@@ -19,6 +19,7 @@ jobs:
           echo "IMAGE_TAG=$(echo $IMAGE | cut -d ':' -f 2)" >> "$GITHUB_ENV"
         env:
           IMAGE: ${{ inputs.image }}
+
       - name: Validate input
         run: |                  
           echo ${IMAGE_NAMESPACE}
@@ -36,6 +37,9 @@ jobs:
             echo "Invalid semantic version: ${IMAGE_TAG}"
             exit 1
           fi
+
+      - name: Log into docker hub
+        run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
 
       - name: Start service
         run: |
@@ -93,6 +97,7 @@ jobs:
         with:
           app_id: ${{ secrets.APP_ID }}
           private_key: ${{ secrets.APP_PRIVATE_KEY }}
+
       - name: Create Pull Request
         if: steps.verify-changed-files.outputs.files_changed == 'true'
         uses: peter-evans/create-pull-request@v5
