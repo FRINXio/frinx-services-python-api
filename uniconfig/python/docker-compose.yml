@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  uniconfig-controller:
+    user: root
+    image: frinx/uniconfig:${IMAGE_TAG:?}
+    entrypoint: cp openapi/uniconfigV3.yaml /home/api/
+    volumes:
+      - uniconfig-swagger:/home/api
+
+  converter:
+    build:
+      context: .
+    depends_on:
+      uniconfig-controller:
+        condition: service_completed_successfully
+    volumes:
+      - ./frinx_api/uniconfig/:/api/
+      - uniconfig-swagger:/swagger
+
+volumes:
+  uniconfig-swagger:
+    name: uniconfig-swagger
