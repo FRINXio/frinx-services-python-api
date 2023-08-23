@@ -1,4 +1,4 @@
-FROM python:3.10-buster as build
+FROM python:3.11-buster as build
 
 RUN : \
 	&& apt-get -y update \
@@ -12,7 +12,7 @@ COPY . .
 
 RUN poetry build
 
-FROM python:3.10-buster
+FROM python:3.11-buster
 
 LABEL maintainer="Jozef Volak <jozefvolak@gmail.com>"
 
