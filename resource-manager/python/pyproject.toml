@@ -10,7 +10,7 @@ graphql-pydantic-transformer = "^0.0.1"
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.0.263"
 pyright = "^1.1.317"
-mypy = "1.3.0"
+mypy = "1.5.1"
 
 
 [tool.poetry]
