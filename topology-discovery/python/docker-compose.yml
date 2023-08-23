@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   arango:
-    image: arangodb:3.9.1
+    image: arangodb:3.11.2
     environment:
       ARANGO_ROOT_PASSWORD: frinx
       ARANGO_USERNAME: root
