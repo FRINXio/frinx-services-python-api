@@ -4,9 +4,10 @@ services:
   uniconfig-controller:
     user: root
     image: frinx/uniconfig:${IMAGE_TAG:?}
-    entrypoint: cp openapi/uniconfigV3.yaml /home/api/
+    entrypoint: ["sh", "-c", "cp /opt/uniconfig-frinx/openapi/uniconfig* /swagger"]
     volumes:
-      - uniconfig-swagger:/home/api
+      - uniconfig_swagger:/swagger
+      - uniconfig_swagger
 
   converter:
     build:
@@ -14,10 +15,10 @@ services:
     depends_on:
       uniconfig-controller:
         condition: service_completed_successfully
+    entrypoint: 'sleep infinity'
     volumes:
-      - ./frinx_api/uniconfig/:/api/
-      - uniconfig-swagger:/swagger
+      - .:/home/app
+      - uniconfig_swagger:/swagger
 
 volumes:
-  uniconfig-swagger:
-    name: uniconfig-swagger
+  uniconfig_swagger:
