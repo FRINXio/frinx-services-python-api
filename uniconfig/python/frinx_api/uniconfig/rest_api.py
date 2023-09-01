@@ -162,3 +162,7 @@ class ReadStructuredData(UniconfigRest):
 class WriteStructuredData(UniconfigRest):
     uri = '/data/network-topology:network-topology/topology={tid}/node={nid}/frinx-uniconfig-topology:configuration{uri}'
     method = 'PUT'
+
+class DeleteStructuredData(UniconfigRest):
+    uri = '/data/network-topology:network-topology/topology={tid}/node={nid}/frinx-uniconfig-topology:configuration{uri}'
+    method = 'DELETE'
