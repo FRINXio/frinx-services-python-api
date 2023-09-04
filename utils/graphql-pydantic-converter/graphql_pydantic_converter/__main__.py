@@ -15,8 +15,8 @@ from typing import Optional
 import requests
 from pydantic import BaseModel
 
-import graphql_pydantic_converter.graphql_types
-from graphql_pydantic_converter.schema_converter import GraphqlJsonParser
+from . import graphql_types
+from .schema_converter import GraphqlJsonParser
 
 EXPECTED_HEADERS_PARTS = 2
 
@@ -30,6 +30,7 @@ arg_parser.add_argument(
     nargs='+',
     help='Add headers to request, when --url is set. --headers "HeaderName: HeaderValue" "HeaderName: HeaderValue"'
 )
+arg_parser.add_argument('--depth', help='Depth of nested json objects, default 3', default=3)
 
 
 class Exit(IntEnum):
@@ -41,11 +42,12 @@ class Exit(IntEnum):
 class Config(BaseModel):
     input_file: Optional[Path]
     output_file: Optional[Path]
+    depth: int
     url: Optional[str]
     headers: Optional[list[str]]
 
 
-def parse_headers(headers):
+def parse_headers(headers: list[str]) -> dict[str, str]:
     dict_headers = {}
     for header in headers:
         header_parts = header.split(':')
@@ -75,7 +77,7 @@ def main(args: Optional[Sequence[str]] = None) -> Exit:
 
             response = requests.post(
                 config.url,
-                data=json.dumps({'query': graphql_pydantic_converter.graphql_types.schema_request}),
+                data=json.dumps({'query': graphql_types.generate_schema_request(config.depth)}),
                 headers={'Content-Type': 'application/json'} | headers
             )
             if response.ok:

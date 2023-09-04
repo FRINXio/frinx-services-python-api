@@ -10,133 +10,65 @@ if TYPE_CHECKING:
     from typing import Any
 
 
-schema_request = """
-{
-  __schema {
-    queryType {
+def generate_type(depth: int) -> str:
+    if depth <= 0:
+        return ''
+    return f"""ofType {{ name kind {generate_type(depth - 1)} }}"""
+
+
+def generate_schema_request(depth: int) -> str:
+    request = f"""{{
+  __schema {{
+    queryType {{
       name
-    }
-    subscriptionType {
+    }}
+    subscriptionType {{
       name
-    }
-    mutationType {
+    }}
+    mutationType {{
       name
-    }
-    types {
+    }}
+    types {{
       kind
       name
-      ofType {
-        kind
+      {generate_type(depth)}
+      fields {{
         name
-        ofType {
-          kind
+        args {{
           name
-          ofType {
-            kind
-            name
-            ofType {
-              kind
-              name
-            }
-          }
-        }
-      }
-      fields {
-        name
-        args {
-          name
-          type {
+          type {{
             name
             kind
-            ofType {
-              name
-              kind
-              ofType {
-                name
-                kind
-                ofType {
-                  name
-                  kind
-                  ofType {
-                    name
-                    kind
-                  }
-                }
-              }
-            }
-          }
-        }
-        type {
+            {generate_type(depth)}
+          }}
+        }}
+        type {{
           name
           kind
-          ofType {
-            name
-            kind
-            ofType {
-              name
-              kind
-              ofType {
-                name
-                kind
-                ofType {
-                  name
-                  kind
-                }
-              }
-            }
-          }
-        }
-      }
-      inputFields {
+          {generate_type(depth)}
+        }}
+      }}
+      inputFields {{
         name
-        type {
+        type {{
           kind
           name
-          ofType {
-            name
-            kind
-            ofType {
-              name
-              kind
-              ofType {
-                name
-                kind
-                ofType {
-                  name
-                  kind
-                }
-              }
-            }
-          }
-        }
-      }
-      interfaces {
+          {generate_type(depth)}
+        }}
+      }}
+      interfaces {{
         name
         kind
-        ofType {
-          name
-          kind
-          ofType {
-            name
-            kind
-            ofType {
-              name
-              kind
-              ofType {
-                name
-                kind
-              }
-            }
-          }
-        }
-      }
-      enumValues {
+        {generate_type(depth)}
+      }}
+      enumValues {{
         name
-      }
-    }
-  }
-}
+      }}
+    }}
+  }}
+}}
 """
+    return request
 
 
 class ENUM(str, Enum):
@@ -196,28 +128,66 @@ class Payload(BaseModel):
 
 
 class Input(BaseModel):
+    @staticmethod
+    def _parse_enum(value: Enum) -> str:
+        return f'{value.name}'
+
+    @staticmethod
+    def _parse_bool(value: bool) -> str:
+        return f'{str(value).lower()}'
+
+    @staticmethod
+    def _parse_num(value: int | float) -> str:
+        return f'{value}'
+
+    @staticmethod
+    def _parse_str(value: Any) -> str:
+        return f'"{value}"'
+
+    @staticmethod
+    def _parse_tuple(value: tuple[Any, ...]) -> str:
+        return f'{", ".join(map(str, value))}'
+
+    def parse_inputs(self, value: Any) -> str:
+        match value:
+            case Enum():
+                response = f'{self._parse_enum(value)}'
+            case bool():
+                response = f'{self._parse_bool(value)}'
+            case int() | float():
+                response = f'{self._parse_num(value)}'
+            case tuple():
+                response = f'{self._parse_tuple(value)}'
+            case list():
+                values = []
+                for item in value:
+                    values.append(self.parse_inputs(item))
+                response = f'[{", ".join(values)}]'
+            case dict():
+                pairs = []
+                for key, values in value.items():
+                    pairs.append(f'{key}: {self.parse_inputs(values)}')
+                response = ', '.join(pairs)
+            case _:
+                response = f'{self._parse_str(value)}'
+        return response
+
     def dict_to_custom_string(self, any_object: Any) -> str:
         pairs = []
-        match any_object:
-            case list():
-                for item in any_object:
-                    pairs.append(self.dict_to_custom_string(item))
-            case dict():
-                for key, value in any_object.items():
-                    match value:
-                        case Enum():
-                            pairs.append(f'{key}: {value.name}')
-                        case bool():
-                            pairs.append(f'{key}: {str(value).lower()}')
-                        case int() | float():
-                            pairs.append(f'{key}: {value}')
-                        case dict():
-                            pairs.append(f'{key}: {self.dict_to_custom_string(value)}')
-                        case list():
-                            for item in any_object:
-                                pairs.append(self.dict_to_custom_string(item))
-                        case _:
-                            pairs.append(f'{key}: "{value}"')
+        for key, value in any_object.items():
+            match value:
+                case list():
+                    values = []
+                    for item in value:
+                        values.append(self.parse_inputs(item))
+                    pairs.append(f'{key}: [{", ".join(values)}]')
+                case dict():
+                    values = []
+                    for key_nested, value_nested in value.items():
+                        values.append(f'{key_nested}: {{{self.parse_inputs(value_nested)}}}')
+                    pairs.append(f'{key}: {{{", ".join(values)}}}]')
+                case _:
+                    pairs.append(f'{key}: {self.parse_inputs(value)}')
         return ', '.join(pairs)
 
     class Config:
