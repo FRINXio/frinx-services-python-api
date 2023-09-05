@@ -47,95 +47,62 @@ class _cls(UniconfigRest):
     response = _response
 
 
-def _upformat(s: str, delimiters: list[str]) -> str:
-    for x in delimiters:
-        s = s.replace(x, SPACE)
-    return NAN.join([x.capitalize() for x in s.split(SPACE)])
-
-
-def _get_cls(endpoint: str, method: str, *, request: bool=False, response: bool=False) -> str:
-    base = _upformat(endpoint, ['/', '-']).split('=')[0] + method.capitalize()
-    return base + {request: 'Request', response: 'Response'}.get(True)
-
-
-def _get_service_name(endpoint: str) -> str:
-    service = endpoint.split('/')[-1]
-    match = re.search(r'\{(.*?)\}', service)
-    if match:
-        param = match.groups()[0].capitalize()
-        service = service.split('=')[0]
-        return _upformat(service, ['-']) + _upformat(param, ['-'])
-    return _upformat(service, ['-'])
-
-
-def _commented(code: str, *, lines: list[int] = []) -> str:
-    code_lines = code.split(ENTER)[:-1]
-    if code_lines:
-        if lines:
-            for line in lines:
-                if TAB in code_lines[line]:
-                    code_lines[line] = TAB + COMMENT_TAG + code_lines[line].replace(TAB, NAN)
-                else:
-                    code_lines[line] = COMMENT_TAG + code_lines[line]
-            return ENTER.join(code_lines) + ENTER
-        else:
-            return COMMENT_TAG + COMMENT_TAG.join(map(lambda s: s + ENTER, code_lines)) + ENTER
-    else:
-        return COMMENT_TAG + code
-
-
-def parse_swagger_scheme(scheme: dict[str, Any], req_res_refs: Iterable[str]
-) -> tuple[list[str], list[str]]:
+def parse_swagger_scheme(scheme: dict[str, Any], req_res_refs: Iterable[str],
+imports: list = [], definitions: list = []) -> tuple[list[str], list[str]]:
     
-    uniconfig_rest = CustomTemplate(inspect.getsource(_cls))
-    imports, definitions = [], []
+    def _upformat(s: str, delimiters: list[str]) -> str:
+        for x in delimiters:
+            s = s.replace(x, SPACE)
+        return NAN.join([x.capitalize() for x in s.split(SPACE)])
+
+    def _get_cls(endpoint: str, method: str, *, request: bool=False, response: bool=False) -> str:
+        base = _upformat(endpoint, ['/', '-']).split('=')[0] + method.capitalize()
+        return base + {request: 'Request', response: 'Response'}.get(True)
+
+    def _get_service_name(endpoint: str) -> str:
+        service = endpoint.split('/')[-1]
+        match = re.search(r'\{(.*?)\}', service)
+        if match:
+            param = match.groups()[0].capitalize()
+            service = service.split('=')[0]
+            return _upformat(service, ['-']) + _upformat(param, ['-'])
+        return _upformat(service, ['-'])
+    
+    uc_rest_template = CustomTemplate(inspect.getsource(_cls))
     
     for endpoint, spec in scheme['paths'].items():
-        try:
-            methods, i = list(spec.keys()), {}
-            for method in methods:
-                if len(methods) > 1:
-                    i['cls']= _get_service_name(endpoint) + method.capitalize()
-                else:
-                    i['cls']= _get_service_name(endpoint)
-                i['uri'] = endpoint
-                i['method'] = method.upper()
-                i['request'] = _get_cls(endpoint, method, request=True)
-                i['response'] = _get_cls(endpoint, method, response=True)
-                
-                req_import = f'from {SOURCE_FILE_PY_PATH} import {i["request"]}'
-                res_import = f'from {SOURCE_FILE_PY_PATH} import {i["response"]}'
+        methods, template_input = list(spec.keys()), {}
+        for method in methods:
+            if len(methods) > 1:
+                template_input['cls']= _get_service_name(endpoint) + method.capitalize()
+            else:
+                template_input['cls']= _get_service_name(endpoint)
 
-                lines_to_comment = []
+            template_input['uri'] = endpoint
+            template_input['method'] = method.upper()
 
-                if i['request'] not in req_res_refs:
-                    imports.append(_commented(req_import))
-                    lines_to_comment.append(3)
-                else:
-                    imports.append(req_import)
-                if i['response'] not in req_res_refs:
-                    imports.append(_commented(res_import))
-                    lines_to_comment.append(4)
-                else:
-                    imports.append(res_import)
-                if lines_to_comment:
-                    definitions.append(
-                        _commented(uniconfig_rest.substitute(**i), lines=lines_to_comment)
-                    )
-                else:
-                    definitions.append(uniconfig_rest.substitute(**i))
+            req_ref = _get_cls(endpoint, method, request=True)
+            res_ref = _get_cls(endpoint, method, response=True)
 
-        except Exception as e:
-            # TODO: error handling
-            ... 
-    return list(set(imports)), definitions
+            if req_ref in req_res_refs:
+                imports.append(f'from {SOURCE_FILE_PY_PATH} import {req_ref}')
+                template_input['request'] = req_ref
+            else:
+                template_input['request'] = None
+            if res_ref in req_res_refs:
+                imports.append(f'from {SOURCE_FILE_PY_PATH} import {res_ref}')
+                template_input['response'] = res_ref
+            else:
+                template_input['response'] = None
+
+            definitions.append(uc_rest_template.substitute(**template_input))
+
+    return imports, definitions
 
 
-def generate_file(path: str | None, 
-imports: Iterable[str], definitions: Iterable[str]) -> None:
+def generate_file(path: str | None, imports: Iterable[str], definitions: Iterable[str]) -> None:
     file = ENTER + ENTER.join(imports)
     file += 3 * ENTER + (2 *ENTER).join(definitions)
-    path = DEFAULT_OUTPUT_FILE if not path else path
     try:
         with open(path, 'w+') as f:
             f.write(file)
@@ -162,26 +129,27 @@ def get_cli_args() -> Namespace:
     return parser.parse_args()
 
 
-def get_cls_def_names_from_source(source_file: str = DEFAULT_SOURCE_FILE) -> list[str]:
-    loaded_file = None
+def cls_def_names_from_src_file(source_file: str) -> list[str]:
     with open(source_file) as f:
         loaded_file = ast.parse(f.read())
-    if loaded_file:
         return [x.name for x in loaded_file.body if isinstance(x, ast.ClassDef)]
-    return []
 
 
 def main() -> None:
     cli_args = get_cli_args()
+
     with open(cli_args.input) as f:
         scheme = yaml.safe_load(f)
-    imports = ['from typing import Optional', 'from typing import Any']
-    definitions = [inspect.getsource(UniconfigRest)]
-    generated_classes = get_cls_def_names_from_source()
-    rest_of_imports, rest_of_definitions = parse_swagger_scheme(scheme, generated_classes)
-    imports += rest_of_imports
-    definitions += rest_of_definitions
-    generate_file(cli_args.output, imports, definitions)
+
+    generate_file(
+        cli_args.output or DEFAULT_OUTPUT_FILE,
+        *parse_swagger_scheme(
+            scheme=scheme, 
+            req_res_refs=cls_def_names_from_src_file(DEFAULT_SOURCE_FILE),
+            imports=['from typing import Optional', 'from typing import Any', NAN],
+            definitions=[inspect.getsource(UniconfigRest)]
+        )
+    )
 
     
 if __name__ == '__main__':
