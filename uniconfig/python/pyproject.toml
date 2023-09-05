@@ -5,14 +5,12 @@ build-backend = "poetry.core.masonry.api"
 [tool.poetry.dependencies]
 python = "^3.8"
 pydantic = "^1.10.7"
-pyyaml = "^6.0.1"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.0.263"
 pyright = "^1.1.317"
 datamodel-code-generator = {extras = ["http"], version = "^0.21.3"}
 mypy = "1.3.0"
-pyyaml = "^6.0.1"
 
 [tool.poetry]
 packages = [{ include = "frinx_api" }]
