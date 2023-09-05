@@ -146,7 +146,13 @@ def main() -> None:
         *parse_swagger_scheme(
             scheme=scheme, 
             req_res_refs=cls_def_names_from_src_file(DEFAULT_SOURCE_FILE),
-            imports=['from typing import Optional', 'from typing import Any', NAN],
+            imports=[
+                'from __future__ import annotations',
+                NAN,
+                'from typing import Optional', 
+                'from typing import Any', 
+                NAN
+            ],
             definitions=[inspect.getsource(UniconfigRest)]
         )
     )
