@@ -61,13 +61,16 @@ imports: list = [], definitions: list = []) -> tuple[list[str], list[str]]:
         return base + {request: 'Request', response: 'Response'}.get(True)
 
     def _get_service_name(endpoint: str) -> str:
+        # TODO: handle query-string-params in depth 5 (MAX FOR HTTP)
         service = endpoint.split('/')[-1]
         match = re.search(r'\{(.*?)\}', service)
-        if match:
+        if match and '=' in service:
             param = match.groups()[0].capitalize()
             service = service.split('=')[0]
-            return _upformat(service, ['-']) + _upformat(param, ['-'])
-        return _upformat(service, ['-'])
+            return _upformat(service, ['-', ':']) + _upformat(param, ['-'])
+        elif match:
+            service = match.groups()[0].capitalize()
+        return _upformat(service, ['-', ':'])
     
     uc_rest_template = CustomTemplate(inspect.getsource(_Cls))
     
