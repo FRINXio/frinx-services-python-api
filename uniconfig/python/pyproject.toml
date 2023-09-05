@@ -12,6 +12,7 @@ ruff = "^0.0.263"
 pyright = "^1.1.317"
 datamodel-code-generator = {extras = ["http"], version = "^0.21.3"}
 mypy = "1.3.0"
+pyyaml = "^6.0.1"
 
 [tool.poetry]
 packages = [{ include = "frinx_api" }]
