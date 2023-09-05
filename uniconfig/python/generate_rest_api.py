@@ -1,14 +1,14 @@
-import re
 import ast
-import yaml
 import inspect
-
+import re
 from argparse import ArgumentParser
 from argparse import Namespace
+from collections.abc import Iterable
 from string import Template
-from typing import Optional
-from typing import Iterable
 from typing import Any
+
+import yaml
+from pydantic import BaseModel
 
 DEFAULT_SOURCE_FILE = 'frinx_api/uniconfig/__init__.py'
 SOURCE_FILE_PY_PATH = '.'
@@ -28,8 +28,8 @@ class CustomTemplate(Template):
 class UniconfigRest:
     uri: str
     method: str
-    request: Optional[Any]
-    response: Optional[Any]
+    request: BaseModel | None
+    response: BaseModel | None
 
 
 def _set_globals_for_template_cls() -> None:
@@ -40,7 +40,7 @@ def _set_globals_for_template_cls() -> None:
 _set_globals_for_template_cls()
 
 
-class _cls(UniconfigRest):
+class _Cls(UniconfigRest):
     uri = '_uri'
     method = '_method'
     request = _request
@@ -68,15 +68,15 @@ imports: list = [], definitions: list = []) -> tuple[list[str], list[str]]:
             return _upformat(service, ['-']) + _upformat(param, ['-'])
         return _upformat(service, ['-'])
     
-    uc_rest_template = CustomTemplate(inspect.getsource(_cls))
+    uc_rest_template = CustomTemplate(inspect.getsource(_Cls))
     
     for endpoint, spec in scheme['paths'].items():
         methods, template_input = list(spec.keys()), {}
         for method in methods:
             if len(methods) > 1:
-                template_input['cls']= _get_service_name(endpoint) + method.capitalize()
+                template_input['Cls']= _get_service_name(endpoint) + method.capitalize()
             else:
-                template_input['cls']= _get_service_name(endpoint)
+                template_input['Cls']= _get_service_name(endpoint)
 
             template_input['uri'] = endpoint
             template_input['method'] = method.upper()
@@ -101,7 +101,7 @@ imports: list = [], definitions: list = []) -> tuple[list[str], list[str]]:
 
 
 def generate_file(path: str | None, imports: Iterable[str], definitions: Iterable[str]) -> None:
-    file = ENTER + ENTER.join(imports)
+    file = ENTER.join(imports)
     file += 3 * ENTER + (2 *ENTER).join(definitions)
     try:
         with open(path, 'w+') as f:
@@ -148,10 +148,9 @@ def main() -> None:
             req_res_refs=cls_def_names_from_src_file(DEFAULT_SOURCE_FILE),
             imports=[
                 'from __future__ import annotations',
-                NAN,
-                'from typing import Optional', 
-                'from typing import Any', 
-                NAN
+                NAN, # empty line between imports
+                'from pydantic import BaseModel', 
+                NAN, # empty line between imports
             ],
             definitions=[inspect.getsource(UniconfigRest)]
         )
