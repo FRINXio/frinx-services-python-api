@@ -43,13 +43,13 @@ class _cls(UniconfigRest):
 
 
 def parse_swagger_scheme(scheme: dict[str, Any]) -> list[str]:
-    template = CustomTemplate(inspect.getsource(_cls))
+    uniconfig_rest = CustomTemplate(inspect.getsource(_cls))
     definitions = []
 
     def _to_pascal(s: str) -> str:
         return NAN.join([x.capitalize() for x in s.split('-')])
 
-    def get_service_name(endpoint: str) -> str:
+    def _get_service_name(endpoint: str) -> str:
         service = endpoint.split('/')[-1]
         match = re.search(r'\{(.*?)\}', service)
         if match:
@@ -58,28 +58,32 @@ def parse_swagger_scheme(scheme: dict[str, Any]) -> list[str]:
             return _to_pascal(service) + _to_pascal(param)
         return _to_pascal(service)
 
+    def get_inputs(endpoint: str, spec: dict[str, Any]) -> list[dict[str, Any]]:
+        i, inputs = {}, []
+        methods = list(spec.keys())
+        for method in methods:
+            if len(methods) > 1:
+                i['cls']= _get_service_name(endpoint) + method.capitalize()
+            else:
+                i['cls']= _get_service_name(endpoint)
+            i['uri'] = endpoint
+            i['method'] = method.upper()
+            # TODO: parse request and response
+            i['request'] = None
+            i['response'] = None
+            inputs.append(i)
+        return inputs
+
     
     for endpoint, spec in scheme['paths'].items():
-        mustache = {}
-        methods = list(spec.keys())
-        # TODO: simplify
-        if len(methods) > 1:
-            for method in methods:
-                mustache = {}
-                mustache['cls']= get_service_name(endpoint) + method.capitalize()
-                mustache['uri'] = endpoint
-                mustache['method'] = method.upper()
-                mustache['request'] = None
-                mustache['response'] = None
-                definitions.append(template.substitute(**mustache))
-        else:
-            mustache['cls'] = get_service_name(endpoint)
-            mustache['uri'] = endpoint
-            mustache['method'] = methods[0].upper()
-            mustache['request'] = None
-            mustache['response'] = None
-            definitions.append(template.substitute(**mustache))
-        #
+        try:
+            [
+                definitions.append(uniconfig_rest.substitute(**i))
+                for i in get_inputs(endpoint, spec)
+            ]
+        except Exception as e:
+            print(e)
+            ... # TODO: error handling
     return definitions
 
 
