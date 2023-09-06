@@ -105,7 +105,7 @@ jobs:
         with:
           title: "[${{ env.IMAGE_REPO }}] Release package for ${{ inputs.image }}"
           commit-message: "[${{ env.IMAGE_REPO }}] Create and publish packages for ${{ env.IMAGE_TAG }}"
-          branch-suffix: timestamp
+          branch-suffix: short-commit-hash
           labels: automated-pr
           delete-branch: true
           reviewers: Jozefiel
