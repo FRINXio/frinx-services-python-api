@@ -41,6 +41,9 @@ jobs:
       - name: Log into docker hub
         run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
 
+      - name: Setup upterm session
+        uses: lhotari/action-upterm@v1
+
       - name: Start service
         run: |
           echo "${IMAGE_NAMESPACE} ${IMAGE_REPO} ${IMAGE_TAG}"

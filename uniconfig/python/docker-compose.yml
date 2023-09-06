@@ -4,7 +4,10 @@ services:
   uniconfig-controller:
     user: root
     image: frinx/uniconfig:${IMAGE_TAG:?}
-    entrypoint: cp openapi/uniconfigV3.yaml /home/api/
+    entrypoint: /bin/bash
+    command:
+      - -c
+      - cp openapi/uniconfig*.yaml /home/api/uniconfig.yaml
     volumes:
       - uniconfig-swagger:/home/api
 

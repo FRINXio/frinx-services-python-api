@@ -11,6 +11,7 @@ ruff = "^0.0.263"
 pyright = "^1.1.317"
 datamodel-code-generator = {extras = ["http"], version = "^0.21.3"}
 mypy = "1.3.0"
+types-pyyaml = "^6.0.12.11"
 pyyaml = "^6.0.1"
 
 [tool.poetry]
@@ -40,7 +41,7 @@ ignore = ["E501"]
 target-version = "py310"
 
 [tool.ruff.isort]
-known-first-party = ['frinx_api']
+known-first-party = ['frinx_api', 'generate_rest_api.py']
 force-single-line = true
 
 [tool.ruff.flake8-quotes]

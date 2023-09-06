@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from pydantic import BaseModel
+from typing import Any
 
 from . import OperationsAddKeystoreEntryPostRequest
 from . import OperationsAddPrivateKeyPostRequest
@@ -126,8 +126,8 @@ from . import OperationsValidatePostResponse
 class UniconfigRest:
     uri: str
     method: str
-    request: BaseModel | None
-    response: BaseModel | None
+    request: Any | None
+    response: Any | None
 
 
 class ConfigCoverage(UniconfigRest):
