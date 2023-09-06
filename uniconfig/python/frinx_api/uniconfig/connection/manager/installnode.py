@@ -9,12 +9,16 @@ from pydantic import BaseModel
 from pydantic import Field
 
 from ...cli import topology
-from ...frinx import types
 from ...netconf.node import topology as topology_1
 from ...uniconfig import config
 
 
 class CliTopologyDefaultErrorPatterns(BaseModel):
+    """
+    Device specific list of error patterns. This list is the primary source
+    of error checking on the device. This list can be overridden from the code.
+    """
+
     class Config:
         allow_population_by_field_name = True
 
@@ -25,6 +29,10 @@ class CliTopologyDefaultErrorPatterns(BaseModel):
 
 
 class Blacklist(BaseModel):
+    """
+    Reads which are not invoked for sync-from-network and initial config read.
+    """
+
     class Config:
         allow_population_by_field_name = True
 
@@ -42,6 +50,10 @@ class Blacklist(BaseModel):
 
 
 class Whitelist(BaseModel):
+    """
+    Reads which are invoked for sync-from-network and initial config read.
+    """
+
     class Config:
         allow_population_by_field_name = True
 
@@ -59,6 +71,11 @@ class Whitelist(BaseModel):
 
 
 class CliTopologyDefaultCommitErrorPatterns(BaseModel):
+    """
+    Device specific list of commit error patterns. The following list
+    of patterns is checked in the input after 'commit' command is sent.
+    """
+
     class Config:
         allow_population_by_field_name = True
 
@@ -139,7 +156,7 @@ class NetconfNodeTopologyOdlHelloMessageCapabilities(BaseModel):
     """
 
 
-class NetconfSubscriptionsStreamItem(BaseModel):
+class SubscriptionsStreamItem(BaseModel):
     class Config:
         allow_population_by_field_name = True
 
@@ -157,9 +174,13 @@ class NetconfSubscriptionsStreamItem(BaseModel):
     It is not valid to specify start times that are later than the current time. If the <startTime> specified
     is earlier than the log can support, the replay will begin with the earliest available notification.
     """
-    stream_name: Optional[str] = Field(None, alias='stream-name')
+    stream_name: str = Field(..., alias='stream-name')
     """
     Identifier of the notification stream.
+    """
+    paths: Optional[list[str]] = None
+    """
+    Paths to which subscribe on data change events
     """
 
 
@@ -196,8 +217,7 @@ class SessionTimers(BaseModel):
         None, alias='keepalive-delay', ge=0.0, le=4294967295.0
     )
     """
-    Netconf connector sends keepalive RPCs while the session is idle,
-    this delay specifies the delay between keepalive RPC in seconds
+    Netconf connector sends keepalive RPCs while the session is idle, this delay specifies the delay between keepalive RPC in seconds
     If a value <1 is provided, no keepalives will be sent
     """
     max_reconnection_attempts: Optional[float] = Field(
@@ -205,8 +225,7 @@ class SessionTimers(BaseModel):
     )
     """
     Maximum number of reconnect retries. Non positive value or null is interpreted as infinity.
-    This is an optional parameter. If set, max-connection-attempts will be used only once, for the first
-    connection attempts
+    This is an optional parameter. If set, max-connection-attempts will be used only once, for the first connection attempts
     and for any subsequent disconnect-connect cycles, max-reconnect-attempts will be used.
     This enables users using different amount of reconnects for initial attempts vs subsequent reconnects.
     """
@@ -271,6 +290,11 @@ class LoginPassword(BaseModel):
 
 
 class UniconfigConfigCrypto(BaseModel):
+    """
+    Settings related to encryption of arbitrary leaves/leaf-list using public key that
+    is read from device on specified path.
+    """
+
     class Config:
         allow_population_by_field_name = True
 
@@ -284,6 +308,10 @@ class UniconfigConfigCrypto(BaseModel):
 
 
 class Cli(BaseModel):
+    """
+    CLI node settings.
+    """
+
     class Config:
         allow_population_by_field_name = True
 
@@ -525,6 +553,10 @@ class OtherParameters(BaseModel):
 
 
 class Netconf(BaseModel):
+    """
+    NETCONF node settings.
+    """
+
     class Config:
         allow_population_by_field_name = True
 
@@ -552,8 +584,7 @@ class Netconf(BaseModel):
     )
     """
     Maximum number of reconnect retries. Non positive value or null is interpreted as infinity.
-    This is an optional parameter. If set, max-connection-attempts will be used only once,
-    for the first connection attempts
+    This is an optional parameter. If set, max-connection-attempts will be used only once, for the first connection attempts
     and for any subsequent disconnect-connect cycles, max-reconnect-attempts will be used.
     This enables users using different amount of reconnects for initial attempts vs subsequent reconnects.
     """
@@ -639,6 +670,12 @@ class Netconf(BaseModel):
     """
     Timeout period in seconds to issued commit after confirmed-commit
     """
+    subscriptions_stream: Optional[list[SubscriptionsStreamItem]] = Field(
+        None, alias='subscriptions:stream'
+    )
+    """
+    List of available streams to which subscription can be created.
+    """
     sleep_factor: Optional[int] = Field(
         None, alias='sleep-factor', ge=-922337203685477630, le=922337203685477630
     )
@@ -668,16 +705,14 @@ class Netconf(BaseModel):
         None, alias='netconf-node-topology:schema-cache-directory'
     )
     """
-    The destination schema repository for yang files relative to the cache directory.
-    This may be specified per netconf mount
+    The destination schema repository for yang files relative to the cache directory.  This may be specified per netconf mount
     so that the loaded yang files are stored to a distinct directory to avoid potential conflict.
     """
     between_attempts_timeout_millis: Optional[int] = Field(
         None, alias='between-attempts-timeout-millis', ge=0, le=65535
     )
     """
-    Initial timeout in milliseconds to wait between connection attempts.
-    Will be multiplied by sleep-factor with every additional attempt
+    Initial timeout in milliseconds to wait between connection attempts. Will be multiplied by sleep-factor with every additional attempt
     """
     netconf_node_topology_pass_through: Optional[dict[str, Any]] = Field(
         None,
@@ -688,12 +723,6 @@ class Netconf(BaseModel):
     When the underlying node is connected, its NETCONF context
     is available verbatim under this container through the
     mount extension.
-    """
-    netconf_subscriptions_stream: Optional[
-        list[NetconfSubscriptionsStreamItem]
-    ] = Field(None, alias='netconf-subscriptions:stream')
-    """
-    List of available streams to which subscription can be created.
     """
     netconf_node_topology_non_module_capabilities: Optional[
         NetconfNodeTopologyNonModuleCapabilities
@@ -749,8 +778,7 @@ class Netconf(BaseModel):
         None, alias='keepalive-delay', ge=0.0, le=4294967295.0
     )
     """
-    Netconf connector sends keepalive RPCs while the session is idle,
-    this delay specifies the delay between keepalive RPC in seconds
+    Netconf connector sends keepalive RPCs while the session is idle, this delay specifies the delay between keepalive RPC in seconds
     If a value <1 is provided, no keepalives will be sent
     """
     netconf_node_topology_host: Optional[str] = Field(
@@ -791,6 +819,10 @@ class Netconf(BaseModel):
 
 
 class Gnmi(BaseModel):
+    """
+    gNMI node settings.
+    """
+
     class Config:
         allow_population_by_field_name = True
 
@@ -821,6 +853,12 @@ class Gnmi(BaseModel):
     uniconfig_config_admin_state: Optional[config.AdminState] = Field(
         None, alias='uniconfig-config:admin-state'
     )
+    subscriptions_stream: Optional[list[SubscriptionsStreamItem]] = Field(
+        None, alias='subscriptions:stream'
+    )
+    """
+    List of available streams to which subscription can be created.
+    """
     uniconfig_config_crypto: Optional[UniconfigConfigCrypto] = Field(
         None,
         alias='uniconfig-config:crypto',
@@ -880,14 +918,9 @@ class Input(BaseModel):
     """
     gNMI node settings.
     """
-
-
-class Output(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
-    error_message: Optional[str] = Field(None, alias='error-message')
+    snmp: Optional[dict[str, Any]] = Field(
+        None, title='connection.manager.installnodeinputfields.Snmp'
+    )
     """
-    Message that described occurred error during invocation of operation.
+    snmp node settings.
     """
-    status: types.OperationResultType

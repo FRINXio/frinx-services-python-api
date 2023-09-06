@@ -52,6 +52,10 @@ class ResultItem(BaseModel):
 
 
 class RevertOutput(BaseModel):
+    """
+    Results of reverted changes.
+    """
+
     class Config:
         allow_population_by_field_name = True
 

@@ -23,6 +23,7 @@ from .connection.manager import mountnode
 from .connection.manager import uninstallmultiplenodes
 from .connection.manager import uninstallnode
 from .connection.manager import unmountnode
+from .crypto import changeencryptionkeys
 from .crypto import changeencryptionstatus
 from .data.change.events import createdatachangesubscription
 from .data.change.events import deletedatachangesubscription
@@ -228,6 +229,13 @@ class OperationsChangeEncryptionStatusPostResponse(BaseModel):
         allow_population_by_field_name = True
 
     output: Optional[changeencryptionstatus.Output] = None
+
+
+class OperationsChangeEncryptionKeysPostResponse(BaseModel):
+    class Config:
+        allow_population_by_field_name = True
+
+    output: Optional[changeencryptionkeys.Output] = None
 
 
 class OperationsShowSubscriptionDataPostRequest(BaseModel):
@@ -573,25 +581,11 @@ class OperationsUninstallNodePostRequest(BaseModel):
     input: Optional[uninstallnode.Input] = None
 
 
-class OperationsUninstallNodePostResponse(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
-    output: Optional[uninstallnode.Output] = None
-
-
 class OperationsUninstallMultipleNodesPostRequest(BaseModel):
     class Config:
         allow_population_by_field_name = True
 
     input: Optional[uninstallmultiplenodes.Input] = None
-
-
-class OperationsUninstallMultipleNodesPostResponse(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
-    output: Optional[uninstallmultiplenodes.Output] = None
 
 
 class OperationsGetInstalledNodesPostRequest(BaseModel):
@@ -608,25 +602,11 @@ class OperationsInstallNodePostRequest(BaseModel):
     input: Optional[installnode.Input] = None
 
 
-class OperationsInstallNodePostResponse(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
-    output: Optional[installnode.Output] = None
-
-
 class OperationsChangeAdminStatePostRequest(BaseModel):
     class Config:
         allow_population_by_field_name = True
 
     input: Optional[changeadminstate.Input] = None
-
-
-class OperationsChangeAdminStatePostResponse(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
-    output: Optional[changeadminstate.Output] = None
 
 
 class OperationsUnmountNodePostRequest(BaseModel):
@@ -636,25 +616,11 @@ class OperationsUnmountNodePostRequest(BaseModel):
     input: Optional[unmountnode.Input] = None
 
 
-class OperationsUnmountNodePostResponse(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
-    output: Optional[unmountnode.Output] = None
-
-
 class OperationsDryrunUnmountNodePostRequest(BaseModel):
     class Config:
         allow_population_by_field_name = True
 
     input: Optional[dryrununmountnode.Input] = None
-
-
-class OperationsDryrunUnmountNodePostResponse(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
-    output: Optional[dryrununmountnode.Output] = None
 
 
 class OperationsMountNodePostRequest(BaseModel):
@@ -664,25 +630,11 @@ class OperationsMountNodePostRequest(BaseModel):
     input: Optional[mountnode.Input] = None
 
 
-class OperationsMountNodePostResponse(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
-    output: Optional[mountnode.Output] = None
-
-
 class OperationsInstallMultipleNodesPostRequest(BaseModel):
     class Config:
         allow_population_by_field_name = True
 
     input: Optional[installmultiplenodes.Input] = None
-
-
-class OperationsInstallMultipleNodesPostResponse(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
-    output: Optional[installmultiplenodes.Output] = None
 
 
 class OperationsDryrunMountNodePostRequest(BaseModel):
@@ -692,11 +644,11 @@ class OperationsDryrunMountNodePostRequest(BaseModel):
     input: Optional[dryrunmountnode.Input] = None
 
 
-class OperationsDryrunMountNodePostResponse(BaseModel):
+class OperationsChangeEncryptionKeysPostRequest(BaseModel):
     class Config:
         allow_population_by_field_name = True
 
-    output: Optional[dryrunmountnode.Output] = None
+    input: Optional[changeencryptionkeys.Input] = None
 
 
 class OperationsShowSubscriptionDataPostResponse(BaseModel):

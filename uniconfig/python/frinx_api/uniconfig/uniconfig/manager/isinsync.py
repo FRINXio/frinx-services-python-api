@@ -43,6 +43,10 @@ class NodeResultItem(BaseModel):
 
 
 class NodeResults(BaseModel):
+    """
+    Result of checking if network elements are in-sync with operational datastore.
+    """
+
     class Config:
         allow_population_by_field_name = True
 

@@ -60,6 +60,10 @@ class NodeResultItem(BaseModel):
 
 
 class NodeResults(BaseModel):
+    """
+    Result of configuration and rollback on each configured network element.
+    """
+
     class Config:
         allow_population_by_field_name = True
 
