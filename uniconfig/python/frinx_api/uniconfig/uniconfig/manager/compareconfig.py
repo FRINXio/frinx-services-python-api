@@ -111,6 +111,10 @@ class NodeResultItem(BaseModel):
 
 
 class NodeResults(BaseModel):
+    """
+    Individual result of configuration comparison for given nodes.
+    """
+
     class Config:
         allow_population_by_field_name = True
 

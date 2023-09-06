@@ -60,6 +60,10 @@ class NodeResultItem(BaseModel):
 
 
 class NodeResults(BaseModel):
+    """
+    Individual result of calculate-diff for given nodes.
+    """
+
     class Config:
         allow_population_by_field_name = True
 

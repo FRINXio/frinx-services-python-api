@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from pydantic import BaseModel
+from typing import Any
 
 from . import OperationsAddKeystoreEntryPostRequest
 from . import OperationsAddPrivateKeyPostRequest
@@ -18,7 +18,8 @@ from . import OperationsCalculateSubtreeDiffPostResponse
 from . import OperationsCalculateSubtreeGitLikeDiffPostRequest
 from . import OperationsCalculateSubtreeGitLikeDiffPostResponse
 from . import OperationsChangeAdminStatePostRequest
-from . import OperationsChangeAdminStatePostResponse
+from . import OperationsChangeEncryptionKeysPostRequest
+from . import OperationsChangeEncryptionKeysPostResponse
 from . import OperationsChangeEncryptionStatusPostRequest
 from . import OperationsChangeEncryptionStatusPostResponse
 from . import OperationsCheckedCommitPostRequest
@@ -32,6 +33,8 @@ from . import OperationsCommitPostRequest
 from . import OperationsCommitPostResponse
 from . import OperationsCompareConfigPostRequest
 from . import OperationsCompareConfigPostResponse
+from . import OperationsConfigCoveragePostRequest
+from . import OperationsConfigCoveragePostResponse
 from . import OperationsCopyManyToOnePostRequest
 from . import OperationsCopyManyToOnePostResponse
 from . import OperationsCopyOneToManyPostRequest
@@ -60,15 +63,21 @@ from . import OperationsDiscoverPostResponse
 from . import OperationsDryrunCommitPostRequest
 from . import OperationsDryrunCommitPostResponse
 from . import OperationsDryrunMountNodePostRequest
-from . import OperationsDryrunMountNodePostResponse
 from . import OperationsDryrunUnmountNodePostRequest
-from . import OperationsDryrunUnmountNodePostResponse
 from . import OperationsEnableDefaultDeviceLoggingPostRequest
 from . import OperationsEnableDefaultDeviceLoggingPostResponse
 from . import OperationsEnableDeviceLoggingPostRequest
 from . import OperationsEnableDeviceLoggingPostResponse
 from . import OperationsEnableLoggingPostRequest
 from . import OperationsEnableLoggingPostResponse
+from . import OperationsExecuteAndExpectPostRequest
+from . import OperationsExecuteAndExpectPostResponse
+from . import OperationsExecuteAndReadPostRequest
+from . import OperationsExecuteAndReadPostResponse
+from . import OperationsExecuteAndReadUntilPostRequest
+from . import OperationsExecuteAndReadUntilPostResponse
+from . import OperationsExecutePostRequest
+from . import OperationsExecutePostResponse
 from . import OperationsGetInstalledNodesPostRequest
 from . import OperationsGetInstalledNodesPostResponse
 from . import OperationsGetTemplateInfoPostRequest
@@ -78,13 +87,10 @@ from . import OperationsGetTemplateNodesPostResponse
 from . import OperationsHealthPostRequest
 from . import OperationsHealthPostResponse
 from . import OperationsInstallMultipleNodesPostRequest
-from . import OperationsInstallMultipleNodesPostResponse
 from . import OperationsInstallNodePostRequest
-from . import OperationsInstallNodePostResponse
 from . import OperationsIsInSyncPostRequest
 from . import OperationsIsInSyncPostResponse
 from . import OperationsMountNodePostRequest
-from . import OperationsMountNodePostResponse
 from . import OperationsQueryConfigPostRequest
 from . import OperationsQueryConfigPostResponse
 from . import OperationsReadJournalPostRequest
@@ -113,11 +119,8 @@ from . import OperationsSyncFromNetworkPostResponse
 from . import OperationsSyncToNetworkPostRequest
 from . import OperationsSyncToNetworkPostResponse
 from . import OperationsUninstallMultipleNodesPostRequest
-from . import OperationsUninstallMultipleNodesPostResponse
 from . import OperationsUninstallNodePostRequest
-from . import OperationsUninstallNodePostResponse
 from . import OperationsUnmountNodePostRequest
-from . import OperationsUnmountNodePostResponse
 from . import OperationsUpgradeTemplatePostRequest
 from . import OperationsValidatePostRequest
 from . import OperationsValidatePostResponse
@@ -126,57 +129,57 @@ from . import OperationsValidatePostResponse
 class UniconfigRest:
     uri: str
     method: str
-    request: BaseModel | None
-    response: BaseModel | None
+    request: Any | None
+    response: Any | None
 
 
 class ConfigCoverage(UniconfigRest):
-    uri = '/operations/network-topology/topology={topology-id}/node={node-id}/yang-ext:mount/config-coverage'
+    uri = '/operations/config-coverage'
     method = 'POST'
-    request = None
-    response = None
+    request = OperationsConfigCoveragePostRequest
+    response = OperationsConfigCoveragePostResponse
 
 
 class Execute(UniconfigRest):
-    uri = '/operations/network-topology/topology={topology-id}/node={node-id}/yang-ext:mount/execute'
+    uri = '/operations/execute'
     method = 'POST'
-    request = None
-    response = None
+    request = OperationsExecutePostRequest
+    response = OperationsExecutePostResponse
 
 
 class ExecuteAndExpect(UniconfigRest):
-    uri = '/operations/network-topology/topology={topology-id}/node={node-id}/yang-ext:mount/execute-and-expect'
+    uri = '/operations/execute-and-expect'
     method = 'POST'
-    request = None
-    response = None
+    request = OperationsExecuteAndExpectPostRequest
+    response = OperationsExecuteAndExpectPostResponse
 
 
 class ExecuteAndRead(UniconfigRest):
-    uri = '/operations/network-topology/topology={topology-id}/node={node-id}/yang-ext:mount/execute-and-read'
+    uri = '/operations/execute-and-read'
     method = 'POST'
-    request = None
-    response = None
+    request = OperationsExecuteAndReadPostRequest
+    response = OperationsExecuteAndReadPostResponse
 
 
 class ExecuteAndReadUntil(UniconfigRest):
-    uri = '/operations/network-topology/topology={topology-id}/node={node-id}/yang-ext:mount/execute-and-read-until'
+    uri = '/operations/execute-and-read-until'
     method = 'POST'
-    request = None
-    response = None
+    request = OperationsExecuteAndReadUntilPostRequest
+    response = OperationsExecuteAndReadUntilPostResponse
 
 
 class UninstallNode(UniconfigRest):
     uri = '/operations/uninstall-node'
     method = 'POST'
     request = OperationsUninstallNodePostRequest
-    response = OperationsUninstallNodePostResponse
+    response = None
 
 
 class UninstallMultipleNodes(UniconfigRest):
     uri = '/operations/uninstall-multiple-nodes'
     method = 'POST'
     request = OperationsUninstallMultipleNodesPostRequest
-    response = OperationsUninstallMultipleNodesPostResponse
+    response = None
 
 
 class GetInstalledNodes(UniconfigRest):
@@ -190,42 +193,42 @@ class InstallNode(UniconfigRest):
     uri = '/operations/install-node'
     method = 'POST'
     request = OperationsInstallNodePostRequest
-    response = OperationsInstallNodePostResponse
+    response = None
 
 
 class ChangeAdminState(UniconfigRest):
     uri = '/operations/change-admin-state'
     method = 'POST'
     request = OperationsChangeAdminStatePostRequest
-    response = OperationsChangeAdminStatePostResponse
+    response = None
 
 
 class UnmountNode(UniconfigRest):
     uri = '/operations/unmount-node'
     method = 'POST'
     request = OperationsUnmountNodePostRequest
-    response = OperationsUnmountNodePostResponse
+    response = None
 
 
 class DryrunUnmountNode(UniconfigRest):
     uri = '/operations/dryrun-unmount-node'
     method = 'POST'
     request = OperationsDryrunUnmountNodePostRequest
-    response = OperationsDryrunUnmountNodePostResponse
+    response = None
 
 
 class MountNode(UniconfigRest):
     uri = '/operations/mount-node'
     method = 'POST'
     request = OperationsMountNodePostRequest
-    response = OperationsMountNodePostResponse
+    response = None
 
 
 class InstallMultipleNodes(UniconfigRest):
     uri = '/operations/install-multiple-nodes'
     method = 'POST'
     request = OperationsInstallMultipleNodesPostRequest
-    response = OperationsInstallMultipleNodesPostResponse
+    response = None
 
 
 class CheckInstalledNodes(UniconfigRest):
@@ -239,7 +242,7 @@ class DryrunMountNode(UniconfigRest):
     uri = '/operations/dryrun-mount-node'
     method = 'POST'
     request = OperationsDryrunMountNodePostRequest
-    response = OperationsDryrunMountNodePostResponse
+    response = None
 
 
 class ChangeEncryptionStatus(UniconfigRest):
@@ -247,6 +250,13 @@ class ChangeEncryptionStatus(UniconfigRest):
     method = 'POST'
     request = OperationsChangeEncryptionStatusPostRequest
     response = OperationsChangeEncryptionStatusPostResponse
+
+
+class ChangeEncryptionKeys(UniconfigRest):
+    uri = '/operations/change-encryption-keys'
+    method = 'POST'
+    request = OperationsChangeEncryptionKeysPostRequest
+    response = OperationsChangeEncryptionKeysPostResponse
 
 
 class ShowSubscriptionData(UniconfigRest):
@@ -282,13 +292,6 @@ class DryrunCommit(UniconfigRest):
     method = 'POST'
     request = OperationsDryrunCommitPostRequest
     response = OperationsDryrunCommitPostResponse
-
-
-class SetMessageTypes(UniconfigRest):
-    uri = '/operations/set-message-types'
-    method = 'POST'
-    request = None
-    response = None
 
 
 class ReadJournal(UniconfigRest):

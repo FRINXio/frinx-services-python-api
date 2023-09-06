@@ -7,7 +7,6 @@ from typing import Optional
 from pydantic import BaseModel
 from pydantic import Field
 
-from ...frinx import types
 from . import AdminState
 
 
@@ -20,14 +19,3 @@ class Input(BaseModel):
     Node identifier of CLI/NETCONF node.
     """
     admin_state: Optional[AdminState] = Field(None, alias='admin-state')
-
-
-class Output(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
-    error_message: Optional[str] = Field(None, alias='error-message')
-    """
-    Message that described occurred error during invocation of operation.
-    """
-    status: types.OperationResultType

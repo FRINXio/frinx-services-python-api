@@ -10,13 +10,45 @@ from pydantic import Field
 from . import MountType
 
 
+class NodeResultItem(BaseModel):
+    class Config:
+        allow_population_by_field_name = True
+
+    node_id: str = Field(..., alias='node-id')
+    """
+    Node identifier of CLI/NETCONF node.
+    """
+    topology_id: Optional[str] = Field(None, alias='topology-id')
+    """
+    Topology identifier for node
+    """
+
+
+class NodeResults(BaseModel):
+    """
+    Individual result of node identifiers for given nodes.
+    """
+
+    class Config:
+        allow_population_by_field_name = True
+
+    node_result: Optional[list[NodeResultItem]] = Field(None, alias='node-result')
+    """
+    List of node identifiers.
+    """
+
+
 class Output(BaseModel):
     class Config:
         allow_population_by_field_name = True
 
-    nodes: Optional[list[str]] = None
+    node_results: Optional[NodeResults] = Field(
+        None,
+        alias='node-results',
+        title='connection.manager.getinstallednodesoutputfields.NodeResults',
+    )
     """
-    List of node identifiers.
+    Individual result of node identifiers for given nodes.
     """
 
 
