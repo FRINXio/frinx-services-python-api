@@ -730,3 +730,18 @@ class QueryConfig(UniconfigRest):
     method = 'POST'
     request = OperationsQueryConfigPostRequest
     response = OperationsQueryConfigPostResponse
+
+
+class ReadStructuredData(UniconfigRest):
+    uri = '/data/network-topology:network-topology/topology={topology-id}/node={node-id}/frinx-uniconfig-topology:configuration{uri}'
+    method = 'GET'
+
+
+class WriteStructuredData(UniconfigRest):
+    uri = '/data/network-topology:network-topology/topology={topology-id}/node={node-id}/frinx-uniconfig-topology:configuration{uri}'
+    method = 'PUT'
+
+
+class DeleteStructuredData(UniconfigRest):
+    uri = '/data/network-topology:network-topology/topology={topology-id}/node={node-id}/frinx-uniconfig-topology:configuration{uri}'
+    method = 'DELETE'
