@@ -39,10 +39,10 @@ However, here are some straightforward examples of usage with Poetry.
 
 ```bash
 # inventory package, example with branch usage
-poetry add git+ssh://git@github.com/FRINXio/frinx-services-python-api.git.git@main#subdirectory=inventory/python
+poetry add git+ssh://git@github.com/FRINXio/frinx-services-python-api.git@main#subdirectory=inventory/python
 
 # inventory package, example with tag usage
-poetry add git+ssh://git@github.com/FRINXio/frinx-services-python-api.git.git@v2.0.0#subdirectory=inventory/python
+poetry add git+ssh://git@github.com/FRINXio/frinx-services-python-api.git@v2.0.0#subdirectory=inventory/python
 ```
 
 ## Usage

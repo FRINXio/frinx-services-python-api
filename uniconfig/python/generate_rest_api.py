@@ -63,6 +63,15 @@ def parse_swagger_scheme(scheme: dict[str, Any], req_res_refs: Iterable[str], im
             s = s.replace(x, SPACE)
         return NAN.join([x.capitalize() for x in s.split(SPACE)])
 
+    def _variable_query_to_snake_case(url: str) -> str:
+        pattern = r'{([^{}]+)}'
+        matches = re.findall(pattern, url)
+        modified_string = url
+        for match in matches:
+            modified_match = match.replace('-', '_')
+            modified_string = modified_string.replace(f'{{{match}}}', f'{{{modified_match}}}')
+        return modified_string
+
     def _get_cls(_endpoint: str, _method: str, *, request: bool = False, response: bool = False) -> str:
         base = _up_format(endpoint, ['/', '-']).split('=')[0] + method.capitalize()
         return str(base + {request: 'Request', response: 'Response'}.get(True))
@@ -91,7 +100,9 @@ def parse_swagger_scheme(scheme: dict[str, Any], req_res_refs: Iterable[str], im
             else:
                 template_input['Cls'] = _get_service_name(endpoint)
 
-            template_input['uri'] = endpoint
+            modified_endpoint = _variable_query_to_snake_case(endpoint)
+
+            template_input['uri'] = modified_endpoint
             template_input['method'] = method.upper()
 
             req_ref = _get_cls(endpoint, method, request=True)

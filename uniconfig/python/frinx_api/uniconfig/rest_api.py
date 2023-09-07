@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from pydantic import BaseModel
+from typing import Any
 
 from . import OperationsAddKeystoreEntryPostRequest
 from . import OperationsAddPrivateKeyPostRequest
@@ -126,40 +126,40 @@ from . import OperationsValidatePostResponse
 class UniconfigRest:
     uri: str
     method: str
-    request: BaseModel | None
-    response: BaseModel | None
+    request: Any | None
+    response: Any | None
 
 
 class ConfigCoverage(UniconfigRest):
-    uri = '/operations/network-topology/topology={topology-id}/node={node-id}/yang-ext:mount/config-coverage'
+    uri = '/operations/network-topology/topology={topology_id}/node={node_id}/yang-ext:mount/config-coverage'
     method = 'POST'
     request = None
     response = None
 
 
 class Execute(UniconfigRest):
-    uri = '/operations/network-topology/topology={topology-id}/node={node-id}/yang-ext:mount/execute'
+    uri = '/operations/network-topology/topology={topology_id}/node={node_id}/yang-ext:mount/execute'
     method = 'POST'
     request = None
     response = None
 
 
 class ExecuteAndExpect(UniconfigRest):
-    uri = '/operations/network-topology/topology={topology-id}/node={node-id}/yang-ext:mount/execute-and-expect'
+    uri = '/operations/network-topology/topology={topology_id}/node={node_id}/yang-ext:mount/execute-and-expect'
     method = 'POST'
     request = None
     response = None
 
 
 class ExecuteAndRead(UniconfigRest):
-    uri = '/operations/network-topology/topology={topology-id}/node={node-id}/yang-ext:mount/execute-and-read'
+    uri = '/operations/network-topology/topology={topology_id}/node={node_id}/yang-ext:mount/execute-and-read'
     method = 'POST'
     request = None
     response = None
 
 
 class ExecuteAndReadUntil(UniconfigRest):
-    uri = '/operations/network-topology/topology={topology-id}/node={node-id}/yang-ext:mount/execute-and-read-until'
+    uri = '/operations/network-topology/topology={topology_id}/node={node_id}/yang-ext:mount/execute-and-read-until'
     method = 'POST'
     request = None
     response = None
@@ -621,7 +621,7 @@ class TransactionMetadata(UniconfigRest):
 
 
 class TransactionMetadataTransactionId(UniconfigRest):
-    uri = '/data/transactions-metadata/transaction-metadata={transaction-id}'
+    uri = '/data/transactions-metadata/transaction-metadata={transaction_id}'
     method = 'GET'
     request = None
     response = None
@@ -730,3 +730,18 @@ class QueryConfig(UniconfigRest):
     method = 'POST'
     request = OperationsQueryConfigPostRequest
     response = OperationsQueryConfigPostResponse
+
+
+class ReadStructuredData(UniconfigRest):
+    uri = '/data/network-topology:network-topology/topology={topology_id}/node={node_id}/frinx-uniconfig-topology:configuration{uri}'
+    method = 'GET'
+
+
+class WriteStructuredData(UniconfigRest):
+    uri = '/data/network-topology:network-topology/topology={topology_id}/node={node_id}/frinx-uniconfig-topology:configuration{uri}'
+    method = 'PUT'
+
+
+class DeleteStructuredData(UniconfigRest):
+    uri = '/data/network-topology:network-topology/topology={topology_id}/node={node_id}/frinx-uniconfig-topology:configuration{uri}'
+    method = 'DELETE'
