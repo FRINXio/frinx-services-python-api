@@ -237,34 +237,66 @@ class Query(BaseModel):
     class Config:
         extra = Extra.forbid
 
+    @staticmethod
+    def _parse_enum(value: Enum) -> str:
+        return f'{value.name}'
+
+    @staticmethod
+    def _parse_bool(value: bool) -> str:
+        return f'{str(value).lower()}'
+
+    @staticmethod
+    def _parse_num(value: int | float) -> str:
+        return f'{value}'
+
+    @staticmethod
+    def _parse_str(value: Any) -> str:
+        return f'"{value}"'
+
+    @staticmethod
+    def _parse_tuple(value: tuple[Any, ...]) -> str:
+        return f'{", ".join(map(str, value))}'
+
+    def parse_inputs(self, value: Any) -> str:
+        match value:
+            case Enum():
+                response = f'{self._parse_enum(value)}'
+            case bool():
+                response = f'{self._parse_bool(value)}'
+            case int() | float():
+                response = f'{self._parse_num(value)}'
+            case tuple():
+                response = f'{self._parse_tuple(value)}'
+            case list():
+                values = []
+                for item in value:
+                    values.append(self.parse_inputs(item))
+                response = f'[ {",".join(values)} ]'
+            case dict():
+                pairs = []
+                for key, values in value.items():
+                    pairs.append(f' {{ {key}: {self.parse_inputs(values)} }} ')
+                response = ', '.join(pairs)
+            case _:
+                response = f'{self._parse_str(value)}'
+        return response
+
     def dict_to_custom_input(self, any_object: Any) -> str:
         pairs = []
-        match any_object:
-            case list():
-                for item in any_object:
-                    pairs.append(self.dict_to_custom_input(item))
-            case dict():
-                for key, value in any_object.items():
-                    match value:
-                        case Enum():
-                            pairs.append(f'{key}: {value.name}')
-                        case bool():
-                            pairs.append(f'{key}: {str(value).lower()}')
-                        case int() | float():
-                            pairs.append(f'{key}: {value}')
-                        case dict():
-                            pairs.append(f'{key}: {{ {self.dict_to_custom_input(value)} }}')
-                        case list():
-                            for item in value:
-                                pairs.append(f'{key}: [ {self.dict_to_custom_input(item)} ]')
-                        case _:
-                            pairs.append(f'{key}: "{value}"')
-            case str():
-                pairs.append(f'"{any_object}"')
-            case bool() | int() | float():
-                pairs.append(f' {any_object}')
-            case Enum():
-                pairs.append(f'{any_object.name}')
+        for key, value in any_object.items():
+            match value:
+                case list():
+                    values = []
+                    for item in value:
+                        values.append(self.parse_inputs(item))
+                    pairs.append(f' {key}: [ {", ".join(values)} ] ')
+                case dict():
+                    values = []
+                    for key_nested, value_nested in value.items():
+                        values.append(f'{key_nested}: {self.parse_inputs(value_nested)} ')
+                    pairs.append(f'{key}: {{ { ", ".join(values) } }}')
+                case _:
+                    pairs.append(f'{key}: {self.parse_inputs(value)}')
         return ', '.join(pairs)
 
     def dict_to_custom_string(self, any_object: Any) -> str:

@@ -13,6 +13,19 @@ from pydantic import Field
 from graphql_pydantic_converter.graphql_types import ENUM
 from graphql_pydantic_converter.graphql_types import Input
 from graphql_pydantic_converter.schema_converter import GraphqlJsonParser
+from tests.render_models import AllocationStrategy
+from tests.render_models import PageInfoSchedule
+from tests.render_models import ResourcePool
+from tests.render_models import ResourcePoolConnection
+from tests.render_models import ResourcePoolEdge
+from tests.render_models import Schedule
+from tests.render_models import ScheduleConnection
+from tests.render_models import ScheduleEdge
+from tests.render_models import SchedulesFilterInput
+from tests.render_models import SchedulesQuery
+from tests.render_models import SearchPoolsByTagsQuery
+from tests.render_models import TagAnd
+from tests.render_models import TagOr
 
 
 class TestTaskGenerator:
@@ -99,3 +112,65 @@ class TestTaskGenerator:
                     'dicts: {a: {"a"}, b: {5}, c: {d: "d"}}], lists: [["aaa"]]'
 
         assert reference == mutation
+
+    def test_render_input_advanced(self) -> None:
+
+        query = SearchPoolsByTagsQuery(
+            tags=TagOr(
+                matchesAny=[
+                    TagAnd(
+                        matchesAll=[
+                            'root_pool'
+                        ]
+                    )
+                ]
+            ),
+            payload=ResourcePoolConnection(
+                edges=ResourcePoolEdge(
+                    node=ResourcePool(
+                        Name=True,
+                        id=True,
+                        AllocationStrategy=AllocationStrategy(
+                            Name=True
+                        )
+                    )
+                )
+            )
+        ).render()
+
+        reference = '{ SearchPoolsByTags ( tags: { matchesAny: [  { matchesAll: [ "root_pool" ] }  ]  } ) ' \
+                    '{ edges { node { AllocationStrategy { Description Lang Name Script id } ' \
+                    'Name PoolProperties PoolType id } } totalCount } }'
+
+        assert reference == query
+
+        query_render = SchedulesQuery(
+            payload=ScheduleConnection(
+                pageInfo=PageInfoSchedule(
+                    hasNextPage=True,
+                    hasPreviousPage=True,
+                    startCursor=True,
+                    endCursor=True
+                ),
+                edges=ScheduleEdge(
+                    node=Schedule(
+                        name=True,
+                        cronString=True,
+                        enabled=True
+                    ),
+                )
+            ),
+            after='aaa',
+            first=10,
+            filter=SchedulesFilterInput(
+                workflowName='TEST_A',
+                workflowVersion='1'
+            )
+        ).render()
+
+        reference = '{ schedules ( after: "aaa", first: 10, filter: { workflowName: "TEST_A" ,' \
+                    ' workflowVersion: "1"  } ) { edges { node { name enabled parallelRuns workflowName' \
+                    ' workflowVersion cronString workflowContext fromDate toDate status } cursor } pageInfo ' \
+                    '{ hasNextPage hasPreviousPage startCursor endCursor } totalCount } }'
+
+        assert reference == query_render
