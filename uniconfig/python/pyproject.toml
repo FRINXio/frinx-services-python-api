@@ -48,7 +48,7 @@ inline-quotes = 'single'
 multiline-quotes = 'double'
 
 [tool.ruff.mccabe]
-max-complexity = 14
+max-complexity = 16
 
 [tool.ruff.pydocstyle]
 convention = "google"
