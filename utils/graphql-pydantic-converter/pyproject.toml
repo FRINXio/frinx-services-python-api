@@ -19,7 +19,7 @@ packages = [{ include = "graphql_pydantic_converter" }]
 name = "graphql-pydantic-transformer"
 description = "Convert pydantic schema to pydantic datamodel and build request from it"
 authors = ["Jozef Volak <jozef.volak@elisapolystar.com>"]
-version = '0.0.3'
+version = '0.0.4'
 readme = ["README.md", "CHANGELOG.md"]
 keywords = ["graphql", "pydantic"]
 license = "Apache 2.0"
