@@ -1,8 +1,8 @@
-# GraphQL to Pydantic Transformer & Pydantic to Query Builder
+# GraphQL to Pydantic Converter & Pydantic to Query Builder
 
 ## Overview
 
-The **GraphQL to Pydantic Transformer** is a Python package designed to simplify the process of transforming GraphQL 
+The **GraphQL to Pydantic Converter** is a Python package designed to simplify the process of transforming GraphQL 
 schemas in JSON format into Pydantic models. This tool is particularly useful for developers working with GraphQL
 APIs who want to generate Pydantic models from GraphQL types for efficient data validation 
 and serialization/deserialization.
@@ -18,7 +18,7 @@ and serialization/deserialization.
 You can install the **GraphQL to Pydantic Transformer** package via pip:
 
 ```bash
-pip install graphql-pydantic-transformer
+pip install graphql-pydantic-converter
 # or
 poetry add git+https://github.com/FRINXio/frinx-services-python-api.git@main#subdirectory=utils/graphql-pydantic-converter
 ```

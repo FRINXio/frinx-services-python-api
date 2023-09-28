@@ -461,12 +461,12 @@ class GraphqlJsonParser:
 
                     if field.args:
                         self.__result += self.__class_template.substitute(
-                            name=f'{field.name[0].upper() + field.name[1:]}Response',
+                            name=f'{field.name[0].upper() + field.name[1:] + payload.name}Response',
                             type='BaseModel',
                         )
 
                         self.__refs += self.__refs_template.substitute(
-                            class_name=f'{field.name[0].upper() + field.name[1:]}Response'
+                            class_name=f'{field.name[0].upper() + field.name[1:] + payload.name}Response'
                         )
 
                         self.__result += kv_template.substitute(
