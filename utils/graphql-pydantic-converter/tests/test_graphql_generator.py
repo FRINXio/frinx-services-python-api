@@ -9,23 +9,23 @@ from model import BlueprintConnection
 from model import BlueprintEdge
 from model import BlueprintsQuery
 from pydantic import Field
+from render_models import AllocationStrategy
+from render_models import PageInfoSchedule
+from render_models import ResourcePool
+from render_models import ResourcePoolConnection
+from render_models import ResourcePoolEdge
+from render_models import Schedule
+from render_models import ScheduleConnection
+from render_models import ScheduleEdge
+from render_models import SchedulesFilterInput
+from render_models import SchedulesQuery
+from render_models import SearchPoolsByTagsQuery
+from render_models import TagAnd
+from render_models import TagOr
 
 from graphql_pydantic_converter.graphql_types import ENUM
 from graphql_pydantic_converter.graphql_types import Input
 from graphql_pydantic_converter.schema_converter import GraphqlJsonParser
-from tests.render_models import AllocationStrategy
-from tests.render_models import PageInfoSchedule
-from tests.render_models import ResourcePool
-from tests.render_models import ResourcePoolConnection
-from tests.render_models import ResourcePoolEdge
-from tests.render_models import Schedule
-from tests.render_models import ScheduleConnection
-from tests.render_models import ScheduleEdge
-from tests.render_models import SchedulesFilterInput
-from tests.render_models import SchedulesQuery
-from tests.render_models import SearchPoolsByTagsQuery
-from tests.render_models import TagAnd
-from tests.render_models import TagOr
 
 
 class TestTaskGenerator:
@@ -38,7 +38,7 @@ class TestTaskGenerator:
         assert reference == converted
 
     def test_render_query(self) -> None:
-        reference = '{ blueprints { edges { cursor node { createdAt name template updatedAt } } totalCount } }'
+        reference = '{ blueprints { edges { node { name } } } }'
         query = BlueprintsQuery(
             payload=BlueprintConnection(
                 edges=BlueprintEdge(
@@ -54,7 +54,7 @@ class TestTaskGenerator:
     def test_render_mutation(self) -> None:
         bp_inputs = 'name: "IOS", template: "{ "cli": { "cli-topology:host": "sample-topology" } }"'
         bp_payload = 'blueprint { createdAt name template updatedAt }'
-        reference = f'mutation {{ addBlueprint ( input: {{ {bp_inputs} }}) {{ { bp_payload } }} }}'
+        reference = f'mutation {{ addBlueprint ( input: {{ {bp_inputs} }}) {{ {bp_payload} }} }}'
         mutation = AddBlueprintMutation(
             input=AddBlueprintInput(
                 name='IOS',
@@ -114,7 +114,6 @@ class TestTaskGenerator:
         assert reference == mutation
 
     def test_render_input_advanced(self) -> None:
-
         query = SearchPoolsByTagsQuery(
             tags=TagOr(
                 matchesAny=[
@@ -174,3 +173,26 @@ class TestTaskGenerator:
                     '{ hasNextPage hasPreviousPage startCursor endCursor } totalCount } }'
 
         assert reference == query_render
+
+    def test_parse_response(self) -> None:
+        from model import BlueprintsResponse
+
+        response: typing.Any = {
+            'data': {
+                'blueprints': {
+                    'edges': [
+                        {
+                            'node': {
+                                'name': 'cli_device_import',
+                                'id': 'Qmx1ZXByaW50OjkyMjJmNTcwLTllNTktNDQxYi1iNzk4LTY2ZTEyY2YwZGQ5OQ'
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+
+        response = BlueprintsResponse(**response)
+
+        assert 'cli_device_import' == response.data.blueprints.edges[0].node.name
+

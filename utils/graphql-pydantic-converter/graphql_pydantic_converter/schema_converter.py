@@ -19,6 +19,7 @@ class GraphqlJsonParser:
     __items: dict[str, Any]
     __result: str = ''
     __enums: list[str] = []
+    __interfaces: list[str] = []
     __refs: str = ''
     __refs_template: Template = Template('$class_name.update_forward_refs()\n')
     __class_template: Template = Template('\n\nclass ${name}($type):\n')
@@ -196,6 +197,7 @@ class GraphqlJsonParser:
         imports = [
             'from __future__ import annotations\n\n'
             'import typing\n',
+            'from pydantic import BaseModel',
             'from pydantic import Field',
             '\n'
         ]
@@ -315,6 +317,8 @@ class GraphqlJsonParser:
         enums = self.__enums + self.__ignore_enums
         kv_template = Template('$indent$name: $val$alias\n')
         for interface in interfaces:
+            if interface.name:
+                self.__interfaces.append(interface.name)
             self.__result += self.__class_template.substitute(name=interface.name, type='Interface')
             self.__refs += self.__refs_template.substitute(class_name=interface.name)
             if interface.fields:
@@ -377,7 +381,7 @@ class GraphqlJsonParser:
 
                     if kind in (self.__enums + self.__ignore_enums):
                         val = 'typing.Optional[Boolean]'
-                        val_type += ', default=True'
+                        val_type += ', default=False'
                     self.__result += kv_template.substitute(
                         indent=self.__INDENT, name=name, val=val, type=val_type
                     )
@@ -391,6 +395,7 @@ class GraphqlJsonParser:
         if payload.interfaces:
             for i in payload.interfaces:
                 interface += f', {i.name}'
+
         if payload.fields and payload.name:
             for field in payload.fields:
                 if field.name and field.type:
@@ -418,12 +423,99 @@ class GraphqlJsonParser:
                         else:
                             self.__result += kv_template.substitute(indent=self.__INDENT, name='payload', val=kind)
 
+    def __create_response(self, payload: Type) -> None:
+        kv_template = Template('$indent$name: $val\n')
+        self.__result += self.__class_template.substitute(name=f'{payload.name}Payload', type='BaseModel')
+        self.__refs += self.__refs_template.substitute(class_name=f'{payload.name}Payload')
+
+        if payload.fields:
+            for field in payload.fields:
+                if field.name and field.type:
+
+                    name = field.name
+                    data_type = self.__extract_fields(field.type, [])
+                    kind = data_type[-1]
+                    data_type[-1] = kind + 'Payload'
+                    if kind in (self.__enums + self.__ignore_enums):
+                        data_type[-1] = f'typing.Optional[{kind}]'
+
+                    if data_type[0] != self.TypeKind.NON_NULL:
+                        data_type.insert(0, self.TypeKind.NON_NULL)
+
+                    val = f'typing.Optional[{ self.__build_type(data_type)}]'
+
+                    if self.is_not_snake_case(field.name):
+                        val += f" = Field(alias='{field.name}')"
+                        name = self.to_snake_case(field.name)
+
+                    self.__result += kv_template.substitute(
+                        indent=self.__INDENT, name=name, val=val
+                    )
+
+    def __create_specific_response(self, payload: Type) -> None:
+        kv_template = Template('$indent$name: $val\n')
+
+        if payload.fields and payload.name:
+            for field in payload.fields:
+                if field.name and field.type:
+
+                    if field.args:
+                        self.__result += self.__class_template.substitute(
+                            name=f'{field.name[0].upper() + field.name[1:]}Response',
+                            type='BaseModel',
+                        )
+
+                        self.__refs += self.__refs_template.substitute(
+                            class_name=f'{field.name[0].upper() + field.name[1:]}Response'
+                        )
+
+                        self.__result += kv_template.substitute(
+                            indent=self.__INDENT,
+                            name='data',
+                            val=f'typing.Optional[{field.name[0].upper() + field.name[1:]}Data]'
+                        )
+
+                        self.__result += kv_template.substitute(
+                            indent=self.__INDENT,
+                            name='errors',
+                            val='typing.Optional[typing.Any]'
+                        )
+
+                        class_name = field.name[0].upper() + field.name[1:]
+
+                        if class_name not in self.__interfaces:
+                            self.__result += self.__class_template.substitute(
+                                name=f'{class_name}Data',
+                                type='BaseModel',
+                            )
+
+                            self.__refs += self.__refs_template.substitute(
+                                class_name=f'{field.name[0].upper() + field.name[1:]}Data',
+                            )
+
+                            data_type = self.__extract_fields(field.type, [])
+                            kind = data_type[-1]
+                            data_type[-1] = kind + 'Payload'
+                            if kind in (self.__enums + self.__ignore_enums):
+                                data_type[-1] = f'typing.Optional[{kind}]'
+
+                            val = self.__build_type(data_type)
+
+                            name = field.name
+                            if self.is_not_snake_case(field.name):
+                                name = self.to_snake_case(field.name)
+                                val += f" = Field(alias='{field.name}')"
+
+                            self.__result += kv_template.substitute(indent=self.__INDENT, name=name, val=val)
+
     def __create_payload(self, payloads: list[Type], specific_payloads: list[Optional[str]]) -> None:
         for payload in payloads:
             if payload.name in specific_payloads:
                 self.__create_specific_payload(payload)
+                self.__create_specific_response(payload)
             else:
                 self.__create_object_payload(payload)
+                self.__create_response(payload)
 
     def __create_refs(self) -> None:
         self.__result += f'\n\n{self.__refs}'
