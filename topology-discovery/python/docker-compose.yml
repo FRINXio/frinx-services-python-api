@@ -12,8 +12,8 @@ services:
     healthcheck:
       test: curl --fail -s http://localhost:5000/api/health
       interval: 5s
-      timeout: 5s
-      retries: 4
+      timeout: 10s
+      retries: 10
     environment:
       UC_URL_BASE: http://uniconfig:8181/rests/
       RUN_MODE: normal
