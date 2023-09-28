@@ -7,15 +7,50 @@ on:
         type: choice
         description: Release package from utils
         options:
-        - graphql-pydantic-converter
+        - utils/graphql-pydantic-converter
 
 jobs:
   build:
+    name: Validate api packages
     runs-on: ubuntu-latest
-
+    timeout-minutes: 5
+    defaults:
+      run:
+        working-directory: ${{ inputs.utils }}
     steps:
       - uses: actions/checkout@v2
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+      - uses: abatilo/actions-poetry@v2
+        with:
+          poetry-version: "1.4.2"
+      - name: Package naming
+        run: |
+          echo "PACKAGE_NAME=$(poetry version --no-interaction | cut -d ' ' -f 1)" >> "$GITHUB_ENV"
+          echo "PACKAGE_VERSION=$(poetry version --no-interaction --short)" >> "$GITHUB_ENV"
+          echo "RELEASE_TAG=$(poetry version --no-interaction | sed 's| |_v|g')" >> "$GITHUB_ENV"
 
-      - name: greet
-        run: | 
-          echo "choice is ${{ github.event.inputs.choice }}" / ${{ inputs.choice }}
+      - name: Docker image naming
+        run: |
+          echo "IMAGE_NAME=frinx/${{ env.PACKAGE_NAME }}:${{ env.PACKAGE_VERSION }}" >> "$GITHUB_ENV"
+      - name: Poetry publish
+        run: poetry publish -u "__token__" -p "${{ secrets.PYPI_TOKEN }}" --build --dry-run
+      - name: Build docker image
+        run: docker build . --file Dockerfile --build-arg git_commit=$(git rev-parse HEAD) --tag ${{ env.IMAGE_NAME }}
+      - name: Log into docker hub
+        run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
+      - name: Push docker image
+        run: docker push ${{ env.IMAGE_NAME }}
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ env.RELEASE_TAG }}
+          release_name: Release ${{ env.RELEASE_TAG }}
+          body: |
+            - Release of ${{ env.PACKAGE_NAME }}:${{ env.PACKAGE_VERSION }} for image with tag ${{ env.IMAGE_NAME }}
+          draft: false
+          prerelease: false

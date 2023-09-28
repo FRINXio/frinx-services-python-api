@@ -16,7 +16,7 @@ pytest = "^7.4.1"
 
 [tool.poetry]
 packages = [{ include = "graphql_pydantic_converter" }]
-name = "graphql-pydantic-transformer"
+name = "graphql-pydantic-converter"
 description = "Convert pydantic schema to pydantic datamodel and build request from it"
 authors = ["Jozef Volak <jozef.volak@elisapolystar.com>"]
 version = '0.1.0'

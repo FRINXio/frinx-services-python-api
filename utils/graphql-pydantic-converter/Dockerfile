@@ -14,7 +14,9 @@ RUN poetry build
 
 FROM python:3.10-buster
 
-LABEL maintainer="Jozef Volak <jozefvolak@gmail.com>"
+LABEL maintainer="Jozef Volak <jozef.volak@elisapolystar.com>"
+ARG git_commit=unspecified
+LABEL git_commit="${git_commit}"
 
 COPY --from=build /home/app/dist/ /home/app
 
