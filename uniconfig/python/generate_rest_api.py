@@ -37,8 +37,8 @@ def _set_globals_for_template_cls() -> None:
     _request, _response = None, None
 
 
-_request: Optional[Any]
-_response: Optional[Any]
+_request: Optional[Any] = None
+_response: Optional[Any] = None
 
 _set_globals_for_template_cls()
 
