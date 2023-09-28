@@ -19,6 +19,8 @@ You can install the **GraphQL to Pydantic Transformer** package via pip:
 
 ```bash
 pip install graphql-pydantic-transformer
+# or
+poetry add git+https://github.com/FRINXio/frinx-services-python-api.git@main#subdirectory=utils/graphql-pydantic-converter
 ```
 
 ## Usage

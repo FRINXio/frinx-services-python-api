@@ -18,5 +18,5 @@ This package has been tested with Python 3.10.
 ### Install the package
 
 ```bash
-pip install frinx-uniconfig-api
+poetry add git+https://github.com/FRINXio/frinx-services-python-api.git@main#subdirectory=uniconfig/python
 ```
