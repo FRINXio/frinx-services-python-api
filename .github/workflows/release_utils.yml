@@ -1,0 +1,21 @@
+name: Publish utils to external repositories
+
+on:
+  workflow_dispatch:
+    inputs:
+      utils:
+        type: choice
+        description: Release package from utils
+        options:
+        - graphql-pydantic-converter
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: greet
+        run: | 
+          echo "choice is ${{ github.event.inputs.choice }}" / ${{ inputs.choice }}

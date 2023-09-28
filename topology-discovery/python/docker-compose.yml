@@ -6,9 +6,17 @@ services:
     environment:
       ARANGO_ROOT_PASSWORD: frinx
       ARANGO_USERNAME: root
+    healthcheck:
+      test: wget http://127.0.0.1:8529 -O- > /dev/null
+      interval: 5s
+      timeout: 10s
+      retries: 10
 
   topology-discovery:
     image: frinx/topology-discovery:${IMAGE_TAG:?}
+    depends_on:
+      arango:
+        condition: service_healthy
     healthcheck:
       test: curl --fail -s http://localhost:5000/api/health
       interval: 5s
