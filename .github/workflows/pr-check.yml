@@ -16,17 +16,65 @@ jobs:
       - name: Codespell
         uses: codespell-project/actions-codespell@master
         with:
-          ignore_words_list: test
+          ignore_words_list: .codespellignore
           check_filenames: true
           check_hidden: false
 
-  code-validate:
-    name: Validate code
+  changes:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      python-api-packages: ${{ steps.python.outputs.changes }}
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-python@v4
-      with:
-        python-version: "3.10"
-    - run: pip3 install -r requirements.txt
-    - run: python3 -m ruff .
+      - uses: actions/checkout@v3
+      - uses: dorny/paths-filter@v2
+        id: python
+        with:
+          filters: |
+            inventory/python:
+              - 'inventory/python/**'
+            resource-manager/python:
+              - 'resource-manager/python/**'
+            schellar/python:
+              - 'schellar/python/**'
+            topology-discovery/python:
+              - 'topology-discovery/python/**'
+            uniconfig/python:
+              - 'uniconfig/python/**'
+            utils/graphql-pydantic-converter:
+              - 'utils/graphql-pydantic-converter/**'
+
+  code-validate:
+    name: Validate api packages
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: changes
+    if: ${{ needs.changes.outputs.python-api-packages != '[]' && needs.changes.outputs.python-api-packages != '' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        directories: ${{ fromJSON(needs.changes.outputs.python-api-packages) }}
+    defaults:
+      run:
+        working-directory: ${{ matrix.directories }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+      - uses: abatilo/actions-poetry@v2
+        with:
+          poetry-version: "1.4.2"
+      - name: Install package dependencies.
+        run: poetry install
+      - name: Run mypy.
+        run: poetry run mypy .
+      - name: Run ruff.
+        run: poetry run ruff .
+      - name: Run pyright.
+        run: poetry run pyright .
+      - name: Run pytests.
+        run: |
+          if [[ -d tests ]]; then
+              poetry run pytest . -vv
+          fi
