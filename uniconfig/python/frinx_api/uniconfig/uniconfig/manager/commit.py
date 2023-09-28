@@ -40,7 +40,7 @@ class Input(BaseModel):
     )
     skip_unreachable_nodes: Optional[bool] = Field(None, alias='skip-unreachable-nodes')
     """
-    Option to skip nodes, that are unreachable at the time of commit. Other nodes will be committed
+    Option to skip nodes, that are unreachable at the time of commit. Other nodes will be commited
     """
     do_validate: Optional[bool] = Field(None, alias='do-validate')
     """
@@ -72,6 +72,10 @@ class NodeResultItem(BaseModel):
 
 
 class NodeResults(BaseModel):
+    """
+    Result of configuration and rollback on each configured network element.
+    """
+
     class Config:
         allow_population_by_field_name = True
 

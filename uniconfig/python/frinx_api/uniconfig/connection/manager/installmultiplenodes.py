@@ -15,6 +15,11 @@ from ...uniconfig import config
 
 
 class CliTopologyDefaultErrorPatterns(BaseModel):
+    """
+    Device specific list of error patterns. This list is the primary source
+    of error checking on the device. This list can be overridden from the code.
+    """
+
     class Config:
         allow_population_by_field_name = True
 
@@ -25,6 +30,10 @@ class CliTopologyDefaultErrorPatterns(BaseModel):
 
 
 class Blacklist(BaseModel):
+    """
+    Reads which are not invoked for sync-from-network and initial config read.
+    """
+
     class Config:
         allow_population_by_field_name = True
 
@@ -42,6 +51,10 @@ class Blacklist(BaseModel):
 
 
 class Whitelist(BaseModel):
+    """
+    Reads which are invoked for sync-from-network and initial config read.
+    """
+
     class Config:
         allow_population_by_field_name = True
 
@@ -59,6 +72,11 @@ class Whitelist(BaseModel):
 
 
 class CliTopologyDefaultCommitErrorPatterns(BaseModel):
+    """
+    Device specific list of commit error patterns. The following list
+    of patterns is checked in the input after 'commit' command is sent.
+    """
+
     class Config:
         allow_population_by_field_name = True
 
@@ -196,8 +214,7 @@ class SessionTimers(BaseModel):
         None, alias='keepalive-delay', ge=0.0, le=4294967295.0
     )
     """
-    Netconf connector sends keepalive RPCs while the session is idle,
-    this delay specifies the delay between keepalive RPC in seconds
+    Netconf connector sends keepalive RPCs while the session is idle, this delay specifies the delay between keepalive RPC in seconds
     If a value <1 is provided, no keepalives will be sent
     """
     max_reconnection_attempts: Optional[float] = Field(
@@ -205,8 +222,7 @@ class SessionTimers(BaseModel):
     )
     """
     Maximum number of reconnect retries. Non positive value or null is interpreted as infinity.
-    This is an optional parameter. If set, max-connection-attempts will be used only once,
-    for the first connection attempts
+    This is an optional parameter. If set, max-connection-attempts will be used only once, for the first connection attempts
     and for any subsequent disconnect-connect cycles, max-reconnect-attempts will be used.
     This enables users using different amount of reconnects for initial attempts vs subsequent reconnects.
     """
@@ -271,6 +287,11 @@ class LoginPassword(BaseModel):
 
 
 class UniconfigConfigCrypto(BaseModel):
+    """
+    Settings related to encryption of arbitrary leaves/leaf-list using public key that
+    is read from device on specified path.
+    """
+
     class Config:
         allow_population_by_field_name = True
 
@@ -284,6 +305,10 @@ class UniconfigConfigCrypto(BaseModel):
 
 
 class Cli(BaseModel):
+    """
+    CLI node settings.
+    """
+
     class Config:
         allow_population_by_field_name = True
 
@@ -525,6 +550,10 @@ class OtherParameters(BaseModel):
 
 
 class Netconf(BaseModel):
+    """
+    NETCONF node settings.
+    """
+
     class Config:
         allow_population_by_field_name = True
 
@@ -552,8 +581,7 @@ class Netconf(BaseModel):
     )
     """
     Maximum number of reconnect retries. Non positive value or null is interpreted as infinity.
-    This is an optional parameter. If set, max-connection-attempts will be used only once,
-    for the first connection attempts
+    This is an optional parameter. If set, max-connection-attempts will be used only once, for the first connection attempts
     and for any subsequent disconnect-connect cycles, max-reconnect-attempts will be used.
     This enables users using different amount of reconnects for initial attempts vs subsequent reconnects.
     """
@@ -668,16 +696,14 @@ class Netconf(BaseModel):
         None, alias='netconf-node-topology:schema-cache-directory'
     )
     """
-    The destination schema repository for yang files relative to the cache directory.
-    This may be specified per netconf mount
+    The destination schema repository for yang files relative to the cache directory.  This may be specified per netconf mount
     so that the loaded yang files are stored to a distinct directory to avoid potential conflict.
     """
     between_attempts_timeout_millis: Optional[int] = Field(
         None, alias='between-attempts-timeout-millis', ge=0, le=65535
     )
     """
-    Initial timeout in milliseconds to wait between connection attempts.
-    Will be multiplied by sleep-factor with every additional attempt
+    Initial timeout in milliseconds to wait between connection attempts. Will be multiplied by sleep-factor with every additional attempt
     """
     netconf_node_topology_pass_through: Optional[dict[str, Any]] = Field(
         None,
@@ -749,8 +775,7 @@ class Netconf(BaseModel):
         None, alias='keepalive-delay', ge=0.0, le=4294967295.0
     )
     """
-    Netconf connector sends keepalive RPCs while the session is idle,
-    this delay specifies the delay between keepalive RPC in seconds
+    Netconf connector sends keepalive RPCs while the session is idle, this delay specifies the delay between keepalive RPC in seconds
     If a value <1 is provided, no keepalives will be sent
     """
     netconf_node_topology_host: Optional[str] = Field(
@@ -791,6 +816,10 @@ class Netconf(BaseModel):
 
 
 class Gnmi(BaseModel):
+    """
+    gNMI node settings.
+    """
+
     class Config:
         allow_population_by_field_name = True
 
@@ -901,7 +930,7 @@ class NodeResult(BaseModel):
     """
     error_message: Optional[str] = Field(None, alias='error-message')
     """
-    Message that described occurred error during invocation of operation on a specific node.
+    Message that described occured error during invocation of operation on a specific node.
     """
     status: types.OperationResultType
 

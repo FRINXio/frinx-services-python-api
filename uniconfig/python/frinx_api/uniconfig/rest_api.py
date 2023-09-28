@@ -32,6 +32,8 @@ from . import OperationsCommitPostRequest
 from . import OperationsCommitPostResponse
 from . import OperationsCompareConfigPostRequest
 from . import OperationsCompareConfigPostResponse
+from . import OperationsConfigCoveragePostRequest
+from . import OperationsConfigCoveragePostResponse
 from . import OperationsCopyManyToOnePostRequest
 from . import OperationsCopyManyToOnePostResponse
 from . import OperationsCopyOneToManyPostRequest
@@ -69,6 +71,14 @@ from . import OperationsEnableDeviceLoggingPostRequest
 from . import OperationsEnableDeviceLoggingPostResponse
 from . import OperationsEnableLoggingPostRequest
 from . import OperationsEnableLoggingPostResponse
+from . import OperationsExecuteAndExpectPostRequest
+from . import OperationsExecuteAndExpectPostResponse
+from . import OperationsExecuteAndReadPostRequest
+from . import OperationsExecuteAndReadPostResponse
+from . import OperationsExecuteAndReadUntilPostRequest
+from . import OperationsExecuteAndReadUntilPostResponse
+from . import OperationsExecutePostRequest
+from . import OperationsExecutePostResponse
 from . import OperationsGetInstalledNodesPostRequest
 from . import OperationsGetInstalledNodesPostResponse
 from . import OperationsGetTemplateInfoPostRequest
@@ -131,38 +141,38 @@ class UniconfigRest:
 
 
 class ConfigCoverage(UniconfigRest):
-    uri = '/operations/network-topology/topology={topology_id}/node={node_id}/yang-ext:mount/config-coverage'
+    uri = '/operations/config-coverage'
     method = 'POST'
-    request = None
-    response = None
+    request = OperationsConfigCoveragePostRequest
+    response = OperationsConfigCoveragePostResponse
 
 
 class Execute(UniconfigRest):
-    uri = '/operations/network-topology/topology={topology_id}/node={node_id}/yang-ext:mount/execute'
+    uri = '/operations/execute'
     method = 'POST'
-    request = None
-    response = None
+    request = OperationsExecutePostRequest
+    response = OperationsExecutePostResponse
 
 
 class ExecuteAndExpect(UniconfigRest):
-    uri = '/operations/network-topology/topology={topology_id}/node={node_id}/yang-ext:mount/execute-and-expect'
+    uri = '/operations/execute-and-expect'
     method = 'POST'
-    request = None
-    response = None
+    request = OperationsExecuteAndExpectPostRequest
+    response = OperationsExecuteAndExpectPostResponse
 
 
 class ExecuteAndRead(UniconfigRest):
-    uri = '/operations/network-topology/topology={topology_id}/node={node_id}/yang-ext:mount/execute-and-read'
+    uri = '/operations/execute-and-read'
     method = 'POST'
-    request = None
-    response = None
+    request = OperationsExecuteAndReadPostRequest
+    response = OperationsExecuteAndReadPostResponse
 
 
 class ExecuteAndReadUntil(UniconfigRest):
-    uri = '/operations/network-topology/topology={topology_id}/node={node_id}/yang-ext:mount/execute-and-read-until'
+    uri = '/operations/execute-and-read-until'
     method = 'POST'
-    request = None
-    response = None
+    request = OperationsExecuteAndReadUntilPostRequest
+    response = OperationsExecuteAndReadUntilPostResponse
 
 
 class UninstallNode(UniconfigRest):
@@ -282,13 +292,6 @@ class DryrunCommit(UniconfigRest):
     method = 'POST'
     request = OperationsDryrunCommitPostRequest
     response = OperationsDryrunCommitPostResponse
-
-
-class SetMessageTypes(UniconfigRest):
-    uri = '/operations/set-message-types'
-    method = 'POST'
-    request = None
-    response = None
 
 
 class ReadJournal(UniconfigRest):
@@ -730,18 +733,3 @@ class QueryConfig(UniconfigRest):
     method = 'POST'
     request = OperationsQueryConfigPostRequest
     response = OperationsQueryConfigPostResponse
-
-
-class ReadStructuredData(UniconfigRest):
-    uri = '/data/network-topology:network-topology/topology={topology_id}/node={node_id}/frinx-uniconfig-topology:configuration{uri}'
-    method = 'GET'
-
-
-class WriteStructuredData(UniconfigRest):
-    uri = '/data/network-topology:network-topology/topology={topology_id}/node={node_id}/frinx-uniconfig-topology:configuration{uri}'
-    method = 'PUT'
-
-
-class DeleteStructuredData(UniconfigRest):
-    uri = '/data/network-topology:network-topology/topology={topology_id}/node={node_id}/frinx-uniconfig-topology:configuration{uri}'
-    method = 'DELETE'

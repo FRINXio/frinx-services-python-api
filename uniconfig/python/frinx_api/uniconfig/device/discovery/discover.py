@@ -8,7 +8,7 @@ from pydantic import BaseModel
 from pydantic import Field
 
 
-class Address(BaseModel):
+class Addres(BaseModel):
     class Config:
         allow_population_by_field_name = True
 
@@ -60,7 +60,7 @@ class Input(BaseModel):
     """
     Check whether the host is reachable or not using ICMP protocol
     """
-    address: Optional[list[Address]] = None
+    address: Optional[list[Addres]] = None
     tcp_port: Optional[list[TcpPortItem]] = Field(None, alias='tcp-port')
     udp_port: Optional[list[UdpPortItem]] = Field(None, alias='udp-port')
 

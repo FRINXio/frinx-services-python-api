@@ -42,6 +42,11 @@ class NodeResultItem(BaseModel):
 
 
 class NodeResults(BaseModel):
+    """
+    Individual result of replace-config-with-operational or replace-config-with-snapshot
+    for given nodes.
+    """
+
     class Config:
         allow_population_by_field_name = True
 
