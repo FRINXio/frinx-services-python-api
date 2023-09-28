@@ -112,3 +112,23 @@ jobs:
           body: |
             Create and publish packages for ${{ env.IMAGE_REPO }}
           token: ${{ steps.generate-token.outputs.token }}
+
+      - name: Collect logs to file
+        if: ${{ always() }}
+        run: |
+          mkdir -p logs
+          for container in $(docker ps --format '{{ .Names }}')
+          do
+            docker container logs $container &> logs/$container.log
+            docker container inspect $container &> logs/${container}_inspect.json
+          done
+
+      - name: Upload pytest logs
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v3.1.1
+        with:
+           name: ${{ github.workflow }}_logs.zip
+           path: |
+              ${{ github.workspace }}/logs/
+           if-no-files-found: error
+           retention-days: 1
