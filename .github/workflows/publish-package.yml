@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
   changes:
@@ -50,9 +51,21 @@ jobs:
           cd ${{ matrix.package }}
           echo "PACKAGE_TAG=$(poetry version | sed 's| |_v|g')" >> "$GITHUB_ENV"
           echo "DOCKER_TAG=$(cat RELEASE.md | grep "$(poetry version --short)" | cut -d '|' -f 2)" >> "$GITHUB_ENV"
-      - uses: rickstaa/action-create-tag@v1
-        id: tag_create
+#      - uses: rickstaa/action-create-tag@v1
+#        id: tag_create
+#        with:
+#          tag: ${{ env.PACKAGE_TAG }}
+#          tag_exists_error: false
+#          message: Release of ${{ env.PACKAGE_TAG }} for image with tag ${{ env.DOCKER_TAG }}
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag: ${{ env.PACKAGE_TAG }}
-          tag_exists_error: false
-          message: Release of ${{ env.PACKAGE_TAG }} for image with tag ${{ env.DOCKER_TAG }}
+          tag_name: ${{ env.PACKAGE_TAG }}
+          release_name: Release ${{ env.PACKAGE_TAG }}
+          body: |
+            - Release of ${{ env.PACKAGE_TAG }} for image with tag ${{ env.DOCKER_TAG }}
+          draft: false
+          prerelease: false
