@@ -8,6 +8,7 @@ from pydantic import Extra
 
 if TYPE_CHECKING:
     from typing import Any
+    from typing import Union
 
 
 def generate_type(depth: int) -> str:
@@ -329,3 +330,8 @@ class Query(BaseModel):
         if variable:
             variable = f' ( {variable} )'
         return f'{{ { name }{variable} {{ {payload} }} }}'
+
+
+def concatenate_queries(queries: list[Union[Query, Mutation]]) -> str:
+    merged_query = ''.join(query.render()[1:-1] for query in queries)
+    return f'{{ {merged_query} }}'
