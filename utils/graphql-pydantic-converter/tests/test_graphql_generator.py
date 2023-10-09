@@ -23,6 +23,7 @@ from render_models import SearchPoolsByTagsQuery
 from render_models import TagAnd
 from render_models import TagOr
 
+import graphql_pydantic_converter.graphql_types
 from graphql_pydantic_converter.graphql_types import ENUM
 from graphql_pydantic_converter.graphql_types import Input
 from graphql_pydantic_converter.schema_converter import GraphqlJsonParser
@@ -195,4 +196,68 @@ class TestTaskGenerator:
         response = BlueprintsQueryResponse(**response)
 
         assert 'cli_device_import' == response.data.blueprints.edges[0].node.name
+
+    def test_multiple_query(self) -> None:
+
+        query_first = SearchPoolsByTagsQuery(
+            tags=TagOr(
+                matchesAny=[
+                    TagAnd(
+                        matchesAll=[
+                            'root_pool'
+                        ]
+                    )
+                ]
+            ),
+            payload=ResourcePoolConnection(
+                edges=ResourcePoolEdge(
+                    node=ResourcePool(
+                        Name=True,
+                        id=True,
+                        AllocationStrategy=AllocationStrategy(
+                            Name=True
+                        )
+                    )
+                )
+            )
+        )
+
+        query_second = SchedulesQuery(
+            payload=ScheduleConnection(
+                pageInfo=PageInfoSchedule(
+                    hasNextPage=True,
+                    hasPreviousPage=True,
+                    startCursor=True,
+                    endCursor=True
+                ),
+                edges=ScheduleEdge(
+                    node=Schedule(
+                        name=True,
+                        cronString=True,
+                        enabled=True
+                    ),
+                )
+            ),
+            after='aaa',
+            first=10,
+            filter=SchedulesFilterInput(
+                workflowName='TEST_A',
+                workflowVersion='1'
+            )
+        )
+
+        queries = [
+            query_first,
+            query_second
+        ]
+
+        reference = '{  SearchPoolsByTags ( tags: { matchesAny: [  { matchesAll: [ "root_pool" ] }  ]  } ) ' \
+            '{ edges { node { AllocationStrategy { Description Lang Name Script id } ' \
+            'Name PoolProperties PoolType id } } totalCount }  schedules ( after: "aaa", first: 10, filter: ' \
+            '{ workflowName: "TEST_A" , workflowVersion: "1"  } ) { edges { node { name enabled parallelRuns ' \
+            'workflowName workflowVersion cronString workflowContext fromDate toDate status } cursor } ' \
+            'pageInfo { hasNextPage hasPreviousPage startCursor endCursor } totalCount }  }'
+
+        merged_query = graphql_pydantic_converter.graphql_types.concatenate_queries(queries)
+        assert reference == merged_query
 

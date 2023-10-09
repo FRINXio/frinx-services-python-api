@@ -10,3 +10,4 @@
 
 # 0.1.2
 - Ignore generating of private graphql schema objects
+- Add graphql_pydantic_converter.graphql_types.concatenate_queries function
