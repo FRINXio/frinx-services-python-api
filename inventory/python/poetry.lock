@@ -96,19 +96,24 @@ files = [
 ]
 
 [[package]]
-name = "graphql-pydantic-transformer"
-version = "0.0.1"
+name = "graphql-pydantic-converter"
+version = "0.1.2"
 description = "Convert pydantic schema to pydantic datamodel and build request from it"
 optional = false
-python-versions = ">=3.10,<4.0"
-files = [
-    {file = "graphql_pydantic_transformer-0.0.1-py3-none-any.whl", hash = "sha256:bcd0d22b001505526447cf1a98ac3b70e631136222332300ee16d1284d6d4d7d"},
-    {file = "graphql_pydantic_transformer-0.0.1.tar.gz", hash = "sha256:6ea6567cecdbf05b53d88a4f4701ef4e081a4265bcdacce93b2038a3a5c88355"},
-]
+python-versions = "^3.10"
+files = []
+develop = false
 
 [package.dependencies]
 pydantic = "1.10.7"
-requests = ">=2.31.0,<3.0.0"
+requests = "^2.31.0"
+
+[package.source]
+type = "git"
+url = "https://github.com/FRINXio/frinx-services-python-api.git"
+reference = "graphql-pydantic-converter_v0.1.2"
+resolved_reference = "0a190ac29d97d0199f8c16bfd57779a29f1d87e8"
+subdirectory = "utils/graphql-pydantic-converter"
 
 [[package]]
 name = "idna"
@@ -367,4 +372,4 @@ zstd = ["zstandard (>=0.18.0)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "0f24cec7bf39a05c8696b5dc49ec014b63bf1ffa6b5ba217db1804f4bb78dcc1"
+content-hash = "d25b1a3163b57efd03729333ca2f19f68d00750593d7b0311406382ed5c3aa51"
