@@ -175,7 +175,7 @@ class TestTaskGenerator:
         assert reference == query_render
 
     def test_parse_response(self) -> None:
-        from model import BlueprintsResponse
+        from model import BlueprintsQueryResponse
 
         response: typing.Any = {
             'data': {
@@ -192,7 +192,7 @@ class TestTaskGenerator:
             }
         }
 
-        response = BlueprintsResponse(**response)
+        response = BlueprintsQueryResponse(**response)
 
         assert 'cli_device_import' == response.data.blueprints.edges[0].node.name
 

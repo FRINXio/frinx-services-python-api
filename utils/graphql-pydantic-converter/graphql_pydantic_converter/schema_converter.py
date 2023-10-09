@@ -460,20 +460,30 @@ class GraphqlJsonParser:
                 if field.name and field.type:
 
                     if field.args:
+
+                        class_name = field.name[0].upper() + field.name[1:]
+
                         self.__result += self.__class_template.substitute(
-                            name=f'{field.name[0].upper() + field.name[1:] + payload.name}Response',
+                            name=f'{class_name + payload.name}Response',
                             type='BaseModel',
                         )
 
                         self.__refs += self.__refs_template.substitute(
-                            class_name=f'{field.name[0].upper() + field.name[1:] + payload.name}Response'
+                            class_name=f'{class_name + payload.name}Response'
                         )
 
-                        self.__result += kv_template.substitute(
-                            indent=self.__INDENT,
-                            name='data',
-                            val=f'typing.Optional[{field.name[0].upper() + field.name[1:]}Data]'
-                        )
+                        if class_name not in (self.__enums + self.__interfaces):
+                            self.__result += kv_template.substitute(
+                                indent=self.__INDENT,
+                                name='data',
+                                val=f'typing.Optional[{class_name}Data]'
+                            )
+                        else:
+                            self.__result += kv_template.substitute(
+                                indent=self.__INDENT,
+                                name='data',
+                                val=f'typing.Optional[{class_name}]'
+                            )
 
                         self.__result += kv_template.substitute(
                             indent=self.__INDENT,
@@ -481,9 +491,7 @@ class GraphqlJsonParser:
                             val='typing.Optional[typing.Any]'
                         )
 
-                        class_name = field.name[0].upper() + field.name[1:]
-
-                        if class_name not in self.__interfaces:
+                        if class_name not in (self.__enums + self.__interfaces):
                             self.__result += self.__class_template.substitute(
                                 name=f'{class_name}Data',
                                 type='BaseModel',

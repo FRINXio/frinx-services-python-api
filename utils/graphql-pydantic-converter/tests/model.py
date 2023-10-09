@@ -166,7 +166,7 @@ class UpdateBlueprintMutation(Mutation):
     payload: UpdateBlueprintPayload
 
 
-class AddBlueprintResponse(BaseModel):
+class AddBlueprintMutationResponse(BaseModel):
     data: typing.Optional[AddBlueprintData]
     errors: typing.Optional[typing.Any]
 
@@ -175,7 +175,7 @@ class AddBlueprintData(BaseModel):
     add_blueprint: AddBlueprintPayloadPayload = Field(alias='addBlueprint')
 
 
-class DeleteBlueprintResponse(BaseModel):
+class DeleteBlueprintMutationResponse(BaseModel):
     data: typing.Optional[DeleteBlueprintData]
     errors: typing.Optional[typing.Any]
 
@@ -184,7 +184,7 @@ class DeleteBlueprintData(BaseModel):
     delete_blueprint: DeleteBlueprintPayloadPayload = Field(alias='deleteBlueprint')
 
 
-class UpdateBlueprintResponse(BaseModel):
+class UpdateBlueprintMutationResponse(BaseModel):
     data: typing.Optional[UpdateBlueprintData]
     errors: typing.Optional[typing.Any]
 
@@ -228,7 +228,7 @@ class BlueprintsQuery(Query):
     payload: BlueprintConnection
 
 
-class BlueprintsResponse(BaseModel):
+class BlueprintsQueryResponse(BaseModel):
     data: typing.Optional[BlueprintsData]
     errors: typing.Optional[typing.Any]
 
@@ -245,7 +245,7 @@ class UniconfigShellSubscription(Subscription):
     payload: Boolean
 
 
-class UniconfigShellResponse(BaseModel):
+class UniconfigShellSubscriptionResponse(BaseModel):
     data: typing.Optional[UniconfigShellData]
     errors: typing.Optional[typing.Any]
 
@@ -283,21 +283,21 @@ GraphNodeCoordinatesPayload.update_forward_refs()
 AddBlueprintMutation.update_forward_refs()
 DeleteBlueprintMutation.update_forward_refs()
 UpdateBlueprintMutation.update_forward_refs()
-AddBlueprintResponse.update_forward_refs()
+AddBlueprintMutationResponse.update_forward_refs()
 AddBlueprintData.update_forward_refs()
-DeleteBlueprintResponse.update_forward_refs()
+DeleteBlueprintMutationResponse.update_forward_refs()
 DeleteBlueprintData.update_forward_refs()
-UpdateBlueprintResponse.update_forward_refs()
+UpdateBlueprintMutationResponse.update_forward_refs()
 UpdateBlueprintData.update_forward_refs()
 GraphNodeInterface.update_forward_refs()
 GraphNodeInterfacePayload.update_forward_refs()
 PageInfo.update_forward_refs()
 PageInfoPayload.update_forward_refs()
 BlueprintsQuery.update_forward_refs()
-BlueprintsResponse.update_forward_refs()
+BlueprintsQueryResponse.update_forward_refs()
 BlueprintsData.update_forward_refs()
 UniconfigShellSubscription.update_forward_refs()
-UniconfigShellResponse.update_forward_refs()
+UniconfigShellSubscriptionResponse.update_forward_refs()
 UniconfigShellData.update_forward_refs()
 UpdateBlueprintPayload.update_forward_refs()
 UpdateBlueprintPayloadPayload.update_forward_refs()
