@@ -31,6 +31,11 @@ arg_parser.add_argument(
     help='Add headers to request, when --url is set. --headers "HeaderName: HeaderValue" "HeaderName: HeaderValue"'
 )
 arg_parser.add_argument('--depth', help='Depth of nested json objects, default 3', default=3)
+arg_parser.add_argument(
+    '--ignore-private-schema-objects',
+    help='Ignore creating of graphql schema private objects (with __ prefix)',
+    default=True
+)
 
 
 class Exit(IntEnum):
@@ -45,6 +50,7 @@ class Config(BaseModel):
     depth: int
     url: Optional[str]
     headers: Optional[list[str]]
+    ignore_private_schema_objects: bool
 
 
 def parse_headers(headers: list[str]) -> dict[str, str]:
@@ -92,7 +98,10 @@ def main(args: Optional[Sequence[str]] = None) -> Exit:
             raise ValueError('input-file or url must be provided')
 
         if config.output_file:
-            GraphqlJsonParser(json_data).export(str(config.output_file.absolute()))
+            GraphqlJsonParser(
+                input_json=json_data,
+                ignore_private_objects=config.ignore_private_schema_objects
+            ).export(str(config.output_file.absolute()))
             return Exit.OK
         else:
             print(GraphqlJsonParser(json_data).render())

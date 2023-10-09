@@ -25,6 +25,7 @@ class GraphqlJsonParser:
     __class_template: Template = Template('\n\nclass ${name}($type):\n')
     __ignore_enums: list[str] = ['String', 'ID', 'Float', 'Int', 'Boolean', 'list']
     __input_json: dict[str, Any]
+    __ignore_private_objects: bool
 
     class ConverterMap(str, Enum):
         OBJECT = 'Payload'
@@ -150,8 +151,9 @@ class GraphqlJsonParser:
         class Config:
             allow_population_by_field_name = True
 
-    def __init__(self, input_json: dict[str, Any]) -> None:
+    def __init__(self, input_json: dict[str, Any], ignore_private_objects: bool = True) -> None:
         self.__input_json = input_json
+        self.__ignore_private_objects = ignore_private_objects
         self.__convert()
 
     def __convert(self) -> None:
@@ -358,33 +360,32 @@ class GraphqlJsonParser:
                         )
 
     def __create_object_payload(self, payload: Type) -> None:
-        kv_template = Template('$indent$name: $val = Field(response=$type)\n')
 
-        interface = ''
-        if payload.interfaces:
-            for i in payload.interfaces:
-                interface += f', {i.name}'
+        if payload.name:
+            if payload.name.startswith('__') and self.__ignore_private_objects:
+                return
 
-        self.__result += self.__class_template.substitute(name=payload.name, type='Payload')
-        self.__refs += self.__refs_template.substitute(class_name=payload.name)
+            kv_template = Template('$indent$name: $val = Field(response=$type)\n')
+            self.__result += self.__class_template.substitute(name=payload.name, type='Payload')
+            self.__refs += self.__refs_template.substitute(class_name=payload.name)
 
-        if payload.fields:
-            for field in payload.fields:
-                if field.name and field.type:
-                    name = field.name
-                    kind = self.__build_type_payload(self.__extract_fields(field.type, []))
-                    val = f'typing.Optional[{kind}]'
-                    val_type = f"'{kind}'"
-                    if self.is_not_snake_case(field.name):
-                        val_type += f", alias='{field.name}'"
-                        name = self.to_snake_case(field.name)
+            if payload.fields:
+                for field in payload.fields:
+                    if field.name and field.type:
+                        name = field.name
+                        kind = self.__build_type_payload(self.__extract_fields(field.type, []))
+                        val = f'typing.Optional[{kind}]'
+                        val_type = f"'{kind}'"
+                        if self.is_not_snake_case(field.name):
+                            val_type += f", alias='{field.name}'"
+                            name = self.to_snake_case(field.name)
 
-                    if kind in (self.__enums + self.__ignore_enums):
-                        val = 'typing.Optional[Boolean]'
-                        val_type += ', default=False'
-                    self.__result += kv_template.substitute(
-                        indent=self.__INDENT, name=name, val=val, type=val_type
-                    )
+                        if kind in (self.__enums + self.__ignore_enums):
+                            val = 'typing.Optional[Boolean]'
+                            val_type += ', default=False'
+                        self.__result += kv_template.substitute(
+                            indent=self.__INDENT, name=name, val=val, type=val_type
+                        )
 
     def __create_specific_payload(self, payload: Type) -> None:
         kv_template = Template('$indent$name: $val\n')
@@ -424,33 +425,38 @@ class GraphqlJsonParser:
                             self.__result += kv_template.substitute(indent=self.__INDENT, name='payload', val=kind)
 
     def __create_response(self, payload: Type) -> None:
-        kv_template = Template('$indent$name: $val\n')
-        self.__result += self.__class_template.substitute(name=f'{payload.name}Payload', type='BaseModel')
-        self.__refs += self.__refs_template.substitute(class_name=f'{payload.name}Payload')
 
-        if payload.fields:
-            for field in payload.fields:
-                if field.name and field.type:
+        if payload.name:
+            if payload.name.startswith('__') and self.__ignore_private_objects:
+                return
 
-                    name = field.name
-                    data_type = self.__extract_fields(field.type, [])
-                    kind = data_type[-1]
-                    data_type[-1] = kind + 'Payload'
-                    if kind in (self.__enums + self.__ignore_enums):
-                        data_type[-1] = f'typing.Optional[{kind}]'
+            kv_template = Template('$indent$name: $val\n')
+            self.__result += self.__class_template.substitute(name=f'{payload.name}Payload', type='BaseModel')
+            self.__refs += self.__refs_template.substitute(class_name=f'{payload.name}Payload')
 
-                    if data_type[0] != self.TypeKind.NON_NULL:
-                        data_type.insert(0, self.TypeKind.NON_NULL)
+            if payload.fields:
+                for field in payload.fields:
+                    if field.name and field.type:
 
-                    val = f'typing.Optional[{ self.__build_type(data_type)}]'
+                        name = field.name
+                        data_type = self.__extract_fields(field.type, [])
+                        kind = data_type[-1]
+                        data_type[-1] = kind + 'Payload'
+                        if kind in (self.__enums + self.__ignore_enums):
+                            data_type[-1] = f'typing.Optional[{kind}]'
 
-                    if self.is_not_snake_case(field.name):
-                        val += f" = Field(alias='{field.name}')"
-                        name = self.to_snake_case(field.name)
+                        if data_type[0] != self.TypeKind.NON_NULL:
+                            data_type.insert(0, self.TypeKind.NON_NULL)
 
-                    self.__result += kv_template.substitute(
-                        indent=self.__INDENT, name=name, val=val
-                    )
+                        val = f'typing.Optional[{ self.__build_type(data_type)}]'
+
+                        if self.is_not_snake_case(field.name):
+                            val += f" = Field(alias='{field.name}')"
+                            name = self.to_snake_case(field.name)
+
+                        self.__result += kv_template.substitute(
+                            indent=self.__INDENT, name=name, val=val
+                        )
 
     def __create_specific_response(self, payload: Type) -> None:
         kv_template = Template('$indent$name: $val\n')

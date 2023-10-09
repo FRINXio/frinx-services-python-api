@@ -6,4 +6,7 @@
 # 0.1.0
 - Changed default payload boolean value from True to False
 - In query or mutation must be defined response properties
-- Generating of pydantic dataclasses for response parsing 
+- Generating of pydantic dataclasses for response parsing
+
+# 0.1.2
+- Ignore generating of private graphql schema objects
