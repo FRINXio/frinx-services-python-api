@@ -33,7 +33,7 @@ services:
       VIEWER: viewer-1,viewer-2,viewer-3
 
   converter:
-    image: jozefiel/graphql-pydantic-converter
+    image: frinx/graphql-pydantic-converter:0.1.0
     depends_on:
       topology-discovery:
         condition: service_healthy

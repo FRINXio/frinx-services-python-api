@@ -29,7 +29,7 @@ services:
       retries: 5
 
   converter:
-    image: jozefiel/graphql-pydantic-converter
+    image: frinx/graphql-pydantic-converter:0.1.0
     depends_on:
       resource-manager:
         condition: service_healthy
