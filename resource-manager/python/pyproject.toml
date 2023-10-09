@@ -5,7 +5,7 @@ build-backend = "poetry.core.masonry.api"
 [tool.poetry.dependencies]
 python = "^3.10"
 pydantic = "^1.10.7"
-graphql-pydantic-transformer = "^0.0.1"
+graphql-pydantic-converter = {git = "https://github.com/FRINXio/frinx-services-python-api.git", rev = "graphql-pydantic-converter_v0.1.2", subdirectory = "utils/graphql-pydantic-converter"}
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.0.263"
