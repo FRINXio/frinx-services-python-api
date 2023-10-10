@@ -97,7 +97,7 @@ files = [
 
 [[package]]
 name = "graphql-pydantic-converter"
-version = "0.1.2"
+version = "0.1.3"
 description = "Convert pydantic schema to pydantic datamodel and build request from it"
 optional = false
 python-versions = "^3.10"
@@ -111,8 +111,8 @@ requests = "^2.31.0"
 [package.source]
 type = "git"
 url = "https://github.com/FRINXio/frinx-services-python-api.git"
-reference = "graphql-pydantic-converter_v0.1.2"
-resolved_reference = "0a190ac29d97d0199f8c16bfd57779a29f1d87e8"
+reference = "graphql-pydantic-converter_v0.1.3"
+resolved_reference = "501327b0f5aa2a1879f37baf244ed48a7f99fd49"
 subdirectory = "utils/graphql-pydantic-converter"
 
 [[package]]
@@ -372,4 +372,4 @@ zstd = ["zstandard (>=0.18.0)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "d25b1a3163b57efd03729333ca2f19f68d00750593d7b0311406382ed5c3aa51"
+content-hash = "a0f20242a8c180e6cbce04bf426bfc7865f167b12cbeb07fd2a3fd8586d2bdb3"
