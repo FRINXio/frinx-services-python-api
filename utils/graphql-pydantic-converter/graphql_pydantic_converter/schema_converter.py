@@ -307,13 +307,18 @@ class GraphqlJsonParser:
     def __create_enum(self, enums: list[Type]) -> None:
         kv_template = Template("$indent$name = '$name'\n")
         for enum in enums:
-            tmp_enum = [self.__class_template.substitute(name=enum.name, type='ENUM')]
-            if enum.enum_values:
-                for i in enum.enum_values:
-                    tmp_enum.append(kv_template.substitute(indent=self.__INDENT, name=i.name))
-                self.__result += (''.join(tmp_enum))
-                if enum.name:
-                    self.__enums.append(enum.name)
+
+            if enum.name:
+                if enum.name.startswith('__') and self.__ignore_private_objects:
+                    return
+
+                tmp_enum = [self.__class_template.substitute(name=enum.name, type='ENUM')]
+                if enum.enum_values:
+                    for i in enum.enum_values:
+                        tmp_enum.append(kv_template.substitute(indent=self.__INDENT, name=i.name))
+                    self.__result += (''.join(tmp_enum))
+                    if enum.name:
+                        self.__enums.append(enum.name)
 
     def __create_interface(self, interfaces: list[Type]) -> None:
         enums = self.__enums + self.__ignore_enums
