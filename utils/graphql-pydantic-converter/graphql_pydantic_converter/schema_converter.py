@@ -8,6 +8,7 @@ from typing import Optional
 
 from pydantic import BaseModel
 from pydantic import Field
+from pydantic import ConfigDict
 
 
 class GraphqlJsonParser:
@@ -21,7 +22,7 @@ class GraphqlJsonParser:
     __enums: list[str] = []
     __interfaces: list[str] = []
     __refs: str = ''
-    __refs_template: Template = Template('$class_name.update_forward_refs()\n')
+    __refs_template: Template = Template('$class_name.model_rebuild()\n')
     __class_template: Template = Template('\n\nclass ${name}($type):\n')
     __ignore_enums: list[str] = ['String', 'ID', 'Float', 'Int', 'Boolean', 'list']
     __input_json: dict[str, Any]
@@ -61,95 +62,97 @@ class GraphqlJsonParser:
         Upload = 'Upload'
 
     class QueryType(BaseModel):
-        name: Optional[str]
+        name: Optional[str] = None
 
     class MutationType(BaseModel):
-        name: Optional[str]
+        name: Optional[str] = None
 
     class SubscriptionType(BaseModel):
-        name: Optional[str]
+        name: Optional[str] = None
 
     class OfType(BaseModel):
-        kind: Optional[GraphqlJsonParser.TypeKind]
-        name: Optional[str]
-        of_type: Optional[GraphqlJsonParser.OfType] = Field(alias='ofType')
+        kind: Optional[GraphqlJsonParser.TypeKind] = None
+        name: Optional[str] = None
+        of_type: Optional[GraphqlJsonParser.OfType] = Field(None, alias='ofType')
 
     class OfTypeItem(BaseModel):
-        kind: Optional[GraphqlJsonParser.TypeKind]
-        name: Optional[str]
-        of_type: Optional[GraphqlJsonParser.OfTypeItem] = Field(alias='ofType')
+        kind: Optional[GraphqlJsonParser.TypeKind] = None
+        name: Optional[str] = None
+        of_type: Optional[GraphqlJsonParser.OfTypeItem] = Field(None, alias='ofType')
 
     class Arg(BaseModel):
-        name: Optional[str]
-        description: Optional[Any]
-        type: Optional[GraphqlJsonParser.Type]
-        default_value: Optional[str] = Field(alias='defaultValue')
-        is_deprecated: Optional[bool] = Field(alias='isDeprecated')
-        deprecation_reason: Optional[Any] = Field(alias='deprecationReason')
+        name: Optional[str] = None
+        description: Optional[Any] = None
+        type: Optional[GraphqlJsonParser.Type] = None
+        default_value: Optional[str] = Field(None, alias='defaultValue')
+        is_deprecated: Optional[bool] = Field(None, alias='isDeprecated')
+        deprecation_reason: Optional[Any] = Field(None, alias='deprecationReason')
 
     class Field(BaseModel):
-        name: Optional[str]
-        description: Optional[str]
-        args: Optional[list[GraphqlJsonParser.Arg]]
-        type: Optional[GraphqlJsonParser.Type]
-        is_deprecated: Optional[bool] = Field(alias='isDeprecated')
-        deprecation_reason: Optional[Any] = Field(alias='deprecationReason')
+        name: Optional[str] = None
+        description: Optional[str] = None
+        args: Optional[list[GraphqlJsonParser.Arg]] = None
+        type: Optional[GraphqlJsonParser.Type] = None
+        is_deprecated: Optional[bool] = Field(None, alias='isDeprecated')
+        deprecation_reason: Optional[Any] = Field(None, alias='deprecationReason')
 
     class InputField(BaseModel):
-        name: Optional[str]
-        description: Optional[Any]
-        type: Optional[GraphqlJsonParser.Type]
-        default_value: Optional[Any] = Field(alias='defaultValue')
-        is_deprecated: Optional[bool] = Field(alias='isDeprecated')
-        deprecation_reason: Optional[Any] = Field(alias='deprecationReason')
+        name: Optional[str] = None
+        description: Optional[Any] = None
+        type: Optional[GraphqlJsonParser.Type] = None
+        default_value: Optional[Any] = Field(None, alias='defaultValue')
+        is_deprecated: Optional[bool] = Field(None, alias='isDeprecated')
+        deprecation_reason: Optional[Any] = Field(None, alias='deprecationReason')
 
     class Interface(BaseModel):
-        kind: Optional[GraphqlJsonParser.TypeKind]
-        name: Optional[str]
-        of_type: Optional[Any] = Field(alias='ofType')
+        kind: Optional[GraphqlJsonParser.TypeKind] = None
+        name: Optional[str] = None
+        of_type: Optional[Any] = Field(None, alias='ofType')
 
     class EnumValue(BaseModel):
-        name: Optional[str]
-        description: Optional[str]
-        is_deprecated: Optional[bool] = Field(alias='isDeprecated')
-        deprecation_reason: Optional[Any] = Field(alias='deprecationReason')
+        name: Optional[str] = None
+        description: Optional[str] = None
+        is_deprecated: Optional[bool] = Field(None, alias='isDeprecated')
+        deprecation_reason: Optional[Any] = Field(None, alias='deprecationReason')
 
     class PossibleType(BaseModel):
-        kind: Optional[GraphqlJsonParser.TypeKind]
-        name: Optional[str]
-        of_type: Optional[Any] = Field(alias='ofType')
+        kind: Optional[GraphqlJsonParser.TypeKind] = None
+        name: Optional[str] = None
+        of_type: Optional[Any] = Field(None, alias='ofType')
 
     class Type(BaseModel):
         kind: GraphqlJsonParser.TypeKind
-        name: Optional[str]
-        description: Optional[str]
-        fields: Optional[list[GraphqlJsonParser.Field]]
-        input_fields: Optional[list[GraphqlJsonParser.InputField]] = Field(alias='inputFields')
-        interfaces: Optional[list[GraphqlJsonParser.Interface]]
-        enum_values: Optional[list[GraphqlJsonParser.EnumValue]] = Field(alias='enumValues')
-        possible_types: Optional[list[GraphqlJsonParser.PossibleType]] = Field(alias='possibleTypes')
-        of_type: Optional[GraphqlJsonParser.OfType] = Field(alias='ofType')
+        name: Optional[str] = None
+        description: Optional[str] = None
+        fields: Optional[list[GraphqlJsonParser.Field]] = None
+        input_fields: Optional[list[GraphqlJsonParser.InputField]] = Field(None, alias='inputFields')
+        interfaces: Optional[list[GraphqlJsonParser.Interface]] = None
+        enum_values: Optional[list[GraphqlJsonParser.EnumValue]] = Field(None, alias='enumValues')
+        possible_types: Optional[list[GraphqlJsonParser.PossibleType]] = Field(None, alias='possibleTypes')
+        of_type: Optional[GraphqlJsonParser.OfType] = Field(None, alias='ofType')
 
     class Directive(BaseModel):
-        name: Optional[str]
-        description: Optional[str]
-        is_repeatable: Optional[bool] = Field(alias='isRepeatable')
-        locations: Optional[list[str]]
-        args: Optional[list[GraphqlJsonParser.Arg]]
+        name: Optional[str] = None
+        description: Optional[str] = None
+        is_repeatable: Optional[bool] = Field(None, alias='isRepeatable')
+        locations: Optional[list[str]] = None
+        args: Optional[list[GraphqlJsonParser.Arg]] = None
 
     class Model(BaseModel):
-        query_type: Optional[GraphqlJsonParser.QueryType] = Field(default=None, alias='queryType')
-        mutation_type: Optional[GraphqlJsonParser.MutationType] = Field(default=None, alias='mutationType')
-        subscription_type: Optional[GraphqlJsonParser.SubscriptionType] = Field(default=None, alias='subscriptionType')
-        types: Optional[list[GraphqlJsonParser.Type]] = Field(default=None)
-        directives: Optional[list[GraphqlJsonParser.Directive]] = Field(default=None)
+        query_type: Optional[GraphqlJsonParser.QueryType] = Field(None, alias='queryType')
+        mutation_type: Optional[GraphqlJsonParser.MutationType] = Field(None, alias='mutationType')
+        subscription_type: Optional[GraphqlJsonParser.SubscriptionType] = Field(None, alias='subscriptionType')
+        types: Optional[list[GraphqlJsonParser.Type]] = Field(None)
+        directives: Optional[list[GraphqlJsonParser.Directive]] = Field(None)
 
     class Schema(BaseModel):
-        graphql_schema: Optional[GraphqlJsonParser.Model] = Field(alias='__schema')
+        graphql_schema: Optional[GraphqlJsonParser.Model] = Field(None, alias='__schema')
         data: Optional[GraphqlJsonParser.Schema] = None
 
-        class Config:
-            allow_population_by_field_name = True
+        model_config = ConfigDict(
+            populate_by_name=True,
+            extra="ignore"
+        )
 
     def __init__(self, input_json: dict[str, Any], ignore_private_objects: bool = True) -> None:
         self.__input_json = input_json
@@ -548,14 +551,14 @@ class GraphqlJsonParser:
         output.close()
 
 
-GraphqlJsonParser.Schema.update_forward_refs()
-GraphqlJsonParser.Model.update_forward_refs()
-GraphqlJsonParser.InputField.update_forward_refs()
-GraphqlJsonParser.Field.update_forward_refs()
-GraphqlJsonParser.Arg.update_forward_refs()
-GraphqlJsonParser.Type.update_forward_refs()
-GraphqlJsonParser.OfType.update_forward_refs()
-GraphqlJsonParser.OfTypeItem.update_forward_refs()
-GraphqlJsonParser.PossibleType.update_forward_refs()
-GraphqlJsonParser.Interface.update_forward_refs()
-GraphqlJsonParser.Directive.update_forward_refs()
+GraphqlJsonParser.Schema.model_rebuild()
+GraphqlJsonParser.Model.model_rebuild()
+GraphqlJsonParser.InputField.model_rebuild()
+GraphqlJsonParser.Field.model_rebuild()
+GraphqlJsonParser.Arg.model_rebuild()
+GraphqlJsonParser.Type.model_rebuild()
+GraphqlJsonParser.OfType.model_rebuild()
+GraphqlJsonParser.OfTypeItem.model_rebuild()
+GraphqlJsonParser.PossibleType.model_rebuild()
+GraphqlJsonParser.Interface.model_rebuild()
+GraphqlJsonParser.Directive.model_rebuild()

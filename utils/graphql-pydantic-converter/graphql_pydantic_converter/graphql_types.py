@@ -125,7 +125,7 @@ class Payload(BaseModel):
         strict = True
 
     def render(self) -> str:
-        return self.dict_to_custom_string(self.dict(exclude_none=True, by_alias=True))
+        return self.dict_to_custom_string(self.model_dump(exclude_none=True, by_alias=True))
 
 
 class Input(BaseModel):
@@ -196,7 +196,7 @@ class Input(BaseModel):
         strict = True
 
     def render(self) -> str:
-        return self.dict_to_custom_string(self.dict(exclude_none=True, by_alias=True))
+        return self.dict_to_custom_string(self.model_dump(exclude_none=True, by_alias=True))
 
 
 class Mutation(BaseModel):
@@ -323,9 +323,9 @@ class Query(BaseModel):
 
     def render(self) -> str:
         variable: str = self.dict_to_custom_input(
-            self.dict(exclude_none=True, exclude={'_name', 'payload'}, by_alias=True)
+            self.model_dump(exclude_none=True, exclude={'_name', 'payload'}, by_alias=True)
         )
-        payload: str = self.dict_to_custom_string(self.payload.dict(exclude_none=True, by_alias=True))
+        payload: str = self.dict_to_custom_string(self.payload.model_dump(exclude_none=True, by_alias=True))
         name: str = self._name.__getattribute__('default')
         if variable:
             variable = f' ( {variable} )'
