@@ -4,7 +4,7 @@ from enum import Enum
 from typing import TYPE_CHECKING
 
 from pydantic import BaseModel
-from pydantic import Extra
+from pydantic import ConfigDict
 
 if TYPE_CHECKING:
     from typing import Any
@@ -87,18 +87,26 @@ class GraphQLType(ENUM):
 class Subscription(BaseModel):
     ...
 
-    class Config:
-        extra = Extra.forbid
+    model_config = ConfigDict(
+        extra='forbid'
+    )
 
 
 class Interface(BaseModel):
     ...
 
-    class Config:
-        extra = Extra.forbid
+    model_config = ConfigDict(
+        extra='forbid'
+    )
 
 
 class Payload(BaseModel):
+
+    model_config = ConfigDict(
+        extra='forbid',
+        strict=True
+    )
+
     def dict_to_custom_string(self, any_object: Any) -> str:
         pairs = []
         match any_object:
@@ -120,15 +128,17 @@ class Payload(BaseModel):
                                 pairs.append(f'{key}')
         return ' '.join(pairs)
 
-    class Config:
-        extra = Extra.forbid
-        strict = True
-
     def render(self) -> str:
         return self.dict_to_custom_string(self.model_dump(exclude_none=True, by_alias=True))
 
 
 class Input(BaseModel):
+
+    model_config = ConfigDict(
+        extra='forbid',
+        strict=True
+    )
+
     @staticmethod
     def _parse_enum(value: Enum) -> str:
         return f'{value.name}'
@@ -191,10 +201,6 @@ class Input(BaseModel):
                     pairs.append(f'{key}: {self.parse_inputs(value)}')
         return ', '.join(pairs)
 
-    class Config:
-        extra = Extra.forbid
-        strict = True
-
     def render(self) -> str:
         return self.dict_to_custom_string(self.model_dump(exclude_none=True, by_alias=True))
 
@@ -203,8 +209,9 @@ class Mutation(BaseModel):
     payload: Payload | bool
     _name: str
 
-    class Config:
-        extra = Extra.forbid
+    model_config = ConfigDict(
+        extra='forbid'
+    )
 
     def dict_to_custom_string(self, value: dict[str, Any]) -> str:
         if isinstance(value, Input):
@@ -226,7 +233,7 @@ class Mutation(BaseModel):
             if k not in ['_name', 'payload']:
                 variables.append(f' {k}: {self.dict_to_custom_string( value)}')
         variable = ', '.join(variables)
-        name: str = self._name.__getattribute__('default')
+        name: str = self._name
 
         return f'mutation {{ { name } ({variable}) {payload} }}'
 
@@ -235,8 +242,9 @@ class Query(BaseModel):
     payload: Payload
     _name: str
 
-    class Config:
-        extra = Extra.forbid
+    model_config = ConfigDict(
+        extra='forbid'
+    )
 
     @staticmethod
     def _parse_enum(value: Enum) -> str:
@@ -326,7 +334,7 @@ class Query(BaseModel):
             self.model_dump(exclude_none=True, exclude={'_name', 'payload'}, by_alias=True)
         )
         payload: str = self.dict_to_custom_string(self.payload.model_dump(exclude_none=True, by_alias=True))
-        name: str = self._name.__getattribute__('default')
+        name: str = self._name
         if variable:
             variable = f' ( {variable} )'
         return f'{{ { name }{variable} {{ {payload} }} }}'
