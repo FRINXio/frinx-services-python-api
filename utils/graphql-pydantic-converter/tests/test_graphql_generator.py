@@ -129,12 +129,19 @@ class TestTaskGenerator:
                 edges=ResourcePoolEdge(
                     node=ResourcePool(
                         Name=True,
+                        PoolProperties=True,
+                        PoolType=True,
                         id=True,
                         AllocationStrategy=AllocationStrategy(
-                            Name=True
+                            Description=True,
+                            Lang=True,
+                            Name=True,
+                            Script=True,
+                            id=True
                         )
                     )
-                )
+                ),
+                totalCount=True
             )
         ).render()
 
@@ -158,7 +165,9 @@ class TestTaskGenerator:
                         cronString=True,
                         enabled=True
                     ),
-                )
+                    cursor=True
+                ),
+                totalCount=True
             ),
             after='aaa',
             first=10,
@@ -169,8 +178,8 @@ class TestTaskGenerator:
         ).render()
 
         reference = '{ schedules ( after: "aaa", first: 10, filter: { workflowName: "TEST_A" ,' \
-                    ' workflowVersion: "1"  } ) { edges { node { name enabled parallelRuns workflowName' \
-                    ' workflowVersion cronString workflowContext fromDate toDate status } cursor } pageInfo ' \
+                    ' workflowVersion: "1"  } ) { edges { node { name enabled' \
+                    ' cronString } cursor } pageInfo ' \
                     '{ hasNextPage hasPreviousPage startCursor endCursor } totalCount } }'
 
         assert reference == query_render
@@ -214,11 +223,14 @@ class TestTaskGenerator:
                     node=ResourcePool(
                         Name=True,
                         id=True,
+                        PoolProperties=True,
+                        PoolType=True,
                         AllocationStrategy=AllocationStrategy(
                             Name=True
                         )
                     )
-                )
+                ),
+                totalCount=True
             )
         )
 
@@ -236,7 +248,9 @@ class TestTaskGenerator:
                         cronString=True,
                         enabled=True
                     ),
-                )
+                    cursor=True
+                ),
+                totalCount=True
             ),
             after='aaa',
             first=10,
@@ -252,10 +266,10 @@ class TestTaskGenerator:
         ]
 
         reference = '{  SearchPoolsByTags ( tags: { matchesAny: [  { matchesAll: [ "root_pool" ] }  ]  } ) ' \
-            '{ edges { node { AllocationStrategy { Description Lang Name Script id } ' \
+            '{ edges { node { AllocationStrategy { Name } ' \
             'Name PoolProperties PoolType id } } totalCount }  schedules ( after: "aaa", first: 10, filter: ' \
-            '{ workflowName: "TEST_A" , workflowVersion: "1"  } ) { edges { node { name enabled parallelRuns ' \
-            'workflowName workflowVersion cronString workflowContext fromDate toDate status } cursor } ' \
+            '{ workflowName: "TEST_A" , workflowVersion: "1"  } ) { edges { node { name enabled ' \
+            'cronString } cursor } ' \
             'pageInfo { hasNextPage hasPreviousPage startCursor endCursor } totalCount }  }'
 
         merged_query = graphql_pydantic_converter.graphql_types.concatenate_queries(queries)

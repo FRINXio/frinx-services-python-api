@@ -1,6 +1,7 @@
 import typing
 
 from pydantic import Field
+from pydantic import PrivateAttr
 
 from graphql_pydantic_converter.graphql_types import Input
 from graphql_pydantic_converter.graphql_types import Payload
@@ -8,60 +9,59 @@ from graphql_pydantic_converter.graphql_types import Query
 
 
 class TagAnd(Input):
-    matches_all: typing.Optional[list[str]] = Field(alias='matchesAll')
+    matches_all: typing.Optional[list[str]] = Field(default=None, alias='matchesAll')
 
 
 class TagOr(Input):
-    matches_any: typing.Optional[list[TagAnd]] = Field(alias='matchesAny')
+    matches_any: typing.Optional[list[TagAnd]] = Field(default=None, alias='matchesAny')
 
 
 class OutputCursor(Payload):
-    id: typing.Optional[bool] = Field(response='str', alias='ID', default=True)
+    id: typing.Optional[bool] = Field(alias='ID', default=False)
 
 
 class PageInfo(Payload):
-    end_cursor: typing.Optional[OutputCursor] = Field(response='OutputCursor', alias='endCursor')
-    has_next_page: typing.Optional[bool] = Field(response='bool', alias='hasNextPage', default=True)
-    has_previous_page: typing.Optional[bool] = Field(response='bool', alias='hasPreviousPage',
-                                                     default=True)
-    start_cursor: typing.Optional[OutputCursor] = Field(response='OutputCursor', alias='startCursor')
+    end_cursor: typing.Optional[OutputCursor] = Field(default=None, alias='endCursor')
+    has_next_page: typing.Optional[bool] = Field(alias='hasNextPage', default=False)
+    has_previous_page: typing.Optional[bool] = Field(alias='hasPreviousPage', default=False)
+    start_cursor: typing.Optional[OutputCursor] = Field(default=None, alias='startCursor')
 
 
 class AllocationStrategy(Payload):
-    description: typing.Optional[bool] = Field(response='str', alias='Description', default=True)
-    lang: typing.Optional[bool] = Field(response='AllocationStrategyLang', alias='Lang', default=True)
-    name: typing.Optional[bool] = Field(response='str', alias='Name', default=True)
-    script: typing.Optional[bool] = Field(response='str', alias='Script', default=True)
-    id: typing.Optional[bool] = Field(response='ID', default=True)
+    description: typing.Optional[bool] = Field(alias='Description', default=False)
+    lang: typing.Optional[bool] = Field(alias='Lang', default=False)
+    name: typing.Optional[bool] = Field(alias='Name', default=False)
+    script: typing.Optional[bool] = Field(alias='Script', default=False)
+    id: typing.Optional[bool] = Field(default=False)
 
 
 class ResourcePool(Payload):
-    allocation_strategy: typing.Optional[AllocationStrategy] = Field(response='AllocationStrategy',
+    allocation_strategy: typing.Optional[AllocationStrategy] = Field(default=None,
                                                                      alias='AllocationStrategy')
-    name: typing.Optional[bool] = Field(response='str', alias='Name', default=True)
-    pool_properties: typing.Optional[bool] = Field(response='Map', alias='PoolProperties', default=True)
-    pool_type: typing.Optional[bool] = Field(response='PoolType', alias='PoolType', default=True)
-    id: typing.Optional[bool] = Field(response='ID', default=True)
+    name: typing.Optional[bool] = Field(alias='Name', default=False)
+    pool_properties: typing.Optional[bool] = Field(alias='PoolProperties', default=False)
+    pool_type: typing.Optional[bool] = Field(alias='PoolType', default=False)
+    id: typing.Optional[bool] = Field(default=False)
 
 
 class ResourcePoolEdge(Payload):
-    cursor: typing.Optional[OutputCursor] = Field(response='OutputCursor')
-    node: typing.Optional[ResourcePool] = Field(response='ResourcePool')
+    cursor: typing.Optional[OutputCursor] = Field(default=None)
+    node: typing.Optional[ResourcePool] = Field(default=None)
 
 
 class ResourcePoolConnection(Payload):
-    edges: typing.Optional[ResourcePoolEdge] = Field(response='ResourcePoolEdge')
-    page_info: typing.Optional[PageInfo] = Field(response='PageInfo', alias='pageInfo')
-    total_count: typing.Optional[bool] = Field(response='Int', alias='totalCount', default=True)
+    edges: typing.Optional[ResourcePoolEdge] = Field(default=None)
+    page_info: typing.Optional[PageInfo] = Field(default=None, alias='pageInfo')
+    total_count: typing.Optional[bool] = Field(default=False, alias='totalCount',)
 
 
 class SearchPoolsByTagsQuery(Query):
-    _name: str = Field('SearchPoolsByTags', const=True)
-    tags: typing.Optional[TagOr]
-    first: typing.Optional[int]
-    last: typing.Optional[int]
-    before: typing.Optional[typing.Any]
-    after: typing.Optional[typing.Any]
+    _name: str = PrivateAttr('SearchPoolsByTags')
+    tags: typing.Optional[TagOr] = Field(default=None)
+    first: typing.Optional[int] = Field(default=None)
+    last: typing.Optional[int] = Field(default=None)
+    before: typing.Optional[typing.Any] = Field(default=None)
+    after: typing.Optional[typing.Any] = Field(default=None)
     payload: ResourcePoolConnection
 
 
@@ -71,41 +71,41 @@ class SchedulesFilterInput(Input):
 
 
 class PageInfoSchedule(Payload):
-    has_next_page: typing.Optional[bool] = Field(response='bool', alias='hasNextPage', default=True)
-    has_previous_page: typing.Optional[bool] = Field(response='bool', alias='hasPreviousPage', default=True)
-    start_cursor: typing.Optional[bool] = Field(response='String', alias='startCursor', default=True)
-    end_cursor: typing.Optional[bool] = Field(response='String', alias='endCursor', default=True)
+    has_next_page: typing.Optional[bool] = Field(alias='hasNextPage', default=False)
+    has_previous_page: typing.Optional[bool] = Field(alias='hasPreviousPage', default=False)
+    start_cursor: typing.Optional[bool] = Field(alias='startCursor', default=False)
+    end_cursor: typing.Optional[bool] = Field(alias='endCursor', default=False)
 
 
 class Schedule(Payload):
-    name: typing.Optional[bool] = Field(response='String', default=True)
-    enabled: typing.Optional[bool] = Field(response='bool', default=True)
-    parallel_runs: typing.Optional[bool] = Field(response='bool', alias='parallelRuns', default=True)
-    workflow_name: typing.Optional[bool] = Field(response='String', alias='workflowName', default=True)
-    workflow_version: typing.Optional[bool] = Field(response='String', alias='workflowVersion', default=True)
-    cron_string: typing.Optional[bool] = Field(response='String', alias='cronString', default=True)
-    workflow_context: typing.Optional[bool] = Field(response='String', alias='workflowContext', default=True)
-    from_date: typing.Optional[bool] = Field(response='DateTime', alias='fromDate', default=True)
-    to_date: typing.Optional[bool] = Field(response='DateTime', alias='toDate', default=True)
-    status: typing.Optional[bool] = Field(response='Status', default=True)
+    name: typing.Optional[bool] = Field(default=False)
+    enabled: typing.Optional[bool] = Field(default=False)
+    parallel_runs: typing.Optional[bool] = Field(alias='parallelRuns', default=False)
+    workflow_name: typing.Optional[bool] = Field(alias='workflowName', default=False)
+    workflow_version: typing.Optional[bool] = Field(alias='workflowVersion', default=False)
+    cron_string: typing.Optional[bool] = Field(alias='cronString', default=False)
+    workflow_context: typing.Optional[bool] = Field(alias='workflowContext', default=False)
+    from_date: typing.Optional[bool] = Field(alias='fromDate', default=False)
+    to_date: typing.Optional[bool] = Field(alias='toDate', default=False)
+    status: typing.Optional[bool] = Field(default=False)
 
 
 class ScheduleEdge(Payload):
-    node: typing.Optional[Schedule] = Field(response='Schedule')
-    cursor: typing.Optional[bool] = Field(response='String', default=True)
+    node: typing.Optional[Schedule] = Field(default=None)
+    cursor: typing.Optional[bool] = Field(default=False)
 
 
 class ScheduleConnection(Payload):
-    edges: typing.Optional[ScheduleEdge] = Field(response='ScheduleEdge')
-    page_info: typing.Optional[PageInfoSchedule] = Field(response='PageInfo', alias='pageInfo')
-    total_count: typing.Optional[bool] = Field(response='Int', alias='totalCount', default=True)
+    edges: typing.Optional[ScheduleEdge] = Field(default=None)
+    page_info: typing.Optional[PageInfoSchedule] = Field(default=None, alias='pageInfo')
+    total_count: typing.Optional[bool] = Field(alias='totalCount', default=False)
 
 
 class SchedulesQuery(Query):
-    _name: str = Field('schedules', const=True)
-    after: typing.Optional[str]
-    before: typing.Optional[str]
-    first: typing.Optional[int]
-    last: typing.Optional[int]
-    filter: typing.Optional[SchedulesFilterInput]
+    _name: str = PrivateAttr('schedules')
+    after: typing.Optional[str] = Field(default=None)
+    before: typing.Optional[str] = Field(default=None)
+    first: typing.Optional[int] = Field(default=None)
+    last: typing.Optional[int] = Field(default=None)
+    filter: typing.Optional[SchedulesFilterInput] = Field(default=None)
     payload: ScheduleConnection

@@ -7,6 +7,7 @@ from typing import Any
 from typing import Optional
 
 from pydantic import BaseModel
+from pydantic import ConfigDict
 from pydantic import Field
 
 
@@ -21,7 +22,7 @@ class GraphqlJsonParser:
     __enums: list[str] = []
     __interfaces: list[str] = []
     __refs: str = ''
-    __refs_template: Template = Template('$class_name.update_forward_refs()\n')
+    __refs_template: Template = Template('$class_name.model_rebuild()\n')
     __class_template: Template = Template('\n\nclass ${name}($type):\n')
     __ignore_enums: list[str] = ['String', 'ID', 'Float', 'Int', 'Boolean', 'list']
     __input_json: dict[str, Any]
@@ -61,95 +62,97 @@ class GraphqlJsonParser:
         Upload = 'Upload'
 
     class QueryType(BaseModel):
-        name: Optional[str]
+        name: Optional[str] = None
 
     class MutationType(BaseModel):
-        name: Optional[str]
+        name: Optional[str] = None
 
     class SubscriptionType(BaseModel):
-        name: Optional[str]
+        name: Optional[str] = None
 
     class OfType(BaseModel):
-        kind: Optional[GraphqlJsonParser.TypeKind]
-        name: Optional[str]
-        of_type: Optional[GraphqlJsonParser.OfType] = Field(alias='ofType')
+        kind: Optional[GraphqlJsonParser.TypeKind] = None
+        name: Optional[str] = None
+        of_type: Optional[GraphqlJsonParser.OfType] = Field(None, alias='ofType')
 
     class OfTypeItem(BaseModel):
-        kind: Optional[GraphqlJsonParser.TypeKind]
-        name: Optional[str]
-        of_type: Optional[GraphqlJsonParser.OfTypeItem] = Field(alias='ofType')
+        kind: Optional[GraphqlJsonParser.TypeKind] = None
+        name: Optional[str] = None
+        of_type: Optional[GraphqlJsonParser.OfTypeItem] = Field(None, alias='ofType')
 
     class Arg(BaseModel):
-        name: Optional[str]
-        description: Optional[Any]
-        type: Optional[GraphqlJsonParser.Type]
-        default_value: Optional[str] = Field(alias='defaultValue')
-        is_deprecated: Optional[bool] = Field(alias='isDeprecated')
-        deprecation_reason: Optional[Any] = Field(alias='deprecationReason')
+        name: Optional[str] = None
+        description: Optional[Any] = None
+        type: Optional[GraphqlJsonParser.Type] = None
+        default_value: Optional[str] = Field(None, alias='defaultValue')
+        is_deprecated: Optional[bool] = Field(None, alias='isDeprecated')
+        deprecation_reason: Optional[Any] = Field(None, alias='deprecationReason')
 
     class Field(BaseModel):
-        name: Optional[str]
-        description: Optional[str]
-        args: Optional[list[GraphqlJsonParser.Arg]]
-        type: Optional[GraphqlJsonParser.Type]
-        is_deprecated: Optional[bool] = Field(alias='isDeprecated')
-        deprecation_reason: Optional[Any] = Field(alias='deprecationReason')
+        name: Optional[str] = None
+        description: Optional[str] = None
+        args: Optional[list[GraphqlJsonParser.Arg]] = None
+        type: Optional[GraphqlJsonParser.Type] = None
+        is_deprecated: Optional[bool] = Field(None, alias='isDeprecated')
+        deprecation_reason: Optional[Any] = Field(None, alias='deprecationReason')
 
     class InputField(BaseModel):
-        name: Optional[str]
-        description: Optional[Any]
-        type: Optional[GraphqlJsonParser.Type]
-        default_value: Optional[Any] = Field(alias='defaultValue')
-        is_deprecated: Optional[bool] = Field(alias='isDeprecated')
-        deprecation_reason: Optional[Any] = Field(alias='deprecationReason')
+        name: Optional[str] = None
+        description: Optional[Any] = None
+        type: Optional[GraphqlJsonParser.Type] = None
+        default_value: Optional[Any] = Field(None, alias='defaultValue')
+        is_deprecated: Optional[bool] = Field(None, alias='isDeprecated')
+        deprecation_reason: Optional[Any] = Field(None, alias='deprecationReason')
 
     class Interface(BaseModel):
-        kind: Optional[GraphqlJsonParser.TypeKind]
-        name: Optional[str]
-        of_type: Optional[Any] = Field(alias='ofType')
+        kind: Optional[GraphqlJsonParser.TypeKind] = None
+        name: Optional[str] = None
+        of_type: Optional[Any] = Field(None, alias='ofType')
 
     class EnumValue(BaseModel):
-        name: Optional[str]
-        description: Optional[str]
-        is_deprecated: Optional[bool] = Field(alias='isDeprecated')
-        deprecation_reason: Optional[Any] = Field(alias='deprecationReason')
+        name: Optional[str] = None
+        description: Optional[str] = None
+        is_deprecated: Optional[bool] = Field(None, alias='isDeprecated')
+        deprecation_reason: Optional[Any] = Field(None, alias='deprecationReason')
 
     class PossibleType(BaseModel):
-        kind: Optional[GraphqlJsonParser.TypeKind]
-        name: Optional[str]
-        of_type: Optional[Any] = Field(alias='ofType')
+        kind: Optional[GraphqlJsonParser.TypeKind] = None
+        name: Optional[str] = None
+        of_type: Optional[Any] = Field(None, alias='ofType')
 
     class Type(BaseModel):
         kind: GraphqlJsonParser.TypeKind
-        name: Optional[str]
-        description: Optional[str]
-        fields: Optional[list[GraphqlJsonParser.Field]]
-        input_fields: Optional[list[GraphqlJsonParser.InputField]] = Field(alias='inputFields')
-        interfaces: Optional[list[GraphqlJsonParser.Interface]]
-        enum_values: Optional[list[GraphqlJsonParser.EnumValue]] = Field(alias='enumValues')
-        possible_types: Optional[list[GraphqlJsonParser.PossibleType]] = Field(alias='possibleTypes')
-        of_type: Optional[GraphqlJsonParser.OfType] = Field(alias='ofType')
+        name: Optional[str] = None
+        description: Optional[str] = None
+        fields: Optional[list[GraphqlJsonParser.Field]] = None
+        input_fields: Optional[list[GraphqlJsonParser.InputField]] = Field(None, alias='inputFields')
+        interfaces: Optional[list[GraphqlJsonParser.Interface]] = None
+        enum_values: Optional[list[GraphqlJsonParser.EnumValue]] = Field(None, alias='enumValues')
+        possible_types: Optional[list[GraphqlJsonParser.PossibleType]] = Field(None, alias='possibleTypes')
+        of_type: Optional[GraphqlJsonParser.OfType] = Field(None, alias='ofType')
 
     class Directive(BaseModel):
-        name: Optional[str]
-        description: Optional[str]
-        is_repeatable: Optional[bool] = Field(alias='isRepeatable')
-        locations: Optional[list[str]]
-        args: Optional[list[GraphqlJsonParser.Arg]]
+        name: Optional[str] = None
+        description: Optional[str] = None
+        is_repeatable: Optional[bool] = Field(None, alias='isRepeatable')
+        locations: Optional[list[str]] = None
+        args: Optional[list[GraphqlJsonParser.Arg]] = None
 
     class Model(BaseModel):
-        query_type: Optional[GraphqlJsonParser.QueryType] = Field(default=None, alias='queryType')
-        mutation_type: Optional[GraphqlJsonParser.MutationType] = Field(default=None, alias='mutationType')
-        subscription_type: Optional[GraphqlJsonParser.SubscriptionType] = Field(default=None, alias='subscriptionType')
-        types: Optional[list[GraphqlJsonParser.Type]] = Field(default=None)
-        directives: Optional[list[GraphqlJsonParser.Directive]] = Field(default=None)
+        query_type: Optional[GraphqlJsonParser.QueryType] = Field(None, alias='queryType')
+        mutation_type: Optional[GraphqlJsonParser.MutationType] = Field(None, alias='mutationType')
+        subscription_type: Optional[GraphqlJsonParser.SubscriptionType] = Field(None, alias='subscriptionType')
+        types: Optional[list[GraphqlJsonParser.Type]] = Field(None)
+        directives: Optional[list[GraphqlJsonParser.Directive]] = Field(None)
 
     class Schema(BaseModel):
-        graphql_schema: Optional[GraphqlJsonParser.Model] = Field(alias='__schema')
+        graphql_schema: Optional[GraphqlJsonParser.Model] = Field(None, alias='__schema')
         data: Optional[GraphqlJsonParser.Schema] = None
 
-        class Config:
-            allow_population_by_field_name = True
+        model_config = ConfigDict(
+            populate_by_name=True,
+            extra='ignore'
+        )
 
     def __init__(self, input_json: dict[str, Any], ignore_private_objects: bool = True) -> None:
         self.__input_json = input_json
@@ -201,6 +204,7 @@ class GraphqlJsonParser:
             'import typing\n',
             'from pydantic import BaseModel',
             'from pydantic import Field',
+            'from pydantic import PrivateAttr',
             '\n'
         ]
         self.__result += '\n'.join(imports)
@@ -322,7 +326,7 @@ class GraphqlJsonParser:
 
     def __create_interface(self, interfaces: list[Type]) -> None:
         enums = self.__enums + self.__ignore_enums
-        kv_template = Template('$indent$name: $val$alias\n')
+        kv_template = Template('$indent$name: $val = Field(default=None$alias)\n')
         for interface in interfaces:
             if interface.name:
                 self.__interfaces.append(interface.name)
@@ -334,7 +338,7 @@ class GraphqlJsonParser:
                         name = field.name
                         alias = ''
                         if self.is_not_snake_case(field.name):
-                            alias = f" = Field(alias='{field.name}')"
+                            alias = f", alias='{field.name}'"
                             name = self.to_snake_case(field.name)
 
                         kind = self.__build_type_payload(self.__extract_fields(field.type, []))
@@ -346,7 +350,7 @@ class GraphqlJsonParser:
                         )
 
     def __create_input(self, inputs: list[Type]) -> None:
-        kv_template = Template('$indent$name: $val$alias\n')
+        kv_template = Template('$indent$name: $val$field\n')
         for _input in inputs:
             self.__result += self.__class_template.substitute(name=_input.name, type='Input')
             self.__refs += self.__refs_template.substitute(class_name=_input.name)
@@ -354,14 +358,21 @@ class GraphqlJsonParser:
                 for field in _input.input_fields:
                     if field.name and field.type:
                         name = field.name
-                        alias = ''
+                        field_args = []
+                        field_str = ''
+                        if name.startswith('typing.Optional'):
+                            field_args.append('default=None')
+
                         if self.is_not_snake_case(field.name):
-                            alias = f" = Field(alias='{field.name}')"
+                            field_args.append(f"alias='{field.name}'")
                             name = self.to_snake_case(field.name)
+
+                        if len(field_args) > 0:
+                            field_str = f" = Field({', '.join(field_args)})"
 
                         kind = self.__build_type(self.__extract_fields(field.type, []))
                         self.__result += kv_template.substitute(
-                            indent=self.__INDENT, name=name, val=kind, alias=alias
+                            indent=self.__INDENT, name=name, val=kind, field=field_str
                         )
 
     def __create_object_payload(self, payload: Type) -> None:
@@ -370,7 +381,7 @@ class GraphqlJsonParser:
             if payload.name.startswith('__') and self.__ignore_private_objects:
                 return
 
-            kv_template = Template('$indent$name: $val = Field(response=$type)\n')
+            kv_template = Template('$indent$name: $val = Field($default$alias)\n')
             self.__result += self.__class_template.substitute(name=payload.name, type='Payload')
             self.__refs += self.__refs_template.substitute(class_name=payload.name)
 
@@ -380,20 +391,23 @@ class GraphqlJsonParser:
                         name = field.name
                         kind = self.__build_type_payload(self.__extract_fields(field.type, []))
                         val = f'typing.Optional[{kind}]'
-                        val_type = f"'{kind}'"
+                        val_type = 'default=None'
+                        alias = ''
+
                         if self.is_not_snake_case(field.name):
-                            val_type += f", alias='{field.name}'"
+                            alias = f", alias='{field.name}'"
                             name = self.to_snake_case(field.name)
 
                         if kind in (self.__enums + self.__ignore_enums):
                             val = 'typing.Optional[Boolean]'
-                            val_type += ', default=False'
+                            val_type = 'default=False'
+
                         self.__result += kv_template.substitute(
-                            indent=self.__INDENT, name=name, val=val, type=val_type
+                            indent=self.__INDENT, name=name, val=val, default=val_type, alias=alias
                         )
 
     def __create_specific_payload(self, payload: Type) -> None:
-        kv_template = Template('$indent$name: $val\n')
+        kv_template = Template('$indent$name: $val$field\n')
 
         interface = ''
         enums = self.__enums + self.__ignore_enums
@@ -410,24 +424,51 @@ class GraphqlJsonParser:
                         type=payload.name + interface,
                     )
 
-                    self.__result += f"{self.__INDENT}_name: str = Field('{field.name}', const=True)\n"
+                    self.__result += f"{self.__INDENT}_name: str = PrivateAttr('{field.name}')\n"
                     self.__refs += self.__refs_template.substitute(
                         class_name=field.name[0].upper() + field.name[1:] + payload.name
                     )
+
                     if field.args:
                         for arg in field.args:
                             if arg.type and arg.name:
+
                                 kind = self.__build_type(self.__extract_fields(arg.type, []))
                                 name = arg.name
+                                field_args = []
+                                field_str = ''
+
+                                if kind.startswith('typing.Optional'):
+                                    field_args.append('default=None')
+
                                 if self.is_not_snake_case(arg.name):
-                                    kind += f" = Field(alias='{arg.name}')"
+                                    field_args.append(f"alias='{arg.name}'")
                                     name = self.to_snake_case(arg.name)
-                                self.__result += kv_template.substitute(indent=self.__INDENT, name=name, val=kind)
+
+                                if len(field_args) > 0:
+                                    field_str = f" = Field({', '.join(field_args)})"
+
+                                self.__result += kv_template.substitute(
+                                    indent=self.__INDENT,
+                                    name=name, val=kind,
+                                    field=field_str
+                                )
+
                         kind = self.__build_type_payload(self.__extract_fields(field.type, []))
                         if kind in enums:
-                            self.__result += kv_template.substitute(indent=self.__INDENT, name='payload', val='Boolean')
+                            self.__result += kv_template.substitute(
+                                indent=self.__INDENT,
+                                name='payload',
+                                val='Boolean',
+                                field=''
+                            )
                         else:
-                            self.__result += kv_template.substitute(indent=self.__INDENT, name='payload', val=kind)
+                            self.__result += kv_template.substitute(
+                                indent=self.__INDENT,
+                                name='payload',
+                                val=kind,
+                                field=''
+                            )
 
     def __create_response(self, payload: Type) -> None:
 
@@ -435,9 +476,11 @@ class GraphqlJsonParser:
             if payload.name.startswith('__') and self.__ignore_private_objects:
                 return
 
-            kv_template = Template('$indent$name: $val\n')
+            kv_template = Template('$indent$name: $val = Field($default$alias)\n')
+
             self.__result += self.__class_template.substitute(name=f'{payload.name}Payload', type='BaseModel')
             self.__refs += self.__refs_template.substitute(class_name=f'{payload.name}Payload')
+            default = 'default=None'
 
             if payload.fields:
                 for field in payload.fields:
@@ -447,6 +490,8 @@ class GraphqlJsonParser:
                         data_type = self.__extract_fields(field.type, [])
                         kind = data_type[-1]
                         data_type[-1] = kind + 'Payload'
+                        alias = ''
+
                         if kind in (self.__enums + self.__ignore_enums):
                             data_type[-1] = f'typing.Optional[{kind}]'
 
@@ -456,11 +501,11 @@ class GraphqlJsonParser:
                         val = f'typing.Optional[{ self.__build_type(data_type)}]'
 
                         if self.is_not_snake_case(field.name):
-                            val += f" = Field(alias='{field.name}')"
+                            alias = f", alias='{field.name}'"
                             name = self.to_snake_case(field.name)
 
                         self.__result += kv_template.substitute(
-                            indent=self.__INDENT, name=name, val=val
+                            indent=self.__INDENT, name=name, val=val, default=default, alias=alias
                         )
 
     def __create_specific_response(self, payload: Type) -> None:
@@ -487,19 +532,19 @@ class GraphqlJsonParser:
                             self.__result += kv_template.substitute(
                                 indent=self.__INDENT,
                                 name='data',
-                                val=f'typing.Optional[{class_name}Data]'
+                                val=f'typing.Optional[{class_name}Data] = Field(default=None)'
                             )
                         else:
                             self.__result += kv_template.substitute(
                                 indent=self.__INDENT,
                                 name='data',
-                                val=f'typing.Optional[{class_name}]'
+                                val=f'typing.Optional[{class_name}] = Field(default=None)'
                             )
 
                         self.__result += kv_template.substitute(
                             indent=self.__INDENT,
                             name='errors',
-                            val='typing.Optional[typing.Any]'
+                            val='typing.Optional[typing.Any] = Field(default=None)'
                         )
 
                         if class_name not in (self.__enums + self.__interfaces):
@@ -519,13 +564,17 @@ class GraphqlJsonParser:
                                 data_type[-1] = f'typing.Optional[{kind}]'
 
                             val = self.__build_type(data_type)
-
                             name = field.name
+
                             if self.is_not_snake_case(field.name):
                                 name = self.to_snake_case(field.name)
                                 val += f" = Field(alias='{field.name}')"
 
-                            self.__result += kv_template.substitute(indent=self.__INDENT, name=name, val=val)
+                            self.__result += kv_template.substitute(
+                                indent=self.__INDENT,
+                                name=name,
+                                val=val,
+                            )
 
     def __create_payload(self, payloads: list[Type], specific_payloads: list[Optional[str]]) -> None:
         for payload in payloads:
@@ -548,14 +597,14 @@ class GraphqlJsonParser:
         output.close()
 
 
-GraphqlJsonParser.Schema.update_forward_refs()
-GraphqlJsonParser.Model.update_forward_refs()
-GraphqlJsonParser.InputField.update_forward_refs()
-GraphqlJsonParser.Field.update_forward_refs()
-GraphqlJsonParser.Arg.update_forward_refs()
-GraphqlJsonParser.Type.update_forward_refs()
-GraphqlJsonParser.OfType.update_forward_refs()
-GraphqlJsonParser.OfTypeItem.update_forward_refs()
-GraphqlJsonParser.PossibleType.update_forward_refs()
-GraphqlJsonParser.Interface.update_forward_refs()
-GraphqlJsonParser.Directive.update_forward_refs()
+GraphqlJsonParser.Schema.model_rebuild()
+GraphqlJsonParser.Model.model_rebuild()
+GraphqlJsonParser.InputField.model_rebuild()
+GraphqlJsonParser.Field.model_rebuild()
+GraphqlJsonParser.Arg.model_rebuild()
+GraphqlJsonParser.Type.model_rebuild()
+GraphqlJsonParser.OfType.model_rebuild()
+GraphqlJsonParser.OfTypeItem.model_rebuild()
+GraphqlJsonParser.PossibleType.model_rebuild()
+GraphqlJsonParser.Interface.model_rebuild()
+GraphqlJsonParser.Directive.model_rebuild()

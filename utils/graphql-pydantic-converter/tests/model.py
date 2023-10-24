@@ -4,6 +4,7 @@ import typing
 
 from pydantic import BaseModel
 from pydantic import Field
+from pydantic import PrivateAttr
 
 from graphql_pydantic_converter.graphql_types import ENUM
 from graphql_pydantic_converter.graphql_types import Input
@@ -38,15 +39,15 @@ class GraphEdgeStatus(ENUM):
 
 
 class BaseGraphNode(Interface):
-    coordinates: typing.Optional[GraphNodeCoordinates]
-    device_type: typing.Optional[Boolean] = Field(alias='deviceType')
-    id: typing.Optional[Boolean]
-    interfaces: typing.Optional[GraphNodeInterface]
-    software_version: typing.Optional[Boolean] = Field(alias='softwareVersion')
+    coordinates: typing.Optional[GraphNodeCoordinates] = Field(default=None)
+    device_type: typing.Optional[Boolean] = Field(default=None, alias='deviceType')
+    id: typing.Optional[Boolean] = Field(default=None)
+    interfaces: typing.Optional[GraphNodeInterface] = Field(default=None)
+    software_version: typing.Optional[Boolean] = Field(default=None, alias='softwareVersion')
 
 
 class Node(Interface):
-    id: typing.Optional[Boolean]
+    id: typing.Optional[Boolean] = Field(default=None)
 
 
 class AddBlueprintInput(Input):
@@ -84,91 +85,91 @@ class UpdateBlueprintInput(Input):
 
 
 class AddBlueprintPayload(Payload):
-    blueprint: typing.Optional[Blueprint] = Field(response='Blueprint')
+    blueprint: typing.Optional[Blueprint] = Field(default=None)
 
 
 class AddBlueprintPayloadPayload(BaseModel):
-    blueprint: typing.Optional[BlueprintPayload]
+    blueprint: typing.Optional[BlueprintPayload] = Field(default=None)
 
 
 class Blueprint(Payload):
-    created_at: typing.Optional[Boolean] = Field(response='String', alias='createdAt', default=False)
-    id: typing.Optional[Boolean] = Field(response='ID', default=False)
-    name: typing.Optional[Boolean] = Field(response='String', default=False)
-    template: typing.Optional[Boolean] = Field(response='String', default=False)
-    updated_at: typing.Optional[Boolean] = Field(response='String', alias='updatedAt', default=False)
+    created_at: typing.Optional[Boolean] = Field(default=False, alias='createdAt')
+    id: typing.Optional[Boolean] = Field(default=False)
+    name: typing.Optional[Boolean] = Field(default=False)
+    template: typing.Optional[Boolean] = Field(default=False)
+    updated_at: typing.Optional[Boolean] = Field(default=False, alias='updatedAt')
 
 
 class BlueprintPayload(BaseModel):
-    created_at: typing.Optional[typing.Optional[String]] = Field(alias='createdAt')
-    id: typing.Optional[typing.Optional[ID]]
-    name: typing.Optional[typing.Optional[String]]
-    template: typing.Optional[typing.Optional[String]]
-    updated_at: typing.Optional[typing.Optional[String]] = Field(alias='updatedAt')
+    created_at: typing.Optional[typing.Optional[String]] = Field(default=None, alias='createdAt')
+    id: typing.Optional[typing.Optional[ID]] = Field(default=None)
+    name: typing.Optional[typing.Optional[String]] = Field(default=None)
+    template: typing.Optional[typing.Optional[String]] = Field(default=None)
+    updated_at: typing.Optional[typing.Optional[String]] = Field(default=None, alias='updatedAt')
 
 
 class BlueprintConnection(Payload):
-    edges: typing.Optional[BlueprintEdge] = Field(response='BlueprintEdge')
-    page_info: typing.Optional[PageInfo] = Field(response='PageInfo', alias='pageInfo')
-    total_count: typing.Optional[Boolean] = Field(response='Int', alias='totalCount', default=False)
+    edges: typing.Optional[BlueprintEdge] = Field(default=None)
+    page_info: typing.Optional[PageInfo] = Field(default=None, alias='pageInfo')
+    total_count: typing.Optional[Boolean] = Field(default=False, alias='totalCount')
 
 
 class BlueprintConnectionPayload(BaseModel):
-    edges: typing.Optional[typing.Optional[list[BlueprintEdgePayload]]]
-    page_info: typing.Optional[PageInfoPayload] = Field(alias='pageInfo')
-    total_count: typing.Optional[typing.Optional[Int]] = Field(alias='totalCount')
+    edges: typing.Optional[typing.Optional[list[BlueprintEdgePayload]]] = Field(default=None)
+    page_info: typing.Optional[PageInfoPayload] = Field(default=None, alias='pageInfo')
+    total_count: typing.Optional[typing.Optional[Int]] = Field(default=None, alias='totalCount')
 
 
 class BlueprintEdge(Payload):
-    cursor: typing.Optional[Boolean] = Field(response='String', default=False)
-    node: typing.Optional[Blueprint] = Field(response='Blueprint')
+    cursor: typing.Optional[Boolean] = Field(default=False)
+    node: typing.Optional[Blueprint] = Field(default=None)
 
 
 class BlueprintEdgePayload(BaseModel):
-    cursor: typing.Optional[typing.Optional[String]]
-    node: typing.Optional[BlueprintPayload]
+    cursor: typing.Optional[typing.Optional[String]] = Field(default=None)
+    node: typing.Optional[BlueprintPayload] = Field(default=None)
 
 
 class DeleteBlueprintPayload(Payload):
-    blueprint: typing.Optional[Blueprint] = Field(response='Blueprint')
+    blueprint: typing.Optional[Blueprint] = Field(default=None)
 
 
 class DeleteBlueprintPayloadPayload(BaseModel):
-    blueprint: typing.Optional[BlueprintPayload]
+    blueprint: typing.Optional[BlueprintPayload] = Field(default=None)
 
 
 class GraphNodeCoordinates(Payload):
-    x: typing.Optional[Boolean] = Field(response='Float', default=False)
-    y: typing.Optional[Boolean] = Field(response='Float', default=False)
+    x: typing.Optional[Boolean] = Field(default=False)
+    y: typing.Optional[Boolean] = Field(default=False)
 
 
 class GraphNodeCoordinatesPayload(BaseModel):
-    x: typing.Optional[typing.Optional[Float]]
-    y: typing.Optional[typing.Optional[Float]]
+    x: typing.Optional[typing.Optional[Float]] = Field(default=None)
+    y: typing.Optional[typing.Optional[Float]] = Field(default=None)
 
 
 class AddBlueprintMutation(Mutation):
-    _name: str = Field('addBlueprint', const=True)
+    _name: str = PrivateAttr('addBlueprint')
     input: AddBlueprintInput
     payload: AddBlueprintPayload
 
 
 class DeleteBlueprintMutation(Mutation):
-    _name: str = Field('deleteBlueprint', const=True)
+    _name: str = PrivateAttr('deleteBlueprint')
     id: String
     payload: DeleteBlueprintPayload
 
 
 class UpdateBlueprintMutation(Mutation):
-    _name: str = Field('updateBlueprint', const=True)
+    _name: str = PrivateAttr('updateBlueprint')
     id: String
     input: UpdateBlueprintInput
     payload: UpdateBlueprintPayload
 
 
 class AddBlueprintMutationResponse(BaseModel):
-    data: typing.Optional[AddBlueprintData]
-    errors: typing.Optional[typing.Any]
+    data: typing.Optional[AddBlueprintData] = Field(default=None)
+    errors: typing.Optional[typing.Any] = Field(default=None)
 
 
 class AddBlueprintData(BaseModel):
@@ -176,8 +177,8 @@ class AddBlueprintData(BaseModel):
 
 
 class DeleteBlueprintMutationResponse(BaseModel):
-    data: typing.Optional[DeleteBlueprintData]
-    errors: typing.Optional[typing.Any]
+    data: typing.Optional[DeleteBlueprintData] = Field(default=None)
+    errors: typing.Optional[typing.Any] = Field(default=None)
 
 
 class DeleteBlueprintData(BaseModel):
@@ -185,8 +186,8 @@ class DeleteBlueprintData(BaseModel):
 
 
 class UpdateBlueprintMutationResponse(BaseModel):
-    data: typing.Optional[UpdateBlueprintData]
-    errors: typing.Optional[typing.Any]
+    data: typing.Optional[UpdateBlueprintData] = Field(default=None)
+    errors: typing.Optional[typing.Any] = Field(default=None)
 
 
 class UpdateBlueprintData(BaseModel):
@@ -194,43 +195,43 @@ class UpdateBlueprintData(BaseModel):
 
 
 class GraphNodeInterface(Payload):
-    id: typing.Optional[Boolean] = Field(response='String', default=False)
-    name: typing.Optional[Boolean] = Field(response='String', default=False)
-    status: typing.Optional[Boolean] = Field(response='GraphEdgeStatus', default=False)
+    id: typing.Optional[Boolean] = Field(default=False)
+    name: typing.Optional[Boolean] = Field(default=False)
+    status: typing.Optional[Boolean] = Field(default=False)
 
 
 class GraphNodeInterfacePayload(BaseModel):
-    id: typing.Optional[typing.Optional[String]]
-    name: typing.Optional[typing.Optional[String]]
-    status: typing.Optional[typing.Optional[GraphEdgeStatus]]
+    id: typing.Optional[typing.Optional[String]] = Field(default=None)
+    name: typing.Optional[typing.Optional[String]] = Field(default=None)
+    status: typing.Optional[typing.Optional[GraphEdgeStatus]] = Field(default=None)
 
 
 class PageInfo(Payload):
-    end_cursor: typing.Optional[Boolean] = Field(response='String', alias='endCursor', default=False)
-    has_next_page: typing.Optional[Boolean] = Field(response='Boolean', alias='hasNextPage', default=False)
-    has_previous_page: typing.Optional[Boolean] = Field(response='Boolean', alias='hasPreviousPage', default=False)
-    start_cursor: typing.Optional[Boolean] = Field(response='String', alias='startCursor', default=False)
+    end_cursor: typing.Optional[Boolean] = Field(default=False, alias='endCursor')
+    has_next_page: typing.Optional[Boolean] = Field(default=False, alias='hasNextPage')
+    has_previous_page: typing.Optional[Boolean] = Field(default=False, alias='hasPreviousPage')
+    start_cursor: typing.Optional[Boolean] = Field(default=False, alias='startCursor')
 
 
 class PageInfoPayload(BaseModel):
-    end_cursor: typing.Optional[typing.Optional[String]] = Field(alias='endCursor')
-    has_next_page: typing.Optional[typing.Optional[Boolean]] = Field(alias='hasNextPage')
-    has_previous_page: typing.Optional[typing.Optional[Boolean]] = Field(alias='hasPreviousPage')
-    start_cursor: typing.Optional[typing.Optional[String]] = Field(alias='startCursor')
+    end_cursor: typing.Optional[typing.Optional[String]] = Field(default=None, alias='endCursor')
+    has_next_page: typing.Optional[typing.Optional[Boolean]] = Field(default=None, alias='hasNextPage')
+    has_previous_page: typing.Optional[typing.Optional[Boolean]] = Field(default=None, alias='hasPreviousPage')
+    start_cursor: typing.Optional[typing.Optional[String]] = Field(default=None, alias='startCursor')
 
 
 class BlueprintsQuery(Query):
-    _name: str = Field('blueprints', const=True)
-    after: typing.Optional[String]
-    before: typing.Optional[String]
-    first: typing.Optional[Int]
-    last: typing.Optional[Int]
+    _name: str = PrivateAttr('blueprints')
+    after: typing.Optional[String] = Field(default=None)
+    before: typing.Optional[String] = Field(default=None)
+    first: typing.Optional[Int] = Field(default=None)
+    last: typing.Optional[Int] = Field(default=None)
     payload: BlueprintConnection
 
 
 class BlueprintsQueryResponse(BaseModel):
-    data: typing.Optional[BlueprintsData]
-    errors: typing.Optional[typing.Any]
+    data: typing.Optional[BlueprintsData] = Field(default=None)
+    errors: typing.Optional[typing.Any] = Field(default=None)
 
 
 class BlueprintsData(BaseModel):
@@ -238,16 +239,16 @@ class BlueprintsData(BaseModel):
 
 
 class UniconfigShellSubscription(Subscription):
-    _name: str = Field('uniconfigShell', const=True)
-    input: typing.Optional[String]
+    _name: str = PrivateAttr('uniconfigShell')
+    input: typing.Optional[String] = Field(default=None)
     session_id: String = Field(alias='sessionId')
-    trigger: typing.Optional[Int]
+    trigger: typing.Optional[Int] = Field(default=None)
     payload: Boolean
 
 
 class UniconfigShellSubscriptionResponse(BaseModel):
-    data: typing.Optional[UniconfigShellData]
-    errors: typing.Optional[typing.Any]
+    data: typing.Optional[UniconfigShellData] = Field(default=None)
+    errors: typing.Optional[typing.Any] = Field(default=None)
 
 
 class UniconfigShellData(BaseModel):
@@ -255,49 +256,49 @@ class UniconfigShellData(BaseModel):
 
 
 class UpdateBlueprintPayload(Payload):
-    blueprint: typing.Optional[Blueprint] = Field(response='Blueprint')
+    blueprint: typing.Optional[Blueprint] = Field(default=None)
 
 
 class UpdateBlueprintPayloadPayload(BaseModel):
-    blueprint: typing.Optional[BlueprintPayload]
+    blueprint: typing.Optional[BlueprintPayload] = Field(default=None)
 
 
-BaseGraphNode.update_forward_refs()
-Node.update_forward_refs()
-AddBlueprintInput.update_forward_refs()
-AddDeviceInput.update_forward_refs()
-GraphNodeCoordinatesInput.update_forward_refs()
-UpdateBlueprintInput.update_forward_refs()
-AddBlueprintPayload.update_forward_refs()
-AddBlueprintPayloadPayload.update_forward_refs()
-Blueprint.update_forward_refs()
-BlueprintPayload.update_forward_refs()
-BlueprintConnection.update_forward_refs()
-BlueprintConnectionPayload.update_forward_refs()
-BlueprintEdge.update_forward_refs()
-BlueprintEdgePayload.update_forward_refs()
-DeleteBlueprintPayload.update_forward_refs()
-DeleteBlueprintPayloadPayload.update_forward_refs()
-GraphNodeCoordinates.update_forward_refs()
-GraphNodeCoordinatesPayload.update_forward_refs()
-AddBlueprintMutation.update_forward_refs()
-DeleteBlueprintMutation.update_forward_refs()
-UpdateBlueprintMutation.update_forward_refs()
-AddBlueprintMutationResponse.update_forward_refs()
-AddBlueprintData.update_forward_refs()
-DeleteBlueprintMutationResponse.update_forward_refs()
-DeleteBlueprintData.update_forward_refs()
-UpdateBlueprintMutationResponse.update_forward_refs()
-UpdateBlueprintData.update_forward_refs()
-GraphNodeInterface.update_forward_refs()
-GraphNodeInterfacePayload.update_forward_refs()
-PageInfo.update_forward_refs()
-PageInfoPayload.update_forward_refs()
-BlueprintsQuery.update_forward_refs()
-BlueprintsQueryResponse.update_forward_refs()
-BlueprintsData.update_forward_refs()
-UniconfigShellSubscription.update_forward_refs()
-UniconfigShellSubscriptionResponse.update_forward_refs()
-UniconfigShellData.update_forward_refs()
-UpdateBlueprintPayload.update_forward_refs()
-UpdateBlueprintPayloadPayload.update_forward_refs()
+BaseGraphNode.model_rebuild()
+Node.model_rebuild()
+AddBlueprintInput.model_rebuild()
+AddDeviceInput.model_rebuild()
+GraphNodeCoordinatesInput.model_rebuild()
+UpdateBlueprintInput.model_rebuild()
+AddBlueprintPayload.model_rebuild()
+AddBlueprintPayloadPayload.model_rebuild()
+Blueprint.model_rebuild()
+BlueprintPayload.model_rebuild()
+BlueprintConnection.model_rebuild()
+BlueprintConnectionPayload.model_rebuild()
+BlueprintEdge.model_rebuild()
+BlueprintEdgePayload.model_rebuild()
+DeleteBlueprintPayload.model_rebuild()
+DeleteBlueprintPayloadPayload.model_rebuild()
+GraphNodeCoordinates.model_rebuild()
+GraphNodeCoordinatesPayload.model_rebuild()
+AddBlueprintMutation.model_rebuild()
+DeleteBlueprintMutation.model_rebuild()
+UpdateBlueprintMutation.model_rebuild()
+AddBlueprintMutationResponse.model_rebuild()
+AddBlueprintData.model_rebuild()
+DeleteBlueprintMutationResponse.model_rebuild()
+DeleteBlueprintData.model_rebuild()
+UpdateBlueprintMutationResponse.model_rebuild()
+UpdateBlueprintData.model_rebuild()
+GraphNodeInterface.model_rebuild()
+GraphNodeInterfacePayload.model_rebuild()
+PageInfo.model_rebuild()
+PageInfoPayload.model_rebuild()
+BlueprintsQuery.model_rebuild()
+BlueprintsQueryResponse.model_rebuild()
+BlueprintsData.model_rebuild()
+UniconfigShellSubscription.model_rebuild()
+UniconfigShellSubscriptionResponse.model_rebuild()
+UniconfigShellData.model_rebuild()
+UpdateBlueprintPayload.model_rebuild()
+UpdateBlueprintPayloadPayload.model_rebuild()
