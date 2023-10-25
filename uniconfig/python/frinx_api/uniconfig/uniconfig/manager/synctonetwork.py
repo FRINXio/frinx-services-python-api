@@ -5,22 +5,23 @@ from __future__ import annotations
 from typing import Optional
 
 from pydantic import BaseModel
+from pydantic import ConfigDict
 from pydantic import Field
 
 from ...frinx import types
 
 
 class TargetNodes(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     node: Optional[list[str]] = None
 
 
 class Input(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     check_timestamp: Optional[bool] = Field(None, alias='check-timestamp')
     """
     Perform timestamp comparison(last known to Uniconfig vs current timestamp on device)
@@ -28,7 +29,7 @@ class Input(BaseModel):
     """
     skip_unreachable_nodes: Optional[bool] = Field(None, alias='skip-unreachable-nodes')
     """
-    Option to skip nodes, that are unreachable at the time of commit. Other nodes will be committed
+    Option to skip nodes, that are unreachable at the time of commit. Other nodes will be commited
     """
     do_validate: Optional[bool] = Field(None, alias='do-validate')
     """
@@ -54,9 +55,9 @@ class Input(BaseModel):
 
 
 class NodeResultItem(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     node_id: Optional[str] = Field(None, alias='node-id')
     error_type: Optional[types.ErrorType] = Field(None, alias='error-type')
     error_message: Optional[str] = Field(None, alias='error-message')
@@ -67,9 +68,13 @@ class NodeResultItem(BaseModel):
 
 
 class NodeResults(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
+    """
+    Individual result of sync for given nodes.
+    """
 
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     node_result: Optional[list[NodeResultItem]] = Field(None, alias='node-result')
     """
     Result of synchronization of configuration to network element
@@ -78,9 +83,9 @@ class NodeResults(BaseModel):
 
 
 class Output(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     error_message: Optional[str] = Field(None, alias='error-message')
     """
     Error message that describe overall problem.

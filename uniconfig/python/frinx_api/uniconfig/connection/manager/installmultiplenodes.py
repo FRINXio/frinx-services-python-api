@@ -6,6 +6,7 @@ from typing import Any
 from typing import Optional
 
 from pydantic import BaseModel
+from pydantic import ConfigDict
 from pydantic import Field
 
 from ...cli import topology
@@ -15,9 +16,14 @@ from ...uniconfig import config
 
 
 class CliTopologyDefaultErrorPatterns(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
+    """
+    Device specific list of error patterns. This list is the primary source
+    of error checking on the device. This list can be overridden from the code.
+    """
 
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     error_pattern: Optional[list[str]] = Field(None, alias='error-pattern')
     """
     Device specific error patterns.
@@ -25,9 +31,13 @@ class CliTopologyDefaultErrorPatterns(BaseModel):
 
 
 class Blacklist(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
+    """
+    Reads which are not invoked for sync-from-network and initial config read.
+    """
 
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     path: Optional[list[str]] = None
     """
     Only root schema nodes are supported. The path needs to be in URI format from RFC 8040.
@@ -42,9 +52,13 @@ class Blacklist(BaseModel):
 
 
 class Whitelist(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
+    """
+    Reads which are invoked for sync-from-network and initial config read.
+    """
 
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     path: Optional[list[str]] = None
     """
     Only root schema nodes are supported. The path needs to be in URI format from RFC 8040.
@@ -59,9 +73,14 @@ class Whitelist(BaseModel):
 
 
 class CliTopologyDefaultCommitErrorPatterns(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
+    """
+    Device specific list of commit error patterns. The following list
+    of patterns is checked in the input after 'commit' command is sent.
+    """
 
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     commit_error_pattern: Optional[list[str]] = Field(
         None, alias='commit-error-pattern'
     )
@@ -71,9 +90,9 @@ class CliTopologyDefaultCommitErrorPatterns(BaseModel):
 
 
 class NetconfNodeTopologyYangModuleCapabilities(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     capability: Optional[list[str]] = None
     """
     Set a list of capabilities to override capabilities provided in device's hello message.
@@ -86,9 +105,9 @@ class NetconfNodeTopologyYangModuleCapabilities(BaseModel):
 
 
 class Flags(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     streaming_session: Optional[bool] = Field(None, alias='streaming-session')
     """
     NETCONF session is created and optimized for receiving of NETCONF notifications
@@ -117,9 +136,9 @@ class Flags(BaseModel):
 
 
 class NetconfNodeTopologyYangLibrary(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     password: Optional[str] = None
     yang_library_url: Optional[str] = Field(None, alias='yang-library-url')
     """
@@ -129,9 +148,9 @@ class NetconfNodeTopologyYangLibrary(BaseModel):
 
 
 class NetconfNodeTopologyOdlHelloMessageCapabilities(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     capability: Optional[list[str]] = None
     """
     Certain devices are non-accepting of ODL's hello message.  This allows specification of
@@ -140,9 +159,9 @@ class NetconfNodeTopologyOdlHelloMessageCapabilities(BaseModel):
 
 
 class NetconfSubscriptionsStreamItem(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     stop_time: Optional[str] = Field(None, alias='stop-time')
     """
     RFC5277: An optional parameter, <stopTime>, used with the optional replay feature to indicate the newest
@@ -164,9 +183,9 @@ class NetconfSubscriptionsStreamItem(BaseModel):
 
 
 class NetconfNodeTopologyNonModuleCapabilities(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     capability: Optional[list[str]] = None
     """
     Set a list of non-module based capabilities to override or merge non-module capabilities
@@ -181,23 +200,22 @@ class NetconfNodeTopologyNonModuleCapabilities(BaseModel):
 
 
 class KeyBased(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     key_id: Optional[str] = Field(None, alias='key-id')
     username: Optional[str] = None
 
 
 class SessionTimers(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     keepalive_delay: Optional[float] = Field(
         None, alias='keepalive-delay', ge=0.0, le=4294967295.0
     )
     """
-    Netconf connector sends keepalive RPCs while the session is idle,
-    this delay specifies the delay between keepalive RPC in seconds
+    Netconf connector sends keepalive RPCs while the session is idle, this delay specifies the delay between keepalive RPC in seconds
     If a value <1 is provided, no keepalives will be sent
     """
     max_reconnection_attempts: Optional[float] = Field(
@@ -205,8 +223,7 @@ class SessionTimers(BaseModel):
     )
     """
     Maximum number of reconnect retries. Non positive value or null is interpreted as infinity.
-    This is an optional parameter. If set, max-connection-attempts will be used only once,
-    for the first connection attempts
+    This is an optional parameter. If set, max-connection-attempts will be used only once, for the first connection attempts
     and for any subsequent disconnect-connect cycles, max-reconnect-attempts will be used.
     This enables users using different amount of reconnects for initial attempts vs subsequent reconnects.
     """
@@ -255,25 +272,30 @@ class SessionTimers(BaseModel):
 
 
 class LoginPasswordUnencrypted(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     password: Optional[str] = None
     username: Optional[str] = None
 
 
 class LoginPassword(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     password: Optional[str] = None
     username: Optional[str] = None
 
 
 class UniconfigConfigCrypto(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
+    """
+    Settings related to encryption of arbitrary leaves/leaf-list using public key that
+    is read from device on specified path.
+    """
 
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     public_key_path: Optional[str] = Field(None, alias='public-key-path')
     """
     Path to leaf containing public key in Base64 binary format.
@@ -284,9 +306,13 @@ class UniconfigConfigCrypto(BaseModel):
 
 
 class Cli(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
+    """
+    CLI node settings.
+    """
 
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     cli_topology_device_type: Optional[str] = Field(
         None, alias='cli-topology:device-type'
     )
@@ -493,9 +519,9 @@ class Cli(BaseModel):
 
 
 class OtherParameters(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     concurrent_rpc_limit: Optional[int] = Field(
         None, alias='concurrent-rpc-limit', ge=0, le=65535
     )
@@ -525,9 +551,13 @@ class OtherParameters(BaseModel):
 
 
 class Netconf(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
+    """
+    NETCONF node settings.
+    """
 
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     concurrent_rpc_limit: Optional[int] = Field(
         None, alias='concurrent-rpc-limit', ge=0, le=65535
     )
@@ -552,8 +582,7 @@ class Netconf(BaseModel):
     )
     """
     Maximum number of reconnect retries. Non positive value or null is interpreted as infinity.
-    This is an optional parameter. If set, max-connection-attempts will be used only once,
-    for the first connection attempts
+    This is an optional parameter. If set, max-connection-attempts will be used only once, for the first connection attempts
     and for any subsequent disconnect-connect cycles, max-reconnect-attempts will be used.
     This enables users using different amount of reconnects for initial attempts vs subsequent reconnects.
     """
@@ -668,16 +697,14 @@ class Netconf(BaseModel):
         None, alias='netconf-node-topology:schema-cache-directory'
     )
     """
-    The destination schema repository for yang files relative to the cache directory.
-    This may be specified per netconf mount
+    The destination schema repository for yang files relative to the cache directory.  This may be specified per netconf mount
     so that the loaded yang files are stored to a distinct directory to avoid potential conflict.
     """
     between_attempts_timeout_millis: Optional[int] = Field(
         None, alias='between-attempts-timeout-millis', ge=0, le=65535
     )
     """
-    Initial timeout in milliseconds to wait between connection attempts.
-    Will be multiplied by sleep-factor with every additional attempt
+    Initial timeout in milliseconds to wait between connection attempts. Will be multiplied by sleep-factor with every additional attempt
     """
     netconf_node_topology_pass_through: Optional[dict[str, Any]] = Field(
         None,
@@ -749,8 +776,7 @@ class Netconf(BaseModel):
         None, alias='keepalive-delay', ge=0.0, le=4294967295.0
     )
     """
-    Netconf connector sends keepalive RPCs while the session is idle,
-    this delay specifies the delay between keepalive RPC in seconds
+    Netconf connector sends keepalive RPCs while the session is idle, this delay specifies the delay between keepalive RPC in seconds
     If a value <1 is provided, no keepalives will be sent
     """
     netconf_node_topology_host: Optional[str] = Field(
@@ -791,9 +817,13 @@ class Netconf(BaseModel):
 
 
 class Gnmi(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
+    """
+    gNMI node settings.
+    """
 
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     uniconfig_config_sequence_read_active: Optional[bool] = Field(
         None, alias='uniconfig-config:sequence-read-active'
     )
@@ -857,9 +887,9 @@ class Gnmi(BaseModel):
 
 
 class Node(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     node_id: str = Field(..., alias='node-id')
     """
     Node identifier of CLI/NETCONF node.
@@ -885,31 +915,31 @@ class Node(BaseModel):
 
 
 class Input(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     nodes: Optional[list[Node]] = None
 
 
 class NodeResult(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     node_id: str = Field(..., alias='node-id')
     """
     Node identifier of CLI/NETCONF node.
     """
     error_message: Optional[str] = Field(None, alias='error-message')
     """
-    Message that described occurred error during invocation of operation on a specific node.
+    Message that described occured error during invocation of operation on a specific node.
     """
     status: types.OperationResultType
 
 
 class Output(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     error_message: Optional[str] = Field(None, alias='error-message')
     """
     Error message that describe overall problem.

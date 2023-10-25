@@ -106,6 +106,8 @@ from . import OperationsSetHiddenHttpHeadersPostRequest
 from . import OperationsSetHiddenHttpHeadersPostResponse
 from . import OperationsSetHiddenHttpMethodsPostRequest
 from . import OperationsSetHiddenHttpMethodsPostResponse
+from . import OperationsSetMessageTypesPostRequest
+from . import OperationsSetMessageTypesPostResponse
 from . import OperationsShowSubscriptionDataPostRequest
 from . import OperationsShowSubscriptionDataPostResponse
 from . import OperationsSyncFromNetworkPostRequest
@@ -287,8 +289,8 @@ class DryrunCommit(UniconfigRest):
 class SetMessageTypes(UniconfigRest):
     uri = '/operations/set-message-types'
     method = 'POST'
-    request = None
-    response = None
+    request = OperationsSetMessageTypesPostRequest
+    response = OperationsSetMessageTypesPostResponse
 
 
 class ReadJournal(UniconfigRest):
@@ -462,13 +464,6 @@ class SnapshotGet(UniconfigRest):
 class SnapshotPut(UniconfigRest):
     uri = '/data/snapshots-metadata/snapshot'
     method = 'PUT'
-    request = None
-    response = None
-
-
-class SnapshotPost(UniconfigRest):
-    uri = '/data/snapshots-metadata/snapshot'
-    method = 'POST'
     request = None
     response = None
 
@@ -730,18 +725,3 @@ class QueryConfig(UniconfigRest):
     method = 'POST'
     request = OperationsQueryConfigPostRequest
     response = OperationsQueryConfigPostResponse
-
-
-class ReadStructuredData(UniconfigRest):
-    uri = '/data/network-topology:network-topology/topology={topology_id}/node={node_id}/frinx-uniconfig-topology:configuration{uri}'
-    method = 'GET'
-
-
-class WriteStructuredData(UniconfigRest):
-    uri = '/data/network-topology:network-topology/topology={topology_id}/node={node_id}/frinx-uniconfig-topology:configuration{uri}'
-    method = 'PUT'
-
-
-class DeleteStructuredData(UniconfigRest):
-    uri = '/data/network-topology:network-topology/topology={topology_id}/node={node_id}/frinx-uniconfig-topology:configuration{uri}'
-    method = 'DELETE'

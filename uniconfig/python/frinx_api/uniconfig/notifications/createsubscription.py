@@ -5,12 +5,13 @@ from __future__ import annotations
 from typing import Optional
 
 from pydantic import BaseModel
+from pydantic import ConfigDict
 
 
 class Input(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     filter: Optional[str] = None
     """
     An optional parameter that indicates which subset of all

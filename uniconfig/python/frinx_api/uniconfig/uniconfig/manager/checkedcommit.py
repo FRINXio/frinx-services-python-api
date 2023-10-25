@@ -5,22 +5,23 @@ from __future__ import annotations
 from typing import Optional
 
 from pydantic import BaseModel
+from pydantic import ConfigDict
 from pydantic import Field
 
 from ...frinx import types
 
 
 class TargetNodes(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     node: Optional[list[str]] = None
 
 
 class Input(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     do_rollback: Optional[bool] = Field(None, alias='do-rollback')
     """
     Controls whether to roll back successfully configured devices in case of failure.
@@ -37,9 +38,9 @@ class Input(BaseModel):
 
 
 class NodeResultItem(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     configuration_status: Optional[types.OperationResultType] = Field(
         None, alias='configuration-status'
     )
@@ -60,9 +61,13 @@ class NodeResultItem(BaseModel):
 
 
 class NodeResults(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
+    """
+    Result of configuration and rollback on each configured network element.
+    """
 
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     node_result: Optional[list[NodeResultItem]] = Field(None, alias='node-result')
     """
     Result of configuration and rollback on the given node.
@@ -71,9 +76,9 @@ class NodeResults(BaseModel):
 
 
 class Output(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     error_message: Optional[str] = Field(None, alias='error-message')
     """
     Error message that describe overall problem.

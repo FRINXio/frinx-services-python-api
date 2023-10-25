@@ -5,13 +5,14 @@ from __future__ import annotations
 from typing import Optional
 
 from pydantic import BaseModel
+from pydantic import ConfigDict
 from pydantic import Field
 
 
 class TrustedCertificateItem(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     certificate: Optional[str] = None
     """
     An X.509 v3 certificate structure as specified by RFC5280, encoded using
@@ -21,9 +22,9 @@ class TrustedCertificateItem(BaseModel):
 
 
 class Input(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     trusted_certificate: Optional[list[TrustedCertificateItem]] = Field(
         None, alias='trusted-certificate'
     )

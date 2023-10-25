@@ -5,13 +5,14 @@ from __future__ import annotations
 from typing import Optional
 
 from pydantic import BaseModel
+from pydantic import ConfigDict
 from pydantic import Field
 
 
 class Input(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     jsonb_path_query: str = Field(..., alias='jsonb-path-query')
     """
     JSON-path used for selection and filtering of elements inside node configuration.
@@ -28,9 +29,9 @@ class Input(BaseModel):
 
 
 class Output(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     config: Optional[list[str]] = None
     """
     All JSON elements returned by input JSON path.
