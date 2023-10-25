@@ -40,7 +40,7 @@ class NodeResult(BaseModel):
     """
     error_message: Optional[str] = Field(None, alias='error-message')
     """
-    Message that described occured error during invocation of operation on a specific node.
+    Message that described occurred error during invocation of operation on a specific node.
     """
     status: types.OperationResultType
 

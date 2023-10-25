@@ -29,7 +29,7 @@ class Input(BaseModel):
     """
     skip_unreachable_nodes: Optional[bool] = Field(None, alias='skip-unreachable-nodes')
     """
-    Option to skip nodes, that are unreachable at the time of commit. Other nodes will be commited
+    Option to skip nodes, that are unreachable at the time of commit. Other nodes will be committed
     """
     do_validate: Optional[bool] = Field(None, alias='do-validate')
     """

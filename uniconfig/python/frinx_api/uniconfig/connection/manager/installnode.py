@@ -918,6 +918,6 @@ class Output(BaseModel):
     )
     error_message: Optional[str] = Field(None, alias='error-message')
     """
-    Message that described occured error during invocation of operation.
+    Message that described occurred error during invocation of operation.
     """
     status: types.OperationResultType
