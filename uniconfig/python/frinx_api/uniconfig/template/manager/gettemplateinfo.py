@@ -5,13 +5,14 @@ from __future__ import annotations
 from typing import Optional
 
 from pydantic import BaseModel
+from pydantic import ConfigDict
 from pydantic import Field
 
 
 class Input(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     template_node_id: str = Field(..., alias='template-node-id')
     """
     Identifier of the template.
@@ -19,40 +20,40 @@ class Input(BaseModel):
 
 
 class BaseTypeItem(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     type: Optional[str] = None
     constraints: Optional[list[str]] = None
 
 
 class BaseTypes(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     base_type: Optional[list[BaseTypeItem]] = Field(None, alias='base-type')
 
 
 class PathItem(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     path: Optional[str] = None
     path_description: Optional[str] = Field(None, alias='path-description')
     default_value: Optional[str] = Field(None, alias='default-value')
 
 
 class Paths(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     path: Optional[list[PathItem]] = None
 
 
 class VariableItem(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     base_types: Optional[BaseTypes] = Field(
         None,
         alias='base-types',
@@ -68,16 +69,16 @@ class VariableItem(BaseModel):
 
 
 class Variables(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     variable: Optional[list[VariableItem]] = None
 
 
 class Output(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     variables: Optional[Variables] = Field(
         None, title='template.manager.gettemplateinfooutputfields.Variables'
     )

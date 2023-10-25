@@ -5,13 +5,14 @@ from __future__ import annotations
 from typing import Optional
 
 from pydantic import BaseModel
+from pydantic import ConfigDict
 from pydantic import Field
 
 
 class KeyCredentialItem(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     passphrase: Optional[str] = None
     """
     If the provided key is encrypted by a passphrase this needs to be included. Leave empty
@@ -30,9 +31,9 @@ class KeyCredentialItem(BaseModel):
 
 
 class Input(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     key_credential: Optional[list[KeyCredentialItem]] = Field(
         None, alias='key-credential'
     )

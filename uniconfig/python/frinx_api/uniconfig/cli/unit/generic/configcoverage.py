@@ -5,13 +5,14 @@ from __future__ import annotations
 from typing import Optional
 
 from pydantic import BaseModel
+from pydantic import ConfigDict
 from pydantic import Field
 
 
 class Input(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     with_details: Optional[bool] = Field(None, alias='with-details')
     """
     Flag for determine whether output will be detailed or not.
@@ -19,18 +20,18 @@ class Input(BaseModel):
 
 
 class ComplexOutputItem(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     non_covered_parts: Optional[list[str]] = Field(None, alias='non-covered-parts')
     command: Optional[str] = None
     covered: Optional[bool] = None
 
 
 class Output(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     simple_output: Optional[str] = Field(None, alias='simple-output')
     """
     Simple output contains commands marked with '+' if it is covered or '-' if not.

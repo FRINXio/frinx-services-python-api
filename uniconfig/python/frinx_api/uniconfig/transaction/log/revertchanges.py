@@ -5,22 +5,23 @@ from __future__ import annotations
 from typing import Optional
 
 from pydantic import BaseModel
+from pydantic import ConfigDict
 from pydantic import Field
 
 from ...frinx import types
 
 
 class TargetTransactions(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     transaction: Optional[list[str]] = None
 
 
 class Input(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     ignore_non_existing_nodes: Optional[bool] = Field(
         None, alias='ignore-non-existing-nodes'
     )
@@ -36,9 +37,9 @@ class Input(BaseModel):
 
 
 class ResultItem(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     transaction_id: Optional[str] = Field(None, alias='transaction-id')
     """
     Transaction identifier.
@@ -52,9 +53,13 @@ class ResultItem(BaseModel):
 
 
 class RevertOutput(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
+    """
+    Results of reverted changes.
+    """
 
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     result: Optional[list[ResultItem]] = None
     """
     Result of reverted changes.
@@ -62,9 +67,9 @@ class RevertOutput(BaseModel):
 
 
 class Output(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     error_message: Optional[str] = Field(None, alias='error-message')
     """
     Error message that describe overall problem.

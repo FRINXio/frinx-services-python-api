@@ -5,15 +5,16 @@ from __future__ import annotations
 from typing import Optional
 
 from pydantic import BaseModel
+from pydantic import ConfigDict
 from pydantic import Field
 
 from ...frinx import types
 
 
 class EditItem(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     path: Optional[str] = None
     """
     Path to modified subtree. Path must be complaint to RFC-8040 and relative
@@ -27,9 +28,9 @@ class EditItem(BaseModel):
 
 
 class Input(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     node_id: Optional[list[str]] = Field(None, alias='node-id')
     """
     List of nodes representing target nodes for list of modifications.
@@ -45,9 +46,9 @@ class Input(BaseModel):
 
 
 class NodeResultItem(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     node_id: Optional[str] = Field(None, alias='node-id')
     error_type: Optional[types.ErrorType] = Field(None, alias='error-type')
     error_message: Optional[str] = Field(None, alias='error-message')
@@ -58,9 +59,9 @@ class NodeResultItem(BaseModel):
 
 
 class Output(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     error_message: Optional[str] = Field(None, alias='error-message')
     """
     Error message that describe overall problem.

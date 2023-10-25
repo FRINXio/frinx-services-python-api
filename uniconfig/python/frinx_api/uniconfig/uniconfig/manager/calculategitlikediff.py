@@ -5,22 +5,23 @@ from __future__ import annotations
 from typing import Optional
 
 from pydantic import BaseModel
+from pydantic import ConfigDict
 from pydantic import Field
 
 from ...frinx import types
 
 
 class TargetNodes(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     node: Optional[list[str]] = None
 
 
 class Input(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     target_nodes: Optional[TargetNodes] = Field(
         None,
         alias='target-nodes',
@@ -29,9 +30,9 @@ class Input(BaseModel):
 
 
 class Change(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     data: Optional[str] = None
     """
     Changes on the specified path in a git like style.
@@ -43,9 +44,9 @@ class Change(BaseModel):
 
 
 class NodeResultItem(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     changes: Optional[list[Change]] = None
     """
     All changes that happened between intended and actual uniconfig node
@@ -60,9 +61,13 @@ class NodeResultItem(BaseModel):
 
 
 class NodeResults(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
+    """
+    Individual result of calculate-diff for given nodes.
+    """
 
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     node_result: Optional[list[NodeResultItem]] = Field(None, alias='node-result')
     """
     Differences between intended and actual uniconfig node in a git like style.
@@ -70,9 +75,9 @@ class NodeResults(BaseModel):
 
 
 class Output(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     error_message: Optional[str] = Field(None, alias='error-message')
     """
     Error message that describe overall problem.

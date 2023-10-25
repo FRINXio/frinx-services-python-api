@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import Optional
 
 from pydantic import BaseModel
+from pydantic import ConfigDict
 from pydantic import Field
 
 from . import SourceDatastore
@@ -12,9 +13,9 @@ from . import TargetDatastore
 
 
 class DeletedDatum(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     data: Optional[str] = None
     path: Optional[str] = None
     """
@@ -23,9 +24,9 @@ class DeletedDatum(BaseModel):
 
 
 class CreatedDatum(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     data: Optional[str] = None
     path: Optional[str] = None
     """
@@ -34,9 +35,9 @@ class CreatedDatum(BaseModel):
 
 
 class UpdatedDatum(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     path_actual: Optional[str] = Field(None, alias='path-actual')
     """
     Instance-identifier of updated data node.
@@ -50,9 +51,9 @@ class UpdatedDatum(BaseModel):
 
 
 class Output(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     deleted_data: Optional[list[DeletedDatum]] = Field(None, alias='deleted-data')
     """
     Removed intended configuration against actual.
@@ -68,9 +69,9 @@ class Output(BaseModel):
 
 
 class Input(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     source_datastore: Optional[SourceDatastore] = Field(None, alias='source-datastore')
     target_datastore: Optional[TargetDatastore] = Field(None, alias='target-datastore')
     target_path: str = Field(..., alias='target-path')

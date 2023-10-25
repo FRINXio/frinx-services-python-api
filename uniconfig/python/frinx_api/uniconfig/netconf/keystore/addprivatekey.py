@@ -5,13 +5,14 @@ from __future__ import annotations
 from typing import Optional
 
 from pydantic import BaseModel
+from pydantic import ConfigDict
 from pydantic import Field
 
 
 class PrivateKeyItem(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     name: Optional[str] = None
     data: Optional[str] = None
     """
@@ -25,9 +26,9 @@ class PrivateKeyItem(BaseModel):
 
 
 class Input(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     private_key: Optional[list[PrivateKeyItem]] = Field(None, alias='private-key')
     """
     A private key.

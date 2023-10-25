@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import Optional
 
 from pydantic import BaseModel
+from pydantic import ConfigDict
 from pydantic import Field
 
 from ...frinx import types
@@ -13,9 +14,9 @@ from . import Operation
 
 
 class Input(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     source_datastore: Optional[Datastore] = Field(None, alias='source-datastore')
     target_datastore: Optional[Datastore] = Field(None, alias='target-datastore')
     target_path: Optional[str] = Field(None, alias='target-path')
@@ -30,9 +31,9 @@ class Input(BaseModel):
 
 
 class Output(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     result: Optional[types.OperationResultType] = None
     error_message: Optional[str] = Field(None, alias='error-message')
     """

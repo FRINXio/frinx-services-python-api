@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import Optional
 
 from pydantic import BaseModel
+from pydantic import ConfigDict
 from pydantic import Field
 
 from . import SourceDatastore
@@ -12,9 +13,9 @@ from . import TargetDatastore
 
 
 class Output(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     changes: Optional[list[str]] = None
     """
     Result of diff between source and target YIID paths in a git like style.
@@ -22,9 +23,9 @@ class Output(BaseModel):
 
 
 class Input(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     source_datastore: Optional[SourceDatastore] = Field(None, alias='source-datastore')
     target_datastore: Optional[TargetDatastore] = Field(None, alias='target-datastore')
     target_path: str = Field(..., alias='target-path')

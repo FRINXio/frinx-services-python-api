@@ -8,14 +8,18 @@ from pydantic import BaseModel
 from pydantic import ConfigDict
 from pydantic import Field
 
+from ... import logging
+from . import GnmiMessageType
+
 
 class Input(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    encryption_enabled: bool = Field(..., alias='encryption-enabled')
+    message_types: Optional[list[GnmiMessageType]] = Field(None, alias='message-types')
     """
-    Is encryption enabled.
+    List of gNMI message types, based on which the broker will log the message content.
+    Names of the gNMI message types are not case-sensitive.
     """
 
 
@@ -23,9 +27,8 @@ class Output(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    encryption_enabled_actual_status: Optional[bool] = Field(
-        None, alias='encryption-enabled-actual-status'
-    )
+    message: Optional[str] = None
     """
-    Actual encryption enabled status (true or false).
+    Information message about state of operation.
     """
+    status: logging.RpcStatus

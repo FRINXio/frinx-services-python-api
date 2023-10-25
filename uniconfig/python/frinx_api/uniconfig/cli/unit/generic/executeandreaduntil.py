@@ -5,13 +5,14 @@ from __future__ import annotations
 from typing import Optional
 
 from pydantic import BaseModel
+from pydantic import ConfigDict
 from pydantic import Field
 
 
 class Input(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     wait_for_output_timer: Optional[int] = Field(
         None, alias='wait-for-output-timer', ge=0, le=65535
     )
@@ -35,9 +36,9 @@ class Input(BaseModel):
 
 
 class Output(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     output: str
     """
     Output that is composed from the inputs/prompts/outputs of executed commands.

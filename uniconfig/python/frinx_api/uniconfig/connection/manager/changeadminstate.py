@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import Optional
 
 from pydantic import BaseModel
+from pydantic import ConfigDict
 from pydantic import Field
 
 from ...frinx import types
@@ -12,9 +13,9 @@ from . import AdminState
 
 
 class Input(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     node_id: str = Field(..., alias='node-id')
     """
     Node identifier of CLI/NETCONF node.
@@ -23,11 +24,11 @@ class Input(BaseModel):
 
 
 class Output(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     error_message: Optional[str] = Field(None, alias='error-message')
     """
-    Message that described occurred error during invocation of operation.
+    Message that described occured error during invocation of operation.
     """
     status: types.OperationResultType

@@ -5,15 +5,16 @@ from __future__ import annotations
 from typing import Optional
 
 from pydantic import BaseModel
+from pydantic import ConfigDict
 from pydantic import Field
 
 from . import DataChangeScope
 
 
 class Output(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     subscription_id: str = Field(..., alias='subscription-id')
     """
     Unique identifier of the subscription.
@@ -21,9 +22,9 @@ class Output(BaseModel):
 
 
 class Input(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
     subtree_path: str = Field(..., alias='subtree-path')
     """
     Identifier of the subtree in the data-tree expressed as relative path.
