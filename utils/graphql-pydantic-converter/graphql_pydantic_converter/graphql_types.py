@@ -221,21 +221,31 @@ class Mutation(BaseModel):
             for item in value:
                 pairs.append(self.dict_to_custom_string(item))
             return f"[ {', '.join(pairs)}]"
-        else:
+        elif isinstance(value, dict):
+            pairs = []
+            for key, values in value.items():
+                pairs.append(f'{key}: {self.dict_to_custom_string(values)}')
+            return f'{{ {", ".join(pairs)} }}'
+        elif isinstance(value, str):
             return f'"{value}"'
+        else:
+            return f'{value}'
 
     def render(self) -> str:
-        payload = ''
+        mutation_name: str = self._name
+        payload: str = ''
         if isinstance(self.payload, Payload):
             payload = f'{{ {self.payload.render()} }}'
-        variables: list[str] = []
-        for k, value in self:
-            if k not in ['_name', 'payload']:
-                variables.append(f' {k}: {self.dict_to_custom_string( value)}')
-        variable = ', '.join(variables)
-        name: str = self._name
 
-        return f'mutation {{ { name } ({variable}) {payload} }}'
+        variables: list[str] = []
+        inputs = self.model_dump(exclude={'_name', 'payload'}, exclude_none=True, by_alias=True)
+
+        for name, value in inputs.items():
+            variables.append(f' {name}: {self.dict_to_custom_string(value)}')
+
+        variable = ', '.join(variables)
+
+        return f'mutation {{ {mutation_name} ({variable}) {payload} }}'
 
 
 class Query(BaseModel):

@@ -44,6 +44,7 @@ options:
 import typing
 
 from pydantic import Field
+from pydantic import PrivateAttr
 from graphql_pydantic_converter.graphql_types import Input
 from graphql_pydantic_converter.graphql_types import Mutation
 from graphql_pydantic_converter.graphql_types import Payload
@@ -58,36 +59,36 @@ String: typing.TypeAlias = str
 
 class CreateScheduleInput(Input):
     name: String
-    workflow_name: String = Field(alias='workflowName')
-    workflow_version: String = Field(alias='workflowVersion')
-    cron_string: String = Field(alias='cronString')
-    enabled: typing.Optional[Boolean]
-    parallel_runs: typing.Optional[Boolean] = Field(alias='parallelRuns')
-    workflow_context: typing.Optional[String] = Field(alias='workflowContext')
-    from_date: typing.Optional[DateTime] = Field(alias='fromDate')
-    to_date: typing.Optional[DateTime] = Field(alias='toDate')
+    workflow_name: String = Field(default=None, alias='workflowName')
+    workflow_version: String = Field(default=None, alias='workflowVersion')
+    cron_string: String = Field(default=None, alias='cronString')
+    enabled: typing.Optional[Boolean] = Field(default=None)
+    parallel_runs: typing.Optional[Boolean] = Field(default=None, alias='parallelRuns')
+    workflow_context: typing.Optional[String] = Field(default=None, alias='workflowContext')
+    from_date: typing.Optional[DateTime] = Field(default=None, alias='fromDate')
+    to_date: typing.Optional[DateTime] = Field(default=None, alias='toDate')
 
 class Schedule(Payload):
-    name: typing.Optional[Boolean] = Field(response='String', default=False)
-    enabled: typing.Optional[Boolean] = Field(response='Boolean', default=False)
-    parallel_runs: typing.Optional[Boolean] = Field(response='Boolean', alias='parallelRuns', default=False)
-    workflow_name: typing.Optional[Boolean] = Field(response='String', alias='workflowName', default=False)
-    workflow_version: typing.Optional[Boolean] = Field(response='String', alias='workflowVersion', default=False)
-    cron_string: typing.Optional[Boolean] = Field(response='String', alias='cronString', default=False)
-    workflow_context: typing.Optional[Boolean] = Field(response='String', alias='workflowContext', default=False)
-    from_date: typing.Optional[Boolean] = Field(response='DateTime', alias='fromDate', default=False)
-    to_date: typing.Optional[Boolean] = Field(response='DateTime', alias='toDate', default=False)
-    status: typing.Optional[Boolean] = Field(response='Status', default=False)
+    name: typing.Optional[bool] = Field(default=False)
+    enabled: typing.Optional[bool] = Field(default=False)
+    parallel_runs: typing.Optional[bool] = Field(alias='parallelRuns', default=False)
+    workflow_name: typing.Optional[bool] = Field(alias='workflowName', default=False)
+    workflow_version: typing.Optional[bool] = Field(alias='workflowVersion', default=False)
+    cron_string: typing.Optional[bool] = Field(alias='cronString', default=False)
+    workflow_context: typing.Optional[bool] = Field(alias='workflowContext', default=False)
+    from_date: typing.Optional[bool] = Field(alias='fromDate', default=False)
+    to_date: typing.Optional[bool] = Field(alias='toDate', default=False)
+    status: typing.Optional[bool] = Field(default=False)
 
 
 class CreateScheduleMutation(Mutation):
-    _name: str = Field('createSchedule', const=True)
+    _name: str = PrivateAttr('createSchedule')
     input: CreateScheduleInput
     payload: Schedule
 
-CreateScheduleInput.update_forward_refs()
-CreateScheduleMutation.update_forward_refs()
-Schedule.update_forward_refs()
+CreateScheduleInput.model_rebuild()
+CreateScheduleMutation.model_rebuild()
+Schedule.model_rebuild()
 
 ```
 
@@ -147,7 +148,7 @@ mutation {
 
 ### Response parser
 
-Example of generated model.py ()
+Example of generated model.py
 
 ```python 
 import typing
@@ -173,25 +174,25 @@ class Status(ENUM):
 
     
 class SchedulePayload(BaseModel):
-    name: typing.Optional[typing.Optional[String]]
-    enabled: typing.Optional[typing.Optional[Boolean]]
-    parallel_runs: typing.Optional[typing.Optional[Boolean]] = Field(alias='parallelRuns')
-    workflow_name: typing.Optional[typing.Optional[String]] = Field(alias='workflowName')
-    workflow_version: typing.Optional[typing.Optional[String]] = Field(alias='workflowVersion')
-    cron_string: typing.Optional[typing.Optional[String]] = Field(alias='cronString')
-    workflow_context: typing.Optional[typing.Optional[String]] = Field(alias='workflowContext')
-    from_date: typing.Optional[typing.Optional[DateTime]] = Field(alias='fromDate')
-    to_date: typing.Optional[typing.Optional[DateTime]] = Field(alias='toDate')
-    status: typing.Optional[typing.Optional[Status]]
+    name: typing.Optional[typing.Optional[String]] = Field(default=None)
+    enabled: typing.Optional[typing.Optional[Boolean]] = Field(default=None)
+    parallel_runs: typing.Optional[typing.Optional[Boolean]] = Field(default=None, alias='parallelRuns')
+    workflow_name: typing.Optional[typing.Optional[String]] = Field(default=None, alias='workflowName')
+    workflow_version: typing.Optional[typing.Optional[String]] = Field(default=None, alias='workflowVersion')
+    cron_string: typing.Optional[typing.Optional[String]] = Field(default=None, alias='cronString')
+    workflow_context: typing.Optional[typing.Optional[String]] = Field(default=None, alias='workflowContext')
+    from_date: typing.Optional[typing.Optional[DateTime]] = Field(default=None, alias='fromDate')
+    to_date: typing.Optional[typing.Optional[DateTime]] = Field(default=None, alias='toDate')
+    status: typing.Optional[typing.Optional[Status]] = Field(default=None)
 
 
 class CreateScheduleData(BaseModel):
-    create_schedule: SchedulePayload = Field(alias='createSchedule')
+    create_schedule: SchedulePayload = Field(default=None, alias='createSchedule')
 
     
 class CreateScheduleResponse(BaseModel):
-    data: typing.Optional[CreateScheduleData]
-    errors: typing.Optional[typing.Any]
+    data: typing.Optional[CreateScheduleData] = Field(default=None)
+    errors: typing.Optional[typing.Any] = Field(default=None)
 
 
 ```

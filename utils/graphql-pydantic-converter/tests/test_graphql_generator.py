@@ -10,7 +10,9 @@ from model import BlueprintEdge
 from model import BlueprintsQuery
 from pydantic import Field
 from render_models import AllocationStrategy
+from render_models import ClaimResourceMutation
 from render_models import PageInfoSchedule
+from render_models import Resource
 from render_models import ResourcePool
 from render_models import ResourcePoolConnection
 from render_models import ResourcePoolEdge
@@ -71,6 +73,21 @@ class TestTaskGenerator:
                 )
             )
         ).render()
+        assert reference == mutation
+
+        reference = ('mutation { ClaimResource ( poolId: "00000000001",  description: "<description>",  userInput: '
+                     '{ address: "0.0.0.0", port: 80 }) { Properties AlternativeId id } }')
+        mutation = ClaimResourceMutation(
+            poolId='00000000001',
+            description='<description>',
+            userInput={'address': '0.0.0.0', 'port': 80},
+            payload=Resource(
+                id=True,
+                Properties=True,
+                AlternativeId=True
+            )
+        ).render()
+
         assert reference == mutation
 
     def test_render_input(self) -> None:
@@ -274,4 +291,3 @@ class TestTaskGenerator:
 
         merged_query = graphql_pydantic_converter.graphql_types.concatenate_queries(queries)
         assert reference == merged_query
-
