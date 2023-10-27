@@ -56,20 +56,20 @@ class AddBlueprintInput(Input):
 
 
 class AddDeviceInput(Input):
-    address: typing.Optional[String]
-    blueprint_id: typing.Optional[String] = Field(alias='blueprintId')
-    device_size: typing.Optional[DeviceSize] = Field(alias='deviceSize')
-    device_type: typing.Optional[String] = Field(alias='deviceType')
-    label_ids: typing.Optional[list[String]] = Field(alias='labelIds')
-    model: typing.Optional[String]
-    mount_parameters: typing.Optional[String] = Field(alias='mountParameters')
+    address: typing.Optional[String] = Field(default=None)
+    blueprint_id: typing.Optional[String] = Field(default=None, alias='blueprintId')
+    device_size: typing.Optional[DeviceSize] = Field(default=None, alias='deviceSize')
+    device_type: typing.Optional[String] = Field(default=None, alias='deviceType')
+    label_ids: typing.Optional[list[String]] = Field(default=None, alias='labelIds')
+    model: typing.Optional[String] = Field(default=None)
+    mount_parameters: typing.Optional[String] = Field(default=None, alias='mountParameters')
     name: String
-    password: typing.Optional[String]
-    port: typing.Optional[Int]
-    service_state: typing.Optional[DeviceServiceState] = Field(alias='serviceState')
-    username: typing.Optional[String]
-    vendor: typing.Optional[String]
-    version: typing.Optional[String]
+    password: typing.Optional[String] = Field(default=None)
+    port: typing.Optional[Int] = Field(default=None)
+    service_state: typing.Optional[DeviceServiceState] = Field(default=None, alias='serviceState')
+    username: typing.Optional[String] = Field(default=None)
+    vendor: typing.Optional[String] = Field(default=None)
+    version: typing.Optional[String] = Field(default=None)
     zone_id: String = Field(alias='zoneId')
 
 
@@ -80,8 +80,8 @@ class GraphNodeCoordinatesInput(Input):
 
 
 class UpdateBlueprintInput(Input):
-    name: typing.Optional[String]
-    template: typing.Optional[String]
+    name: typing.Optional[String] = Field(default=None)
+    template: typing.Optional[String] = Field(default=None)
 
 
 class AddBlueprintPayload(Payload):

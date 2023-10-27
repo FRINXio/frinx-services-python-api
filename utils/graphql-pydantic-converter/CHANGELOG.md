@@ -11,3 +11,9 @@
 # 0.1.2
 - Ignore generating of private graphql schema objects
 - Add graphql_pydantic_converter.graphql_types.concatenate_queries function
+
+# 1.0.0
+- Migration to pydantic v2
+
+# 1.1.0
+- Change Map type to dict (key, value)

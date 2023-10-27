@@ -4,8 +4,17 @@ from pydantic import Field
 from pydantic import PrivateAttr
 
 from graphql_pydantic_converter.graphql_types import Input
+from graphql_pydantic_converter.graphql_types import Mutation
 from graphql_pydantic_converter.graphql_types import Payload
 from graphql_pydantic_converter.graphql_types import Query
+
+Boolean: typing.TypeAlias = bool
+Cursor: typing.TypeAlias = typing.Any
+Float: typing.TypeAlias = float
+ID: typing.TypeAlias = str
+Int: typing.TypeAlias = int
+Map: typing.TypeAlias = dict[str, typing.Any]
+String: typing.TypeAlias = str
 
 
 class TagAnd(Input):
@@ -109,3 +118,20 @@ class SchedulesQuery(Query):
     last: typing.Optional[int] = Field(default=None)
     filter: typing.Optional[SchedulesFilterInput] = Field(default=None)
     payload: ScheduleConnection
+
+
+class Resource(Payload):
+    description: typing.Optional[Boolean] = Field(default=False, alias='Description')
+    nested_pool: typing.Optional[ResourcePool] = Field(default=None, alias='NestedPool')
+    parent_pool: typing.Optional[ResourcePool] = Field(default=None, alias='ParentPool')
+    properties: typing.Optional[Boolean] = Field(default=False, alias='Properties')
+    alternative_id: typing.Optional[Boolean] = Field(default=False, alias='AlternativeId')
+    id: typing.Optional[Boolean] = Field(default=False)
+
+
+class ClaimResourceMutation(Mutation):
+    _name: str = PrivateAttr('ClaimResource')
+    pool_id: ID = Field(alias='poolId')
+    description: typing.Optional[String] = Field(default=None)
+    user_input: Map = Field(alias='userInput')
+    payload: Resource

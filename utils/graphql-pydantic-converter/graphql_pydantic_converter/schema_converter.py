@@ -60,6 +60,7 @@ class GraphqlJsonParser:
         Int = 'Int'
         Boolean = 'Boolean'
         Upload = 'Upload'
+        Map = 'Map'
 
     class QueryType(BaseModel):
         name: Optional[str] = None
@@ -201,13 +202,13 @@ class GraphqlJsonParser:
 
         imports = [
             'from __future__ import annotations\n\n'
-            'import typing\n',
-            'from pydantic import BaseModel',
-            'from pydantic import Field',
-            'from pydantic import PrivateAttr',
-            '\n'
+            'import typing\n\n',
         ]
         self.__result += '\n'.join(imports)
+
+        self.__result += 'from pydantic import BaseModel\n'
+        self.__result += 'from pydantic import Field\n'
+        self.__result += 'from pydantic import PrivateAttr\n\n'
 
         if items[GraphqlJsonParser.TypeKind.ENUM]:
             self.__result += kv_template.substitute(type=GraphqlJsonParser.ConverterMap.ENUM.value)
@@ -223,6 +224,7 @@ class GraphqlJsonParser:
             self.__result += kv_template.substitute(type=GraphqlJsonParser.ConverterMap.QUERY.value)
         if GraphqlJsonParser.ConverterMap.SUBSCRIPTION in worker_list:
             self.__result += kv_template.substitute(type=GraphqlJsonParser.ConverterMap.SUBSCRIPTION.value)
+
         self.__result += '\n'
 
     def __extract_fields(self, of_type: OfType | Type, previous: list[Any]) -> list[Any]:
@@ -305,6 +307,9 @@ class GraphqlJsonParser:
                         scalar_type = 'list'
                     case self.Scalars.ID:
                         scalar_type = 'str'
+                    case self.Scalars.Map:
+                        scalar_type = 'dict[str, typing.Any]'
+
                 self.__result += kv_template.substitute(indent=self.__INDENT, name=scalar.name, type=scalar_type)
                 self.__ignore_enums.append(scalar.name)
 
@@ -360,7 +365,10 @@ class GraphqlJsonParser:
                         name = field.name
                         field_args = []
                         field_str = ''
-                        if name.startswith('typing.Optional'):
+
+                        kind = self.__build_type(self.__extract_fields(field.type, []))
+
+                        if kind.startswith('typing.Optional'):
                             field_args.append('default=None')
 
                         if self.is_not_snake_case(field.name):
@@ -370,7 +378,6 @@ class GraphqlJsonParser:
                         if len(field_args) > 0:
                             field_str = f" = Field({', '.join(field_args)})"
 
-                        kind = self.__build_type(self.__extract_fields(field.type, []))
                         self.__result += kv_template.substitute(
                             indent=self.__INDENT, name=name, val=kind, field=field_str
                         )
