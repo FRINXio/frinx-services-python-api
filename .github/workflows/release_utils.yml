@@ -35,7 +35,7 @@ jobs:
         run: |
           echo "IMAGE_NAME=frinx/${{ env.PACKAGE_NAME }}:${{ env.PACKAGE_VERSION }}" >> "$GITHUB_ENV"
       - name: Poetry publish
-        run: poetry publish -u "__token__" -p "${{ secrets.PYPI_TOKEN }}" --build --dry-run
+        run: poetry publish -u "__token__" -p "${{ secrets.PYPI_TOKEN }}" --build
       - name: Build docker image
         run: docker build . --file Dockerfile --build-arg git_commit=$(git rev-parse HEAD) --tag ${{ env.IMAGE_NAME }}
       - name: Log into docker hub

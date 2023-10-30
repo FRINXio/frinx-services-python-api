@@ -1,34 +1,36 @@
 import json
 import typing
 
-from model import AddBlueprintInput
-from model import AddBlueprintMutation
-from model import AddBlueprintPayload
-from model import Blueprint
-from model import BlueprintConnection
-from model import BlueprintEdge
-from model import BlueprintsQuery
 from pydantic import Field
-from render_models import AllocationStrategy
-from render_models import ClaimResourceMutation
-from render_models import PageInfoSchedule
-from render_models import Resource
-from render_models import ResourcePool
-from render_models import ResourcePoolConnection
-from render_models import ResourcePoolEdge
-from render_models import Schedule
-from render_models import ScheduleConnection
-from render_models import ScheduleEdge
-from render_models import SchedulesFilterInput
-from render_models import SchedulesQuery
-from render_models import SearchPoolsByTagsQuery
-from render_models import TagAnd
-from render_models import TagOr
 
 import graphql_pydantic_converter.graphql_types
 from graphql_pydantic_converter.graphql_types import ENUM
 from graphql_pydantic_converter.graphql_types import Input
 from graphql_pydantic_converter.schema_converter import GraphqlJsonParser
+
+from .model import AddBlueprintInput
+from .model import AddBlueprintMutation
+from .model import AddBlueprintPayload
+from .model import Blueprint
+from .model import BlueprintConnection
+from .model import BlueprintEdge
+from .model import BlueprintsQuery
+from .model import BlueprintsQueryResponse
+from .render_models import AllocationStrategy
+from .render_models import ClaimResourceMutation
+from .render_models import PageInfoSchedule
+from .render_models import Resource
+from .render_models import ResourcePool
+from .render_models import ResourcePoolConnection
+from .render_models import ResourcePoolEdge
+from .render_models import Schedule
+from .render_models import ScheduleConnection
+from .render_models import ScheduleEdge
+from .render_models import SchedulesFilterInput
+from .render_models import SchedulesQuery
+from .render_models import SearchPoolsByTagsQuery
+from .render_models import TagAnd
+from .render_models import TagOr
 
 
 class TestTaskGenerator:
@@ -131,6 +133,38 @@ class TestTaskGenerator:
 
         assert reference == mutation
 
+        json_blueprint = 'tests/blueprint.json'
+
+        with open(json_blueprint) as json_file:
+            device_import_json = json_file.read()
+            template = device_import_json
+
+            mutation = AddBlueprintMutation(
+                payload=AddBlueprintPayload(
+                    blueprint=Blueprint(
+                        id=True,
+                        name=True,
+                        template=True
+                    )
+                ),
+                input=AddBlueprintInput(
+                    name='blueprint',
+                    template=template,
+                )
+            ).render()
+
+        reference = ('mutation { addBlueprint ( input: { name: "blueprint", template: "{\n\t\"cli\": '
+                     '{\n\t\t\"cli-topology:host\": \"sample-topology\",\n\t\t\"cli-topology:port\": '
+                     '\"{{port}}\",\n\t\t\"cli-topology:transport-type\": \"ssh\",\n\t\t\"cli-topology:device-type\": '
+                     '\"{{device_type}}\",\n\t\t\"cli-topology:device-version\": '
+                     '\"{{device_version}}\",\n\t\t\"cli-topology:password\": '
+                     '\"{{password}}\",\n\t\t\"cli-topology:username\": '
+                     '\"{{username}}\",\n\t\t\"cli-topology:journal-size\": '
+                     '500,\n\t\t\"cli-topology:dry-run-journal-size\": 180,\n\t\t\"cli-topology:parsing-engine\": '
+                     '\"tree-parser\"\n\t}\n}" }) { blueprint { id name template } } }')
+
+        assert reference == mutation
+
     def test_render_input_advanced(self) -> None:
         query = SearchPoolsByTagsQuery(
             tags=TagOr(
@@ -202,7 +236,6 @@ class TestTaskGenerator:
         assert reference == query_render
 
     def test_parse_response(self) -> None:
-        from model import BlueprintsQueryResponse
 
         response: typing.Any = {
             'data': {
@@ -253,7 +286,9 @@ class TestTaskGenerator:
 
         query_second = SchedulesQuery(
             payload=ScheduleConnection(
+                __typename=True,
                 pageInfo=PageInfoSchedule(
+                    __typename=True,
                     hasNextPage=True,
                     hasPreviousPage=True,
                     startCursor=True,
@@ -285,9 +320,9 @@ class TestTaskGenerator:
         reference = '{  SearchPoolsByTags ( tags: { matchesAny: [  { matchesAll: [ "root_pool" ] }  ]  } ) ' \
             '{ edges { node { AllocationStrategy { Name } ' \
             'Name PoolProperties PoolType id } } totalCount }  schedules ( after: "aaa", first: 10, filter: ' \
-            '{ workflowName: "TEST_A" , workflowVersion: "1"  } ) { edges { node { name enabled ' \
+            '{ workflowName: "TEST_A" , workflowVersion: "1"  } ) { __typename edges { node { name enabled ' \
             'cronString } cursor } ' \
-            'pageInfo { hasNextPage hasPreviousPage startCursor endCursor } totalCount }  }'
+            'pageInfo { __typename hasNextPage hasPreviousPage startCursor endCursor } totalCount }  }'
 
         merged_query = graphql_pydantic_converter.graphql_types.concatenate_queries(queries)
         assert reference == merged_query
