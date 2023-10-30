@@ -1,10 +1,13 @@
 from __future__ import annotations
 
+import json
+import typing
 from enum import Enum
 from typing import TYPE_CHECKING
 
 from pydantic import BaseModel
 from pydantic import ConfigDict
+from pydantic import Field
 
 if TYPE_CHECKING:
     from typing import Any
@@ -101,6 +104,7 @@ class Interface(BaseModel):
 
 
 class Payload(BaseModel):
+    typename: bool = Field(default=False, alias='__typename')
 
     model_config = ConfigDict(
         extra='forbid',
@@ -153,7 +157,10 @@ class Input(BaseModel):
 
     @staticmethod
     def _parse_str(value: Any) -> str:
-        return f'"{value}"'
+        try:
+            return json.dumps(json.loads(json.dumps(value)))
+        except ValueError:
+            return f'"{value}"'
 
     @staticmethod
     def _parse_tuple(value: tuple[Any, ...]) -> str:
@@ -270,7 +277,10 @@ class Query(BaseModel):
 
     @staticmethod
     def _parse_str(value: Any) -> str:
-        return f'"{value}"'
+        try:
+            return json.dumps(json.loads(json.dumps(value)))
+        except ValueError:
+            return f'"{value}"'
 
     @staticmethod
     def _parse_tuple(value: tuple[Any, ...]) -> str:
@@ -350,6 +360,6 @@ class Query(BaseModel):
         return f'{{ { name }{variable} {{ {payload} }} }}'
 
 
-def concatenate_queries(queries: list[Union[Query, Mutation]]) -> str:
+def concatenate_queries(queries: typing.Sequence[Union[Query, Mutation]]) -> str:
     merged_query = ''.join(query.render()[1:-1] for query in queries)
     return f'{{ {merged_query} }}'
