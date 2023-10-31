@@ -237,6 +237,27 @@ class GraphqlJsonParser:
             return previous
 
     @staticmethod
+    def __build_type_graphql(fields: list[Any]) -> Any:
+        rendered_type = fields[-1]
+        optional_count = 0
+
+        if len(fields) == 1 and fields[0] not in ['NON_NULL', 'LIST']:
+            return f'{rendered_type}'
+
+        for item in reversed(fields):
+            if item not in ['NON_NULL', 'LIST']:
+                continue
+            elif item == 'NON_NULL':
+                rendered_type = f'{rendered_type}!'
+            elif item == 'LIST':
+                rendered_type = f'[{rendered_type}]'
+                optional_count += 1
+
+        if optional_count > 0:
+            rendered_type = f'{rendered_type}'
+        return rendered_type
+
+    @staticmethod
     def __build_type(fields: list[Any]) -> Any:
         rendered_type = fields[-1]
         optional_count = 0
@@ -452,6 +473,9 @@ class GraphqlJsonParser:
                                     field_args.append(f"alias='{arg.name}'")
                                     name = self.to_snake_case(arg.name)
 
+                                kind_graphql = self.__build_type_graphql(self.__extract_fields(arg.type, []))
+                                field_args.append(f"json_schema_extra={{'type': '{kind_graphql}'}}")
+
                                 if len(field_args) > 0:
                                     field_str = f" = Field({', '.join(field_args)})"
 
@@ -505,7 +529,7 @@ class GraphqlJsonParser:
                         if data_type[0] != self.TypeKind.NON_NULL:
                             data_type.insert(0, self.TypeKind.NON_NULL)
 
-                        val = f'typing.Optional[{ self.__build_type(data_type)}]'
+                        val = f'typing.Optional[{self.__build_type(data_type)}]'
 
                         if self.is_not_snake_case(field.name):
                             alias = f", alias='{field.name}'"

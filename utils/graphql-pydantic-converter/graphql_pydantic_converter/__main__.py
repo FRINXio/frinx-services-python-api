@@ -15,8 +15,8 @@ from typing import Optional
 import requests
 from pydantic import BaseModel
 
-from . import graphql_types
-from .schema_converter import GraphqlJsonParser
+from graphql_pydantic_converter import introspection
+from graphql_pydantic_converter.schema_converter import GraphqlJsonParser
 
 EXPECTED_HEADERS_PARTS = 2
 
@@ -83,7 +83,7 @@ def main(args: Optional[Sequence[str]] = None) -> Exit:
 
             response = requests.post(
                 config.url,
-                data=json.dumps({'query': graphql_types.generate_schema_request(config.depth)}),
+                data=json.dumps({'query': introspection.generate_schema_request(config.depth)}),
                 headers={'Content-Type': 'application/json'} | headers
             )
             if response.ok:

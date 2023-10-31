@@ -118,14 +118,16 @@ mutation = CreateScheduleMutation(
     )
 )
 
-mutation.render()
 
 ```
 
 
-Created query
+Created query with inlined variables as string
 
-```graphql
+```
+
+mutation.render(form='inline')
+
 mutation {
   createSchedule(
     input: {
@@ -142,6 +144,35 @@ mutation {
     workflowName
     workflowVersion
     cronString
+  }
+}
+
+```
+Created query with extracted variables
+
+```
+mutation, variables = mutation.render(form='extracted)
+
+# mutation as a string
+mutation ($input: CreateScheduleInput!) { 
+  createSchedule(input: $input) { 
+    name 
+    enabled 
+    workflowName
+    workflowVersion 
+    cronString 
+  } 
+}
+
+# variables as a dict[str, Any]
+{
+  "input": {
+    "name": "name",
+    "workflowName": "workflowName",
+    "workflowVersion": "workflowVersion",
+    "cronString": "* * * * *",
+    "enabled": true,
+    "parallelRuns": false
   }
 }
 ```
