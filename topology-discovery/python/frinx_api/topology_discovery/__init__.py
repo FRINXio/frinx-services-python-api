@@ -137,31 +137,31 @@ class SyncResponsePayload(BaseModel):
 
 class NodeQuery(Query):
     _name: str = PrivateAttr('node')
-    id: ID
+    id: ID = Field(json_schema_extra={'type': 'ID!'})
     payload: Node
 
 
 class PhyDevicesQuery(Query):
     _name: str = PrivateAttr('phyDevices')
-    filters: typing.Optional[PhyDeviceFilter] = Field(default=None)
-    first: typing.Optional[Int] = Field(default=None)
-    cursor: typing.Optional[String] = Field(default=None)
+    filters: typing.Optional[PhyDeviceFilter] = Field(default=None, json_schema_extra={'type': 'PhyDeviceFilter'})
+    first: typing.Optional[Int] = Field(default=None, json_schema_extra={'type': 'Int'})
+    cursor: typing.Optional[String] = Field(default=None, json_schema_extra={'type': 'String'})
     payload: PhyDeviceConnection
 
 
 class NetDevicesQuery(Query):
     _name: str = PrivateAttr('netDevices')
-    filters: typing.Optional[NetDeviceFilter] = Field(default=None)
-    first: typing.Optional[Int] = Field(default=None)
-    cursor: typing.Optional[String] = Field(default=None)
+    filters: typing.Optional[NetDeviceFilter] = Field(default=None, json_schema_extra={'type': 'NetDeviceFilter'})
+    first: typing.Optional[Int] = Field(default=None, json_schema_extra={'type': 'Int'})
+    cursor: typing.Optional[String] = Field(default=None, json_schema_extra={'type': 'String'})
     payload: NetDeviceConnection
 
 
 class NetRoutingPathsQuery(Query):
     _name: str = PrivateAttr('netRoutingPaths')
-    device_from: ID = Field(alias='deviceFrom')
-    device_to: ID = Field(alias='deviceTo')
-    output_collection: typing.Optional[NetRoutingPathOutputCollections] = Field(default=None, alias='outputCollection')
+    device_from: ID = Field(alias='deviceFrom', json_schema_extra={'type': 'ID!'})
+    device_to: ID = Field(alias='deviceTo', json_schema_extra={'type': 'ID!'})
+    output_collection: typing.Optional[NetRoutingPathOutputCollections] = Field(default=None, alias='outputCollection', json_schema_extra={'type': 'NetRoutingPathOutputCollections'})
     payload: NetRoutingPathConnection
 
 
@@ -171,9 +171,9 @@ class BackupsQuery(Query):
 
 class TopologyDiffQuery(Query):
     _name: str = PrivateAttr('topologyDiff')
-    new_db: typing.Optional[String] = Field(default=None)
-    old_db: typing.Optional[String] = Field(default=None)
-    collection_type: TopologyDiffCollectionTypes
+    new_db: typing.Optional[String] = Field(default=None, json_schema_extra={'type': 'String'})
+    old_db: typing.Optional[String] = Field(default=None, json_schema_extra={'type': 'String'})
+    collection_type: TopologyDiffCollectionTypes = Field(json_schema_extra={'type': 'TopologyDiffCollectionTypes!'})
     payload: TopologyResponse
 
 
@@ -187,8 +187,8 @@ class PhyLinksAndDevicesQuery(Query):
 
 class CommonNodesQuery(Query):
     _name: str = PrivateAttr('commonNodes')
-    selected_nodes: typing.Optional[list[String]] = Field(default=None)
-    db_name: typing.Optional[String] = Field(default=None)
+    selected_nodes: typing.Optional[list[String]] = Field(default=None, json_schema_extra={'type': '[String!]!'})
+    db_name: typing.Optional[String] = Field(default=None, json_schema_extra={'type': 'String'})
     payload: CommonNodesResponse
 
 
@@ -198,7 +198,7 @@ class ProvidersQuery(Query):
 
 class ProviderQuery(Query):
     _name: str = PrivateAttr('provider')
-    name: String
+    name: String = Field(json_schema_extra={'type': 'String!'})
     payload: ProviderResponse
 
 
@@ -267,29 +267,29 @@ class CreateBackupMutation(Mutation):
 
 class DeleteBackupsMutation(Mutation):
     _name: str = PrivateAttr('deleteBackups')
-    delete_age: typing.Optional[Int] = Field(default=None)
+    delete_age: typing.Optional[Int] = Field(default=None, json_schema_extra={'type': 'Int'})
     payload: DeleteBackupsResponse
 
 
 class UpdateCoordinatesMutation(Mutation):
     _name: str = PrivateAttr('updateCoordinates')
-    coordinates_list: typing.Optional[list[CoordinatesInput]] = Field(default=None)
+    coordinates_list: typing.Optional[list[CoordinatesInput]] = Field(default=None, json_schema_extra={'type': '[CoordinatesInput!]!'})
     payload: CoordinatesResponse
 
 
 class UpdateNodeStatusMutation(Mutation):
     _name: str = PrivateAttr('updateNodeStatus')
-    device_name: String
-    status: String
-    interface_name: typing.Optional[String] = Field(default=None)
+    device_name: String = Field(json_schema_extra={'type': 'String!'})
+    status: String = Field(json_schema_extra={'type': 'String!'})
+    interface_name: typing.Optional[String] = Field(default=None, json_schema_extra={'type': 'String'})
     payload: Boolean
 
 
 class SyncMutation(Mutation):
     _name: str = PrivateAttr('sync')
-    provider_name: String
-    devices: typing.Optional[list[String]] = Field(default=None)
-    labels: typing.Optional[list[String]] = Field(default=None)
+    provider_name: String = Field(json_schema_extra={'type': 'String!'})
+    devices: typing.Optional[list[String]] = Field(default=None, json_schema_extra={'type': '[String]'})
+    labels: typing.Optional[list[String]] = Field(default=None, json_schema_extra={'type': '[String]'})
     payload: SyncResponse
 
 

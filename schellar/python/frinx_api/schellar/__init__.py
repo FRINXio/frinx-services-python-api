@@ -60,20 +60,20 @@ class UpdateScheduleInput(Input):
 
 class CreateScheduleMutation(Mutation):
     _name: str = PrivateAttr('createSchedule')
-    input: CreateScheduleInput
+    input: CreateScheduleInput = Field(json_schema_extra={'type': 'CreateScheduleInput!'})
     payload: Schedule
 
 
 class UpdateScheduleMutation(Mutation):
     _name: str = PrivateAttr('updateSchedule')
-    name: String
-    input: UpdateScheduleInput
+    name: String = Field(json_schema_extra={'type': 'String!'})
+    input: UpdateScheduleInput = Field(json_schema_extra={'type': 'UpdateScheduleInput!'})
     payload: Schedule
 
 
 class DeleteScheduleMutation(Mutation):
     _name: str = PrivateAttr('deleteSchedule')
-    name: String
+    name: String = Field(json_schema_extra={'type': 'String!'})
     payload: Boolean
 
 
@@ -120,17 +120,17 @@ class PageInfoPayload(BaseModel):
 
 class ScheduleQuery(Query):
     _name: str = PrivateAttr('schedule')
-    name: String
+    name: String = Field(json_schema_extra={'type': 'String!'})
     payload: Schedule
 
 
 class SchedulesQuery(Query):
     _name: str = PrivateAttr('schedules')
-    after: typing.Optional[String] = Field(default=None)
-    before: typing.Optional[String] = Field(default=None)
-    first: typing.Optional[Int] = Field(default=None)
-    last: typing.Optional[Int] = Field(default=None)
-    filter: typing.Optional[SchedulesFilterInput] = Field(default=None)
+    after: typing.Optional[String] = Field(default=None, json_schema_extra={'type': 'String'})
+    before: typing.Optional[String] = Field(default=None, json_schema_extra={'type': 'String'})
+    first: typing.Optional[Int] = Field(default=None, json_schema_extra={'type': 'Int'})
+    last: typing.Optional[Int] = Field(default=None, json_schema_extra={'type': 'Int'})
+    filter: typing.Optional[SchedulesFilterInput] = Field(default=None, json_schema_extra={'type': 'SchedulesFilterInput'})
     payload: ScheduleConnection
 
 

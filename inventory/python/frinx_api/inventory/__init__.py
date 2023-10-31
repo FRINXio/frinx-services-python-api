@@ -914,18 +914,18 @@ class GraphVersionNodePayload(BaseModel):
 
 class NodeQuery(Query):
     _name: str = PrivateAttr('node')
-    id: ID
+    id: ID = Field(json_schema_extra={'type': 'ID!'})
     payload: Node
 
 
 class DevicesQuery(Query):
     _name: str = PrivateAttr('devices')
-    first: typing.Optional[Int] = Field(default=None)
-    after: typing.Optional[String] = Field(default=None)
-    last: typing.Optional[Int] = Field(default=None)
-    before: typing.Optional[String] = Field(default=None)
-    filter: typing.Optional[FilterDevicesInput] = Field(default=None)
-    order_by: typing.Optional[DeviceOrderByInput] = Field(default=None, alias='orderBy')
+    first: typing.Optional[Int] = Field(default=None, json_schema_extra={'type': 'Int'})
+    after: typing.Optional[String] = Field(default=None, json_schema_extra={'type': 'String'})
+    last: typing.Optional[Int] = Field(default=None, json_schema_extra={'type': 'Int'})
+    before: typing.Optional[String] = Field(default=None, json_schema_extra={'type': 'String'})
+    filter: typing.Optional[FilterDevicesInput] = Field(default=None, json_schema_extra={'type': 'FilterDevicesInput'})
+    order_by: typing.Optional[DeviceOrderByInput] = Field(default=None, alias='orderBy', json_schema_extra={'type': 'DeviceOrderByInput'})
     payload: DeviceConnection
 
 
@@ -935,60 +935,60 @@ class UniconfigShellSessionQuery(Query):
 
 class ZonesQuery(Query):
     _name: str = PrivateAttr('zones')
-    first: typing.Optional[Int] = Field(default=None)
-    after: typing.Optional[String] = Field(default=None)
-    last: typing.Optional[Int] = Field(default=None)
-    before: typing.Optional[String] = Field(default=None)
+    first: typing.Optional[Int] = Field(default=None, json_schema_extra={'type': 'Int'})
+    after: typing.Optional[String] = Field(default=None, json_schema_extra={'type': 'String'})
+    last: typing.Optional[Int] = Field(default=None, json_schema_extra={'type': 'Int'})
+    before: typing.Optional[String] = Field(default=None, json_schema_extra={'type': 'String'})
     payload: ZonesConnection
 
 
 class DataStoreQuery(Query):
     _name: str = PrivateAttr('dataStore')
-    device_id: String = Field(alias='deviceId')
-    transaction_id: String = Field(alias='transactionId')
+    device_id: String = Field(alias='deviceId', json_schema_extra={'type': 'String!'})
+    transaction_id: String = Field(alias='transactionId', json_schema_extra={'type': 'String!'})
     payload: DataStore
 
 
 class CalculatedDiffQuery(Query):
     _name: str = PrivateAttr('calculatedDiff')
-    device_id: String = Field(alias='deviceId')
-    transaction_id: String = Field(alias='transactionId')
+    device_id: String = Field(alias='deviceId', json_schema_extra={'type': 'String!'})
+    transaction_id: String = Field(alias='transactionId', json_schema_extra={'type': 'String!'})
     payload: CalculatedDiffPayload
 
 
 class LabelsQuery(Query):
     _name: str = PrivateAttr('labels')
-    first: typing.Optional[Int] = Field(default=None)
-    after: typing.Optional[String] = Field(default=None)
-    last: typing.Optional[Int] = Field(default=None)
-    before: typing.Optional[String] = Field(default=None)
+    first: typing.Optional[Int] = Field(default=None, json_schema_extra={'type': 'Int'})
+    after: typing.Optional[String] = Field(default=None, json_schema_extra={'type': 'String'})
+    last: typing.Optional[Int] = Field(default=None, json_schema_extra={'type': 'Int'})
+    before: typing.Optional[String] = Field(default=None, json_schema_extra={'type': 'String'})
     payload: LabelConnection
 
 
 class CountriesQuery(Query):
     _name: str = PrivateAttr('countries')
-    first: typing.Optional[Int] = Field(default=None)
-    after: typing.Optional[String] = Field(default=None)
-    last: typing.Optional[Int] = Field(default=None)
-    before: typing.Optional[String] = Field(default=None)
+    first: typing.Optional[Int] = Field(default=None, json_schema_extra={'type': 'Int'})
+    after: typing.Optional[String] = Field(default=None, json_schema_extra={'type': 'String'})
+    last: typing.Optional[Int] = Field(default=None, json_schema_extra={'type': 'Int'})
+    before: typing.Optional[String] = Field(default=None, json_schema_extra={'type': 'String'})
     payload: CountryConnection
 
 
 class LocationsQuery(Query):
     _name: str = PrivateAttr('locations')
-    first: typing.Optional[Int] = Field(default=None)
-    after: typing.Optional[String] = Field(default=None)
-    last: typing.Optional[Int] = Field(default=None)
-    before: typing.Optional[String] = Field(default=None)
+    first: typing.Optional[Int] = Field(default=None, json_schema_extra={'type': 'Int'})
+    after: typing.Optional[String] = Field(default=None, json_schema_extra={'type': 'String'})
+    last: typing.Optional[Int] = Field(default=None, json_schema_extra={'type': 'Int'})
+    before: typing.Optional[String] = Field(default=None, json_schema_extra={'type': 'String'})
     payload: LocationConnection
 
 
 class BlueprintsQuery(Query):
     _name: str = PrivateAttr('blueprints')
-    first: typing.Optional[Int] = Field(default=None)
-    after: typing.Optional[String] = Field(default=None)
-    last: typing.Optional[Int] = Field(default=None)
-    before: typing.Optional[String] = Field(default=None)
+    first: typing.Optional[Int] = Field(default=None, json_schema_extra={'type': 'Int'})
+    after: typing.Optional[String] = Field(default=None, json_schema_extra={'type': 'String'})
+    last: typing.Optional[Int] = Field(default=None, json_schema_extra={'type': 'Int'})
+    before: typing.Optional[String] = Field(default=None, json_schema_extra={'type': 'String'})
     payload: BlueprintConnection
 
 
@@ -998,7 +998,7 @@ class TransactionsQuery(Query):
 
 class TopologyQuery(Query):
     _name: str = PrivateAttr('topology')
-    filter: typing.Optional[FilterTopologyInput] = Field(default=None)
+    filter: typing.Optional[FilterTopologyInput] = Field(default=None, json_schema_extra={'type': 'FilterTopologyInput'})
     payload: Topology
 
 
@@ -1008,13 +1008,13 @@ class TopologyVersionsQuery(Query):
 
 class TopologyCommonNodesQuery(Query):
     _name: str = PrivateAttr('topologyCommonNodes')
-    nodes: typing.Optional[list[String]] = Field(default=None)
+    nodes: typing.Optional[list[String]] = Field(default=None, json_schema_extra={'type': '[String!]!'})
     payload: TopologyCommonNodes
 
 
 class TopologyVersionDataQuery(Query):
     _name: str = PrivateAttr('topologyVersionData')
-    version: String
+    version: String = Field(json_schema_extra={'type': 'String!'})
     payload: TopologyVersionData
 
 
@@ -1128,155 +1128,155 @@ class TopologyVersionDataData(BaseModel):
 
 class AddDeviceMutation(Mutation):
     _name: str = PrivateAttr('addDevice')
-    input: AddDeviceInput
+    input: AddDeviceInput = Field(json_schema_extra={'type': 'AddDeviceInput!'})
     payload: AddDevicePayload
 
 
 class UpdateDeviceMutation(Mutation):
     _name: str = PrivateAttr('updateDevice')
-    id: String
-    input: UpdateDeviceInput
+    id: String = Field(json_schema_extra={'type': 'String!'})
+    input: UpdateDeviceInput = Field(json_schema_extra={'type': 'UpdateDeviceInput!'})
     payload: UpdateDevicePayload
 
 
 class DeleteDeviceMutation(Mutation):
     _name: str = PrivateAttr('deleteDevice')
-    id: String
+    id: String = Field(json_schema_extra={'type': 'String!'})
     payload: DeleteDevicePayload
 
 
 class InstallDeviceMutation(Mutation):
     _name: str = PrivateAttr('installDevice')
-    id: String
+    id: String = Field(json_schema_extra={'type': 'String!'})
     payload: InstallDevicePayload
 
 
 class UninstallDeviceMutation(Mutation):
     _name: str = PrivateAttr('uninstallDevice')
-    id: String
+    id: String = Field(json_schema_extra={'type': 'String!'})
     payload: UninstallDevicePayload
 
 
 class ImportCSVMutation(Mutation):
     _name: str = PrivateAttr('importCSV')
-    input: CSVImportInput
+    input: CSVImportInput = Field(json_schema_extra={'type': 'CSVImportInput!'})
     payload: CSVImport
 
 
 class AddZoneMutation(Mutation):
     _name: str = PrivateAttr('addZone')
-    input: AddZoneInput
+    input: AddZoneInput = Field(json_schema_extra={'type': 'AddZoneInput!'})
     payload: AddZonePayload
 
 
 class UpdateDataStoreMutation(Mutation):
     _name: str = PrivateAttr('updateDataStore')
-    device_id: String = Field(alias='deviceId')
-    transaction_id: String = Field(alias='transactionId')
-    input: UpdateDataStoreInput
+    device_id: String = Field(alias='deviceId', json_schema_extra={'type': 'String!'})
+    transaction_id: String = Field(alias='transactionId', json_schema_extra={'type': 'String!'})
+    input: UpdateDataStoreInput = Field(json_schema_extra={'type': 'UpdateDataStoreInput!'})
     payload: UpdateDataStorePayload
 
 
 class CommitConfigMutation(Mutation):
     _name: str = PrivateAttr('commitConfig')
-    transaction_id: String = Field(alias='transactionId')
-    input: CommitConfigInput
+    transaction_id: String = Field(alias='transactionId', json_schema_extra={'type': 'String!'})
+    input: CommitConfigInput = Field(json_schema_extra={'type': 'CommitConfigInput!'})
     payload: CommitConfigPayload
 
 
 class ResetConfigMutation(Mutation):
     _name: str = PrivateAttr('resetConfig')
-    device_id: String = Field(alias='deviceId')
-    transaction_id: String = Field(alias='transactionId')
+    device_id: String = Field(alias='deviceId', json_schema_extra={'type': 'String!'})
+    transaction_id: String = Field(alias='transactionId', json_schema_extra={'type': 'String!'})
     payload: ResetConfigPayload
 
 
 class AddSnapshotMutation(Mutation):
     _name: str = PrivateAttr('addSnapshot')
-    input: AddSnapshotInput
-    transaction_id: String = Field(alias='transactionId')
+    input: AddSnapshotInput = Field(json_schema_extra={'type': 'AddSnapshotInput!'})
+    transaction_id: String = Field(alias='transactionId', json_schema_extra={'type': 'String!'})
     payload: AddSnapshotPayload
 
 
 class DeleteSnapshotMutation(Mutation):
     _name: str = PrivateAttr('deleteSnapshot')
-    input: DeleteSnapshotInput
+    input: DeleteSnapshotInput = Field(json_schema_extra={'type': 'DeleteSnapshotInput!'})
     payload: DeleteSnapshotPayload
 
 
 class ApplySnapshotMutation(Mutation):
     _name: str = PrivateAttr('applySnapshot')
-    input: ApplySnapshotInput
-    transaction_id: String = Field(alias='transactionId')
+    input: ApplySnapshotInput = Field(json_schema_extra={'type': 'ApplySnapshotInput!'})
+    transaction_id: String = Field(alias='transactionId', json_schema_extra={'type': 'String!'})
     payload: ApplySnapshotPayload
 
 
 class SyncFromNetworkMutation(Mutation):
     _name: str = PrivateAttr('syncFromNetwork')
-    device_id: String = Field(alias='deviceId')
-    transaction_id: String = Field(alias='transactionId')
+    device_id: String = Field(alias='deviceId', json_schema_extra={'type': 'String!'})
+    transaction_id: String = Field(alias='transactionId', json_schema_extra={'type': 'String!'})
     payload: SyncFromNetworkPayload
 
 
 class CreateLabelMutation(Mutation):
     _name: str = PrivateAttr('createLabel')
-    input: CreateLabelInput
+    input: CreateLabelInput = Field(json_schema_extra={'type': 'CreateLabelInput!'})
     payload: CreateLabelPayload
 
 
 class DeleteLabelMutation(Mutation):
     _name: str = PrivateAttr('deleteLabel')
-    id: String
+    id: String = Field(json_schema_extra={'type': 'String!'})
     payload: DeleteLabelPayload
 
 
 class AddLocationMutation(Mutation):
     _name: str = PrivateAttr('addLocation')
-    input: AddLocationInput
+    input: AddLocationInput = Field(json_schema_extra={'type': 'AddLocationInput!'})
     payload: AddLocationPayload
 
 
 class AddBlueprintMutation(Mutation):
     _name: str = PrivateAttr('addBlueprint')
-    input: AddBlueprintInput
+    input: AddBlueprintInput = Field(json_schema_extra={'type': 'AddBlueprintInput!'})
     payload: AddBlueprintPayload
 
 
 class UpdateBlueprintMutation(Mutation):
     _name: str = PrivateAttr('updateBlueprint')
-    id: String
-    input: UpdateBlueprintInput
+    id: String = Field(json_schema_extra={'type': 'String!'})
+    input: UpdateBlueprintInput = Field(json_schema_extra={'type': 'UpdateBlueprintInput!'})
     payload: UpdateBlueprintPayload
 
 
 class DeleteBlueprintMutation(Mutation):
     _name: str = PrivateAttr('deleteBlueprint')
-    id: String
+    id: String = Field(json_schema_extra={'type': 'String!'})
     payload: DeleteBlueprintPayload
 
 
 class CreateTransactionMutation(Mutation):
     _name: str = PrivateAttr('createTransaction')
-    device_id: String = Field(alias='deviceId')
+    device_id: String = Field(alias='deviceId', json_schema_extra={'type': 'String!'})
     payload: CreateTransactionPayload
 
 
 class CloseTransactionMutation(Mutation):
     _name: str = PrivateAttr('closeTransaction')
-    device_id: String = Field(alias='deviceId')
-    transaction_id: String = Field(alias='transactionId')
+    device_id: String = Field(alias='deviceId', json_schema_extra={'type': 'String!'})
+    transaction_id: String = Field(alias='transactionId', json_schema_extra={'type': 'String!'})
     payload: CloseTransactionPayload
 
 
 class RevertChangesMutation(Mutation):
     _name: str = PrivateAttr('revertChanges')
-    transaction_id: String = Field(alias='transactionId')
+    transaction_id: String = Field(alias='transactionId', json_schema_extra={'type': 'String!'})
     payload: RevertChangesPayload
 
 
 class UpdateGraphNodeCoordinatesMutation(Mutation):
     _name: str = PrivateAttr('updateGraphNodeCoordinates')
-    input: typing.Optional[list[GraphNodeCoordinatesInput]] = Field(default=None)
+    input: typing.Optional[list[GraphNodeCoordinatesInput]] = Field(default=None, json_schema_extra={'type': '[GraphNodeCoordinatesInput!]!'})
     payload: UpdateGraphNodeCoordinatesPayload
 
 
@@ -1498,9 +1498,9 @@ class UpdateGraphNodeCoordinatesData(BaseModel):
 
 class UniconfigShellSubscription(Subscription):
     _name: str = PrivateAttr('uniconfigShell')
-    input: typing.Optional[String] = Field(default=None)
-    trigger: typing.Optional[Int] = Field(default=None)
-    session_id: String = Field(alias='sessionId')
+    input: typing.Optional[String] = Field(default=None, json_schema_extra={'type': 'String'})
+    trigger: typing.Optional[Int] = Field(default=None, json_schema_extra={'type': 'Int'})
+    session_id: String = Field(alias='sessionId', json_schema_extra={'type': 'String!'})
     payload: Boolean
 
 
