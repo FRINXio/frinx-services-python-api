@@ -22,3 +22,7 @@
 - Stringify mutation input strings
 - Add __typename to payload
 - create test folder as a module
+
+# 1.1.0
+- Support inline and extracted variables for mutation and query
+- Stringify fix

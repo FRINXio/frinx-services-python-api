@@ -6,6 +6,7 @@ from pydantic import Field
 import graphql_pydantic_converter.graphql_types
 from graphql_pydantic_converter.graphql_types import ENUM
 from graphql_pydantic_converter.graphql_types import Input
+from graphql_pydantic_converter.graphql_types import QueryForm
 from graphql_pydantic_converter.schema_converter import GraphqlJsonParser
 
 from .model import AddBlueprintInput
@@ -18,6 +19,8 @@ from .model import BlueprintsQuery
 from .model import BlueprintsQueryResponse
 from .render_models import AllocationStrategy
 from .render_models import ClaimResourceMutation
+from .render_models import CreateScheduleInput
+from .render_models import CreateScheduleMutation
 from .render_models import PageInfoSchedule
 from .render_models import Resource
 from .render_models import ResourcePool
@@ -53,11 +56,11 @@ class TestTaskGenerator:
                     )
                 )
             )
-        ).render()
-        assert reference == query
+        ).render(form='inline')
+        assert reference == query.query
 
     def test_render_mutation(self) -> None:
-        bp_inputs = 'name: "IOS", template: "{ "cli": { "cli-topology:host": "sample-topology" } }"'
+        bp_inputs = 'name: "IOS", template: "{ \\"cli\\": { \\"cli-topology:host\\": \\"sample-topology\\" } }"'
         bp_payload = 'blueprint { createdAt name template updatedAt }'
         reference = f'mutation {{ addBlueprint ( input: {{ {bp_inputs} }}) {{ {bp_payload} }} }}'
         mutation = AddBlueprintMutation(
@@ -74,23 +77,23 @@ class TestTaskGenerator:
                     updatedAt=True
                 )
             )
-        ).render()
-        assert reference == mutation
+        ).render(form='inline')
+
+        assert reference == mutation.query
 
         reference = ('mutation { ClaimResource ( poolId: "00000000001",  description: "<description>",  userInput: '
                      '{ address: "0.0.0.0", port: 80 }) { Properties AlternativeId id } }')
         mutation = ClaimResourceMutation(
             poolId='00000000001',
             description='<description>',
-            userInput={'address': '0.0.0.0', 'port': 80},
+            userInput=dict(address='0.0.0.0', port=80),
             payload=Resource(
                 id=True,
                 Properties=True,
                 AlternativeId=True
             )
-        ).render()
-
-        assert reference == mutation
+        ).render(form='inline')
+        assert reference == mutation.query
 
     def test_render_input(self) -> None:
         class DeviceSize(ENUM):
@@ -109,7 +112,7 @@ class TestTaskGenerator:
             dicts: typing.Optional[dict[typing.Any, typing.Any]]
             lists: typing.Optional[list[list[str]]]
 
-        mutation = AddDeviceInput(
+        add_device_mutation = AddDeviceInput(
             name='name',
             zoneId='zoneId',
             mountParameters='{}',
@@ -131,15 +134,14 @@ class TestTaskGenerator:
                     'deviceSize: MEDIUM, mountParameters: "{}", port: 8080, booleans: true, ' \
                     'dicts: {a: {"a"}, b: {5}, c: {d: "d"}}], lists: [["aaa"]]'
 
-        assert reference == mutation
+        assert reference == add_device_mutation
 
         json_blueprint = 'tests/blueprint.json'
-
         with open(json_blueprint) as json_file:
             device_import_json = json_file.read()
             template = device_import_json
 
-            mutation = AddBlueprintMutation(
+            add_blueprint_mutation = AddBlueprintMutation(
                 payload=AddBlueprintPayload(
                     blueprint=Blueprint(
                         id=True,
@@ -151,19 +153,19 @@ class TestTaskGenerator:
                     name='blueprint',
                     template=template,
                 )
-            ).render()
+            ).render(form='inline')
 
-        reference = ('mutation { addBlueprint ( input: { name: "blueprint", template: "{\n\t\"cli\": '
-                     '{\n\t\t\"cli-topology:host\": \"sample-topology\",\n\t\t\"cli-topology:port\": '
-                     '\"{{port}}\",\n\t\t\"cli-topology:transport-type\": \"ssh\",\n\t\t\"cli-topology:device-type\": '
-                     '\"{{device_type}}\",\n\t\t\"cli-topology:device-version\": '
-                     '\"{{device_version}}\",\n\t\t\"cli-topology:password\": '
-                     '\"{{password}}\",\n\t\t\"cli-topology:username\": '
-                     '\"{{username}}\",\n\t\t\"cli-topology:journal-size\": '
-                     '500,\n\t\t\"cli-topology:dry-run-journal-size\": 180,\n\t\t\"cli-topology:parsing-engine\": '
-                     '\"tree-parser\"\n\t}\n}" }) { blueprint { id name template } } }')
+            reference = ('mutation { addBlueprint ( input: { name: "blueprint", template: "{\\n\\t\\"cli\\": '
+                         '{\\n\\t\\t\\"cli-topology:host\\": \\"sample-topology\\",\\n\\t\\t\\"cli-topology:port\\":'
+                         ' \\"{{port}}\\",\\n\\t\\t\\"cli-topology:transport-type\\": \\"ssh\\",'
+                         '\\n\\t\\t\\"cli-topology:device-type\\": \\"{{device_type}}\\",\\n\\t\\t\\"cli-topology:'
+                         'device-version\\": \\"{{device_version}}\\",\\n\\t\\t\\"cli-topology:password\\": '
+                         '\\"{{password}}\\",\\n\\t\\t\\"cli-topology:username\\": \\"{{username}}\\"'
+                         ',\\n\\t\\t\\"cli-topology:journal-size\\": 500,\\n\\t\\t\\"cli-topology:'
+                         'dry-run-journal-size\\": 180,\\n\\t\\t\\"cli-topology:parsing-engine\\": '
+                         '\\"tree-parser\\"\\n\\t}\\n}" }) { blueprint { id name template } } }')
 
-        assert reference == mutation
+            assert reference == add_blueprint_mutation.query
 
     def test_render_input_advanced(self) -> None:
         query = SearchPoolsByTagsQuery(
@@ -194,13 +196,13 @@ class TestTaskGenerator:
                 ),
                 totalCount=True
             )
-        ).render()
+        ).render(form='inline')
 
         reference = '{ SearchPoolsByTags ( tags: { matchesAny: [  { matchesAll: [ "root_pool" ] }  ]  } ) ' \
                     '{ edges { node { AllocationStrategy { Description Lang Name Script id } ' \
                     'Name PoolProperties PoolType id } } totalCount } }'
 
-        assert reference == query
+        assert reference == query.query
 
         query_render = SchedulesQuery(
             payload=ScheduleConnection(
@@ -226,14 +228,14 @@ class TestTaskGenerator:
                 workflowName='TEST_A',
                 workflowVersion='1'
             )
-        ).render()
+        ).render(form='inline')
 
         reference = '{ schedules ( after: "aaa", first: 10, filter: { workflowName: "TEST_A" ,' \
                     ' workflowVersion: "1"  } ) { edges { node { name enabled' \
                     ' cronString } cursor } pageInfo ' \
                     '{ hasNextPage hasPreviousPage startCursor endCursor } totalCount } }'
 
-        assert reference == query_render
+        assert reference == query_render.query
 
     def test_parse_response(self) -> None:
 
@@ -256,7 +258,7 @@ class TestTaskGenerator:
 
         assert 'cli_device_import' == response.data.blueprints.edges[0].node.name
 
-    def test_multiple_query(self) -> None:
+    def test_concatenate_query(self) -> None:
 
         query_first = SearchPoolsByTagsQuery(
             tags=TagOr(
@@ -326,3 +328,173 @@ class TestTaskGenerator:
 
         merged_query = graphql_pydantic_converter.graphql_types.concatenate_queries(queries)
         assert reference == merged_query
+
+    def test_multiple_query(self) -> None:
+
+        query_first = SearchPoolsByTagsQuery(
+            tags=TagOr(
+                matchesAny=[
+                    TagAnd(
+                        matchesAll=[
+                            'root_pool'
+                        ]
+                    )
+                ]
+            ),
+            payload=ResourcePoolConnection(
+                edges=ResourcePoolEdge(
+                    node=ResourcePool(
+                        Name=True,
+                        id=True,
+                        PoolProperties=True,
+                        PoolType=True,
+                        AllocationStrategy=AllocationStrategy(
+                            Name=True
+                        )
+                    )
+                ),
+                totalCount=True
+            )
+        )
+
+        query_second = SchedulesQuery(
+            payload=ScheduleConnection(
+                __typename=True,
+                pageInfo=PageInfoSchedule(
+                    __typename=True,
+                    hasNextPage=True,
+                    hasPreviousPage=True,
+                    startCursor=True,
+                    endCursor=True
+                ),
+                edges=ScheduleEdge(
+                    node=Schedule(
+                        name=True,
+                        cronString=True,
+                        enabled=True
+                    ),
+                    cursor=True
+                ),
+                totalCount=True
+            ),
+            after='aaa',
+            first=10,
+            filter=SchedulesFilterInput(
+                workflowName='TEST_A',
+                workflowVersion='1'
+            )
+        )
+
+        queries = [
+            query_first,
+            query_second
+        ]
+
+        reference_first = ('{ SearchPoolsByTags ( tags: { matchesAny: [  { matchesAll: [ "root_pool" ] } '
+                           ' ]  } ) { edges { node { AllocationStrategy { Name } '
+                           'Name PoolProperties PoolType id } } totalCount } }')
+
+        reference_second = ('{ schedules ( after: "aaa", first: 10, filter: '
+                            '{ workflowName: "TEST_A" , workflowVersion: "1"  } ) '
+                            '{ __typename edges { node { name enabled ' 'cronString } cursor } pageInfo '
+                            '{ __typename hasNextPage hasPreviousPage startCursor endCursor } totalCount } }')
+
+        merged_query: list[QueryForm] = graphql_pydantic_converter.graphql_types.render(queries, form='inline')
+
+        assert reference_first == merged_query[0].query
+        assert reference_second == merged_query[1].query
+
+        reference_first_var = {'tags': {'matchesAny': [{'matchesAll': ['root_pool']}]}}
+        reference_first_query = ('query SearchPoolsByTags($tags: TagOr) { SearchPoolsByTags(tags: $tags) { edges { node'
+                                 ' { AllocationStrategy { Name } Name PoolProperties PoolType id } } totalCount } }')
+
+        reference_second_query = ('query schedules($after: String, $first: Int, $filter: SchedulesFilterInput) '
+                                  '{ schedules(after: $after, first: $first, filter: $filter) { __typename edges '
+                                  '{ node { name enabled cronString } cursor } pageInfo '
+                                  '{ __typename hasNextPage hasPreviousPage startCursor endCursor } totalCount } }')
+        reference_second_var = {'after': 'aaa', 'first': 10, 'filter':
+                                {'workflowName': 'TEST_A', 'workflowVersion': '1'}}
+
+        merged_query = graphql_pydantic_converter.graphql_types.render(queries, form='extracted')
+
+        assert reference_first_query == merged_query[0].query
+        assert reference_first_var == merged_query[0].variable
+
+        print(merged_query[1].query)
+        print(merged_query[1].variable)
+
+        assert reference_second_query == merged_query[1].query
+        assert reference_second_var == merged_query[1].variable
+
+    def test_extracted_render(self) -> None:
+
+        query = SearchPoolsByTagsQuery(
+            tags=TagOr(
+                matchesAny=[
+                    TagAnd(
+                        matchesAll=[
+                            'root_pool'
+                        ]
+                    )
+                ]
+            ),
+            payload=ResourcePoolConnection(
+                edges=ResourcePoolEdge(
+                    node=ResourcePool(
+                        Name=True,
+                        id=True,
+                        PoolProperties=True,
+                        PoolType=True,
+                        AllocationStrategy=AllocationStrategy(
+                            Name=True
+                        )
+                    )
+                ),
+                totalCount=True
+            )
+        )
+
+        query_str = query.render(form='extracted')
+
+        reference_variable: typing.Any = {'tags': {'matchesAny': [{'matchesAll': ['root_pool']}]}}
+        reference_mutation = ('query SearchPoolsByTags($tags: TagOr) '
+                              '{ SearchPoolsByTags(tags: $tags) { edges { node { AllocationStrategy { Name } '
+                              'Name PoolProperties PoolType id } } totalCount } }')
+
+        assert reference_mutation == query_str.query
+        assert reference_variable == query_str.variable
+
+        mutation = CreateScheduleMutation(
+            payload=Schedule(
+                name=True,
+                enabled=True,
+                workflowName=True,
+                workflowVersion=True,
+                cronString=True
+            ),
+            input=CreateScheduleInput(
+                name='name',
+                workflowName='workflowName',
+                workflowVersion='workflowVersion',
+                cronString='* * * * *',
+                enabled=True,
+                parallelRuns=False,
+            )
+        )
+
+        mutation_str = mutation.render(form='extracted')
+        reference_variable = {
+            'input': {
+                'name': 'name',
+                'workflowName': 'workflowName',
+                'workflowVersion': 'workflowVersion',
+                'cronString': '* * * * *',
+                'enabled': True,
+                'parallelRuns': False}
+        }
+
+        reference_mutation = ('mutation createSchedule($input: CreateScheduleInput!) { createSchedule(input: $input) '
+                              '{ name enabled workflowName workflowVersion cronString } }')
+
+        assert reference_mutation == mutation_str.query
+        assert reference_variable == mutation_str.variable

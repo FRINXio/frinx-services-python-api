@@ -150,20 +150,20 @@ class GraphNodeCoordinatesPayload(BaseModel):
 
 class AddBlueprintMutation(Mutation):
     _name: str = PrivateAttr('addBlueprint')
-    input: AddBlueprintInput
+    input: AddBlueprintInput = Field(json_schema_extra={'type': 'AddBlueprintInput!'})
     payload: AddBlueprintPayload
 
 
 class DeleteBlueprintMutation(Mutation):
     _name: str = PrivateAttr('deleteBlueprint')
-    id: String
+    id: String = Field(json_schema_extra={'type': 'String!'})
     payload: DeleteBlueprintPayload
 
 
 class UpdateBlueprintMutation(Mutation):
     _name: str = PrivateAttr('updateBlueprint')
-    id: String
-    input: UpdateBlueprintInput
+    id: String = Field(json_schema_extra={'type': 'String!'})
+    input: UpdateBlueprintInput = Field(json_schema_extra={'type': 'UpdateBlueprintInput!'})
     payload: UpdateBlueprintPayload
 
 
@@ -222,10 +222,10 @@ class PageInfoPayload(BaseModel):
 
 class BlueprintsQuery(Query):
     _name: str = PrivateAttr('blueprints')
-    after: typing.Optional[String] = Field(default=None)
-    before: typing.Optional[String] = Field(default=None)
-    first: typing.Optional[Int] = Field(default=None)
-    last: typing.Optional[Int] = Field(default=None)
+    after: typing.Optional[String] = Field(default=None, json_schema_extra={'type': 'String'})
+    before: typing.Optional[String] = Field(default=None, json_schema_extra={'type': 'String'})
+    first: typing.Optional[Int] = Field(default=None, json_schema_extra={'type': 'Int'})
+    last: typing.Optional[Int] = Field(default=None, json_schema_extra={'type': 'Int'})
     payload: BlueprintConnection
 
 
@@ -240,9 +240,9 @@ class BlueprintsData(BaseModel):
 
 class UniconfigShellSubscription(Subscription):
     _name: str = PrivateAttr('uniconfigShell')
-    input: typing.Optional[String] = Field(default=None)
-    session_id: String = Field(alias='sessionId')
-    trigger: typing.Optional[Int] = Field(default=None)
+    input: typing.Optional[String] = Field(default=None, json_schema_extra={'type': 'String'})
+    session_id: String = Field(alias='sessionId', json_schema_extra={'type': 'String!'})
+    trigger: typing.Optional[Int] = Field(default=None, json_schema_extra={'type': 'Int'})
     payload: Boolean
 
 
