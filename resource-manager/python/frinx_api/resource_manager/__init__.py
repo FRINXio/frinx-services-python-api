@@ -288,144 +288,144 @@ class DeleteTagPayloadPayload(BaseModel):
 
 class CreateTagMutation(Mutation):
     _name: str = PrivateAttr('CreateTag')
-    input: CreateTagInput
+    input: CreateTagInput = Field(json_schema_extra={'type': 'CreateTagInput!'})
     payload: CreateTagPayload
 
 
 class UpdateTagMutation(Mutation):
     _name: str = PrivateAttr('UpdateTag')
-    input: UpdateTagInput
+    input: UpdateTagInput = Field(json_schema_extra={'type': 'UpdateTagInput!'})
     payload: UpdateTagPayload
 
 
 class DeleteTagMutation(Mutation):
     _name: str = PrivateAttr('DeleteTag')
-    input: DeleteTagInput
+    input: DeleteTagInput = Field(json_schema_extra={'type': 'DeleteTagInput!'})
     payload: DeleteTagPayload
 
 
 class TagPoolMutation(Mutation):
     _name: str = PrivateAttr('TagPool')
-    input: TagPoolInput
+    input: TagPoolInput = Field(json_schema_extra={'type': 'TagPoolInput!'})
     payload: TagPoolPayload
 
 
 class UntagPoolMutation(Mutation):
     _name: str = PrivateAttr('UntagPool')
-    input: UntagPoolInput
+    input: UntagPoolInput = Field(json_schema_extra={'type': 'UntagPoolInput!'})
     payload: UntagPoolPayload
 
 
 class CreateAllocationStrategyMutation(Mutation):
     _name: str = PrivateAttr('CreateAllocationStrategy')
-    input: typing.Optional[CreateAllocationStrategyInput] = Field(default=None)
+    input: typing.Optional[CreateAllocationStrategyInput] = Field(default=None, json_schema_extra={'type': 'CreateAllocationStrategyInput'})
     payload: CreateAllocationStrategyPayload
 
 
 class DeleteAllocationStrategyMutation(Mutation):
     _name: str = PrivateAttr('DeleteAllocationStrategy')
-    input: typing.Optional[DeleteAllocationStrategyInput] = Field(default=None)
+    input: typing.Optional[DeleteAllocationStrategyInput] = Field(default=None, json_schema_extra={'type': 'DeleteAllocationStrategyInput'})
     payload: DeleteAllocationStrategyPayload
 
 
 class TestAllocationStrategyMutation(Mutation):
     _name: str = PrivateAttr('TestAllocationStrategy')
-    allocation_strategy_id: ID = Field(alias='allocationStrategyId')
-    resource_pool: ResourcePoolInput = Field(alias='resourcePool')
-    current_resources: typing.Optional[list[ResourceInput]] = Field(default=None, alias='currentResources')
-    user_input: Map = Field(alias='userInput')
+    allocation_strategy_id: ID = Field(alias='allocationStrategyId', json_schema_extra={'type': 'ID!'})
+    resource_pool: ResourcePoolInput = Field(alias='resourcePool', json_schema_extra={'type': 'ResourcePoolInput!'})
+    current_resources: typing.Optional[list[ResourceInput]] = Field(default=None, alias='currentResources', json_schema_extra={'type': '[ResourceInput!]!'})
+    user_input: Map = Field(alias='userInput', json_schema_extra={'type': 'Map!'})
     payload: Boolean
 
 
 class ClaimResourceMutation(Mutation):
     _name: str = PrivateAttr('ClaimResource')
-    pool_id: ID = Field(alias='poolId')
-    description: typing.Optional[String] = Field(default=None)
-    user_input: Map = Field(alias='userInput')
+    pool_id: ID = Field(alias='poolId', json_schema_extra={'type': 'ID!'})
+    description: typing.Optional[String] = Field(default=None, json_schema_extra={'type': 'String'})
+    user_input: Map = Field(alias='userInput', json_schema_extra={'type': 'Map!'})
     payload: Resource
 
 
 class ClaimResourceWithAltIdMutation(Mutation):
     _name: str = PrivateAttr('ClaimResourceWithAltId')
-    pool_id: ID = Field(alias='poolId')
-    description: typing.Optional[String] = Field(default=None)
-    user_input: Map = Field(alias='userInput')
-    alternative_id: Map = Field(alias='alternativeId')
+    pool_id: ID = Field(alias='poolId', json_schema_extra={'type': 'ID!'})
+    description: typing.Optional[String] = Field(default=None, json_schema_extra={'type': 'String'})
+    user_input: Map = Field(alias='userInput', json_schema_extra={'type': 'Map!'})
+    alternative_id: Map = Field(alias='alternativeId', json_schema_extra={'type': 'Map!'})
     payload: Resource
 
 
 class FreeResourceMutation(Mutation):
     _name: str = PrivateAttr('FreeResource')
-    input: Map
-    pool_id: ID = Field(alias='poolId')
+    input: Map = Field(json_schema_extra={'type': 'Map!'})
+    pool_id: ID = Field(alias='poolId', json_schema_extra={'type': 'ID!'})
     payload: Boolean
 
 
 class CreateSetPoolMutation(Mutation):
     _name: str = PrivateAttr('CreateSetPool')
-    input: CreateSetPoolInput
+    input: CreateSetPoolInput = Field(json_schema_extra={'type': 'CreateSetPoolInput!'})
     payload: CreateSetPoolPayload
 
 
 class CreateNestedSetPoolMutation(Mutation):
     _name: str = PrivateAttr('CreateNestedSetPool')
-    input: CreateNestedSetPoolInput
+    input: CreateNestedSetPoolInput = Field(json_schema_extra={'type': 'CreateNestedSetPoolInput!'})
     payload: CreateNestedSetPoolPayload
 
 
 class CreateSingletonPoolMutation(Mutation):
     _name: str = PrivateAttr('CreateSingletonPool')
-    input: typing.Optional[CreateSingletonPoolInput] = Field(default=None)
+    input: typing.Optional[CreateSingletonPoolInput] = Field(default=None, json_schema_extra={'type': 'CreateSingletonPoolInput'})
     payload: CreateSingletonPoolPayload
 
 
 class CreateNestedSingletonPoolMutation(Mutation):
     _name: str = PrivateAttr('CreateNestedSingletonPool')
-    input: CreateNestedSingletonPoolInput
+    input: CreateNestedSingletonPoolInput = Field(json_schema_extra={'type': 'CreateNestedSingletonPoolInput!'})
     payload: CreateNestedSingletonPoolPayload
 
 
 class CreateAllocatingPoolMutation(Mutation):
     _name: str = PrivateAttr('CreateAllocatingPool')
-    input: typing.Optional[CreateAllocatingPoolInput] = Field(default=None)
+    input: typing.Optional[CreateAllocatingPoolInput] = Field(default=None, json_schema_extra={'type': 'CreateAllocatingPoolInput'})
     payload: CreateAllocatingPoolPayload
 
 
 class CreateNestedAllocatingPoolMutation(Mutation):
     _name: str = PrivateAttr('CreateNestedAllocatingPool')
-    input: CreateNestedAllocatingPoolInput
+    input: CreateNestedAllocatingPoolInput = Field(json_schema_extra={'type': 'CreateNestedAllocatingPoolInput!'})
     payload: CreateNestedAllocatingPoolPayload
 
 
 class DeleteResourcePoolMutation(Mutation):
     _name: str = PrivateAttr('DeleteResourcePool')
-    input: DeleteResourcePoolInput
+    input: DeleteResourcePoolInput = Field(json_schema_extra={'type': 'DeleteResourcePoolInput!'})
     payload: DeleteResourcePoolPayload
 
 
 class CreateResourceTypeMutation(Mutation):
     _name: str = PrivateAttr('CreateResourceType')
-    input: CreateResourceTypeInput
+    input: CreateResourceTypeInput = Field(json_schema_extra={'type': 'CreateResourceTypeInput!'})
     payload: CreateResourceTypePayload
 
 
 class DeleteResourceTypeMutation(Mutation):
     _name: str = PrivateAttr('DeleteResourceType')
-    input: DeleteResourceTypeInput
+    input: DeleteResourceTypeInput = Field(json_schema_extra={'type': 'DeleteResourceTypeInput!'})
     payload: DeleteResourceTypePayload
 
 
 class UpdateResourceTypeNameMutation(Mutation):
     _name: str = PrivateAttr('UpdateResourceTypeName')
-    input: UpdateResourceTypeNameInput
+    input: UpdateResourceTypeNameInput = Field(json_schema_extra={'type': 'UpdateResourceTypeNameInput!'})
     payload: UpdateResourceTypeNamePayload
 
 
 class UpdateResourceAltIdMutation(Mutation):
     _name: str = PrivateAttr('UpdateResourceAltId')
-    input: Map
-    pool_id: ID = Field(alias='poolId')
-    alternative_id: Map = Field(alias='alternativeId')
+    input: Map = Field(json_schema_extra={'type': 'Map!'})
+    pool_id: ID = Field(alias='poolId', json_schema_extra={'type': 'ID!'})
+    alternative_id: Map = Field(alias='alternativeId', json_schema_extra={'type': 'Map!'})
     payload: Resource
 
 
@@ -681,7 +681,7 @@ class PropertyTypePayload(BaseModel):
 
 class QueryPoolCapacityQuery(Query):
     _name: str = PrivateAttr('QueryPoolCapacity')
-    pool_id: ID = Field(alias='poolId')
+    pool_id: ID = Field(alias='poolId', json_schema_extra={'type': 'ID!'})
     payload: PoolCapacityPayload
 
 
@@ -691,132 +691,132 @@ class QueryPoolTypesQuery(Query):
 
 class QueryResourceQuery(Query):
     _name: str = PrivateAttr('QueryResource')
-    input: Map
-    pool_id: ID = Field(alias='poolId')
+    input: Map = Field(json_schema_extra={'type': 'Map!'})
+    pool_id: ID = Field(alias='poolId', json_schema_extra={'type': 'ID!'})
     payload: Resource
 
 
 class QueryResourcesQuery(Query):
     _name: str = PrivateAttr('QueryResources')
-    pool_id: ID = Field(alias='poolId')
-    first: typing.Optional[Int] = Field(default=None)
-    last: typing.Optional[Int] = Field(default=None)
-    before: typing.Optional[String] = Field(default=None)
-    after: typing.Optional[String] = Field(default=None)
+    pool_id: ID = Field(alias='poolId', json_schema_extra={'type': 'ID!'})
+    first: typing.Optional[Int] = Field(default=None, json_schema_extra={'type': 'Int'})
+    last: typing.Optional[Int] = Field(default=None, json_schema_extra={'type': 'Int'})
+    before: typing.Optional[String] = Field(default=None, json_schema_extra={'type': 'String'})
+    after: typing.Optional[String] = Field(default=None, json_schema_extra={'type': 'String'})
     payload: ResourceConnection
 
 
 class QueryResourcesByAltIdQuery(Query):
     _name: str = PrivateAttr('QueryResourcesByAltId')
-    input: Map
-    pool_id: typing.Optional[ID] = Field(default=None, alias='poolId')
-    first: typing.Optional[Int] = Field(default=None)
-    last: typing.Optional[Int] = Field(default=None)
-    before: typing.Optional[String] = Field(default=None)
-    after: typing.Optional[String] = Field(default=None)
+    input: Map = Field(json_schema_extra={'type': 'Map!'})
+    pool_id: typing.Optional[ID] = Field(default=None, alias='poolId', json_schema_extra={'type': 'ID'})
+    first: typing.Optional[Int] = Field(default=None, json_schema_extra={'type': 'Int'})
+    last: typing.Optional[Int] = Field(default=None, json_schema_extra={'type': 'Int'})
+    before: typing.Optional[String] = Field(default=None, json_schema_extra={'type': 'String'})
+    after: typing.Optional[String] = Field(default=None, json_schema_extra={'type': 'String'})
     payload: ResourceConnection
 
 
 class QueryAllocationStrategyQuery(Query):
     _name: str = PrivateAttr('QueryAllocationStrategy')
-    allocation_strategy_id: ID = Field(alias='allocationStrategyId')
+    allocation_strategy_id: ID = Field(alias='allocationStrategyId', json_schema_extra={'type': 'ID!'})
     payload: AllocationStrategy
 
 
 class QueryAllocationStrategiesQuery(Query):
     _name: str = PrivateAttr('QueryAllocationStrategies')
-    by_name: typing.Optional[String] = Field(default=None, alias='byName')
+    by_name: typing.Optional[String] = Field(default=None, alias='byName', json_schema_extra={'type': 'String'})
     payload: AllocationStrategy
 
 
 class QueryResourceTypesQuery(Query):
     _name: str = PrivateAttr('QueryResourceTypes')
-    by_name: typing.Optional[String] = Field(default=None, alias='byName')
+    by_name: typing.Optional[String] = Field(default=None, alias='byName', json_schema_extra={'type': 'String'})
     payload: ResourceType
 
 
 class QueryRequiredPoolPropertiesQuery(Query):
     _name: str = PrivateAttr('QueryRequiredPoolProperties')
-    allocation_strategy_name: String = Field(alias='allocationStrategyName')
+    allocation_strategy_name: String = Field(alias='allocationStrategyName', json_schema_extra={'type': 'String!'})
     payload: PropertyType
 
 
 class QueryResourcePoolQuery(Query):
     _name: str = PrivateAttr('QueryResourcePool')
-    pool_id: ID = Field(alias='poolId')
+    pool_id: ID = Field(alias='poolId', json_schema_extra={'type': 'ID!'})
     payload: ResourcePool
 
 
 class QueryEmptyResourcePoolsQuery(Query):
     _name: str = PrivateAttr('QueryEmptyResourcePools')
-    resource_type_id: typing.Optional[ID] = Field(default=None, alias='resourceTypeId')
-    first: typing.Optional[Int] = Field(default=None)
-    last: typing.Optional[Int] = Field(default=None)
-    before: typing.Optional[Cursor] = Field(default=None)
-    after: typing.Optional[Cursor] = Field(default=None)
+    resource_type_id: typing.Optional[ID] = Field(default=None, alias='resourceTypeId', json_schema_extra={'type': 'ID'})
+    first: typing.Optional[Int] = Field(default=None, json_schema_extra={'type': 'Int'})
+    last: typing.Optional[Int] = Field(default=None, json_schema_extra={'type': 'Int'})
+    before: typing.Optional[Cursor] = Field(default=None, json_schema_extra={'type': 'Cursor'})
+    after: typing.Optional[Cursor] = Field(default=None, json_schema_extra={'type': 'Cursor'})
     payload: ResourcePoolConnection
 
 
 class QueryResourcePoolsQuery(Query):
     _name: str = PrivateAttr('QueryResourcePools')
-    resource_type_id: typing.Optional[ID] = Field(default=None, alias='resourceTypeId')
-    tags: typing.Optional[TagOr] = Field(default=None)
-    first: typing.Optional[Int] = Field(default=None)
-    last: typing.Optional[Int] = Field(default=None)
-    before: typing.Optional[Cursor] = Field(default=None)
-    after: typing.Optional[Cursor] = Field(default=None)
-    filter_by_resources: typing.Optional[Map] = Field(default=None, alias='filterByResources')
+    resource_type_id: typing.Optional[ID] = Field(default=None, alias='resourceTypeId', json_schema_extra={'type': 'ID'})
+    tags: typing.Optional[TagOr] = Field(default=None, json_schema_extra={'type': 'TagOr'})
+    first: typing.Optional[Int] = Field(default=None, json_schema_extra={'type': 'Int'})
+    last: typing.Optional[Int] = Field(default=None, json_schema_extra={'type': 'Int'})
+    before: typing.Optional[Cursor] = Field(default=None, json_schema_extra={'type': 'Cursor'})
+    after: typing.Optional[Cursor] = Field(default=None, json_schema_extra={'type': 'Cursor'})
+    filter_by_resources: typing.Optional[Map] = Field(default=None, alias='filterByResources', json_schema_extra={'type': 'Map'})
     payload: ResourcePoolConnection
 
 
 class QueryRecentlyActiveResourcesQuery(Query):
     _name: str = PrivateAttr('QueryRecentlyActiveResources')
-    from_datetime: String = Field(alias='fromDatetime')
-    to_datetime: typing.Optional[String] = Field(default=None, alias='toDatetime')
-    first: typing.Optional[Int] = Field(default=None)
-    last: typing.Optional[Int] = Field(default=None)
-    before: typing.Optional[String] = Field(default=None)
-    after: typing.Optional[String] = Field(default=None)
+    from_datetime: String = Field(alias='fromDatetime', json_schema_extra={'type': 'String!'})
+    to_datetime: typing.Optional[String] = Field(default=None, alias='toDatetime', json_schema_extra={'type': 'String'})
+    first: typing.Optional[Int] = Field(default=None, json_schema_extra={'type': 'Int'})
+    last: typing.Optional[Int] = Field(default=None, json_schema_extra={'type': 'Int'})
+    before: typing.Optional[String] = Field(default=None, json_schema_extra={'type': 'String'})
+    after: typing.Optional[String] = Field(default=None, json_schema_extra={'type': 'String'})
     payload: ResourceConnection
 
 
 class QueryResourcePoolHierarchyPathQuery(Query):
     _name: str = PrivateAttr('QueryResourcePoolHierarchyPath')
-    pool_id: ID = Field(alias='poolId')
+    pool_id: ID = Field(alias='poolId', json_schema_extra={'type': 'ID!'})
     payload: ResourcePool
 
 
 class QueryRootResourcePoolsQuery(Query):
     _name: str = PrivateAttr('QueryRootResourcePools')
-    resource_type_id: typing.Optional[ID] = Field(default=None, alias='resourceTypeId')
-    tags: typing.Optional[TagOr] = Field(default=None)
-    first: typing.Optional[Int] = Field(default=None)
-    last: typing.Optional[Int] = Field(default=None)
-    before: typing.Optional[Cursor] = Field(default=None)
-    after: typing.Optional[Cursor] = Field(default=None)
-    filter_by_resources: typing.Optional[Map] = Field(default=None, alias='filterByResources')
+    resource_type_id: typing.Optional[ID] = Field(default=None, alias='resourceTypeId', json_schema_extra={'type': 'ID'})
+    tags: typing.Optional[TagOr] = Field(default=None, json_schema_extra={'type': 'TagOr'})
+    first: typing.Optional[Int] = Field(default=None, json_schema_extra={'type': 'Int'})
+    last: typing.Optional[Int] = Field(default=None, json_schema_extra={'type': 'Int'})
+    before: typing.Optional[Cursor] = Field(default=None, json_schema_extra={'type': 'Cursor'})
+    after: typing.Optional[Cursor] = Field(default=None, json_schema_extra={'type': 'Cursor'})
+    filter_by_resources: typing.Optional[Map] = Field(default=None, alias='filterByResources', json_schema_extra={'type': 'Map'})
     payload: ResourcePoolConnection
 
 
 class QueryLeafResourcePoolsQuery(Query):
     _name: str = PrivateAttr('QueryLeafResourcePools')
-    resource_type_id: typing.Optional[ID] = Field(default=None, alias='resourceTypeId')
-    tags: typing.Optional[TagOr] = Field(default=None)
-    first: typing.Optional[Int] = Field(default=None)
-    last: typing.Optional[Int] = Field(default=None)
-    before: typing.Optional[Cursor] = Field(default=None)
-    after: typing.Optional[Cursor] = Field(default=None)
-    filter_by_resources: typing.Optional[Map] = Field(default=None, alias='filterByResources')
+    resource_type_id: typing.Optional[ID] = Field(default=None, alias='resourceTypeId', json_schema_extra={'type': 'ID'})
+    tags: typing.Optional[TagOr] = Field(default=None, json_schema_extra={'type': 'TagOr'})
+    first: typing.Optional[Int] = Field(default=None, json_schema_extra={'type': 'Int'})
+    last: typing.Optional[Int] = Field(default=None, json_schema_extra={'type': 'Int'})
+    before: typing.Optional[Cursor] = Field(default=None, json_schema_extra={'type': 'Cursor'})
+    after: typing.Optional[Cursor] = Field(default=None, json_schema_extra={'type': 'Cursor'})
+    filter_by_resources: typing.Optional[Map] = Field(default=None, alias='filterByResources', json_schema_extra={'type': 'Map'})
     payload: ResourcePoolConnection
 
 
 class SearchPoolsByTagsQuery(Query):
     _name: str = PrivateAttr('SearchPoolsByTags')
-    tags: typing.Optional[TagOr] = Field(default=None)
-    first: typing.Optional[Int] = Field(default=None)
-    last: typing.Optional[Int] = Field(default=None)
-    before: typing.Optional[Cursor] = Field(default=None)
-    after: typing.Optional[Cursor] = Field(default=None)
+    tags: typing.Optional[TagOr] = Field(default=None, json_schema_extra={'type': 'TagOr'})
+    first: typing.Optional[Int] = Field(default=None, json_schema_extra={'type': 'Int'})
+    last: typing.Optional[Int] = Field(default=None, json_schema_extra={'type': 'Int'})
+    before: typing.Optional[Cursor] = Field(default=None, json_schema_extra={'type': 'Cursor'})
+    after: typing.Optional[Cursor] = Field(default=None, json_schema_extra={'type': 'Cursor'})
     payload: ResourcePoolConnection
 
 
@@ -826,7 +826,7 @@ class QueryTagsQuery(Query):
 
 class NodeQuery(Query):
     _name: str = PrivateAttr('node')
-    id: ID
+    id: ID = Field(json_schema_extra={'type': 'ID!'})
     payload: Node
 
 
