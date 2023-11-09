@@ -212,7 +212,7 @@ class Mutation(GraphqlSchemaType):
         for key, value in model.items():
             if key == 'payload':
                 continue
-            if input_dict.get(key) is None:
+            if input_dict.get(value.alias or key) is None:
                 continue
             if value.json_schema_extra:
                 extra_inputs: dict[str, str] = dict(**value.json_schema_extra)
@@ -340,7 +340,7 @@ class Query(GraphqlSchemaType):
         for key, value in model.items():
             if key == 'payload':
                 continue
-            if input_dict.get(key) is None:
+            if input_dict.get(value.alias or key) is None:
                 continue
             if value.json_schema_extra:
                 extra_inputs: dict[str, str] = dict(**value.json_schema_extra)

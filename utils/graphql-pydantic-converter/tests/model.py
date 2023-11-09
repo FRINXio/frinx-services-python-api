@@ -2,10 +2,6 @@ from __future__ import annotations
 
 import typing
 
-from pydantic import BaseModel
-from pydantic import Field
-from pydantic import PrivateAttr
-
 from graphql_pydantic_converter.graphql_types import ENUM
 from graphql_pydantic_converter.graphql_types import Input
 from graphql_pydantic_converter.graphql_types import Interface
@@ -13,6 +9,9 @@ from graphql_pydantic_converter.graphql_types import Mutation
 from graphql_pydantic_converter.graphql_types import Payload
 from graphql_pydantic_converter.graphql_types import Query
 from graphql_pydantic_converter.graphql_types import Subscription
+from pydantic import BaseModel
+from pydantic import Field
+from pydantic import PrivateAttr
 
 String: typing.TypeAlias = str
 Int: typing.TypeAlias = int
@@ -34,8 +33,8 @@ class DeviceSize(ENUM):
 
 
 class GraphEdgeStatus(ENUM):
-    ok = 'ok'
-    unknown = 'unknown'
+    OK = 'ok'
+    UNKNOWN = 'unknown'
 
 
 class BaseGraphNode(Interface):
