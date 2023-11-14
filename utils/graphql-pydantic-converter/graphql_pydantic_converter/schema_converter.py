@@ -342,7 +342,10 @@ class GraphqlJsonParser:
                 tmp_enum = [self.__class_template.substitute(name=enum.name, type='ENUM')]
                 if enum.enum_values:
                     for i in enum.enum_values:
-                        tmp_enum.append(kv_template.substitute(indent=self.__INDENT, name=i.name, key=i.name.upper()))
+                        key: Optional[str] = None
+                        if i.name:
+                            key = i.name.upper()
+                        tmp_enum.append(kv_template.substitute(indent=self.__INDENT, name=i.name, key=key))
                     self.__result += (''.join(tmp_enum))
                     if enum.name:
                         self.__enums.append(enum.name)
