@@ -206,10 +206,6 @@ class GraphqlJsonParser:
         ]
         self.__result += '\n'.join(imports)
 
-        self.__result += 'from pydantic import BaseModel\n'
-        self.__result += 'from pydantic import Field\n'
-        self.__result += 'from pydantic import PrivateAttr\n\n'
-
         if items[GraphqlJsonParser.TypeKind.ENUM]:
             self.__result += kv_template.substitute(type=GraphqlJsonParser.ConverterMap.ENUM.value)
         if items[GraphqlJsonParser.TypeKind.INPUT_OBJECT]:
@@ -224,7 +220,9 @@ class GraphqlJsonParser:
             self.__result += kv_template.substitute(type=GraphqlJsonParser.ConverterMap.QUERY.value)
         if GraphqlJsonParser.ConverterMap.SUBSCRIPTION in worker_list:
             self.__result += kv_template.substitute(type=GraphqlJsonParser.ConverterMap.SUBSCRIPTION.value)
-
+        self.__result += 'from pydantic import BaseModel\n'
+        self.__result += 'from pydantic import Field\n'
+        self.__result += 'from pydantic import PrivateAttr\n'
         self.__result += '\n'
 
     def __extract_fields(self, of_type: OfType | Type, previous: list[Any]) -> list[Any]:
@@ -335,17 +333,19 @@ class GraphqlJsonParser:
                 self.__ignore_enums.append(scalar.name)
 
     def __create_enum(self, enums: list[Type]) -> None:
-        kv_template = Template("$indent$name = '$name'\n")
+        kv_template = Template("$indent$key = '$name'\n")
         for enum in enums:
 
             if enum.name:
                 if enum.name.startswith('__') and self.__ignore_private_objects:
                     return
-
                 tmp_enum = [self.__class_template.substitute(name=enum.name, type='ENUM')]
                 if enum.enum_values:
                     for i in enum.enum_values:
-                        tmp_enum.append(kv_template.substitute(indent=self.__INDENT, name=i.name))
+                        key: Optional[str] = None
+                        if i.name:
+                            key = i.name.upper()
+                        tmp_enum.append(kv_template.substitute(indent=self.__INDENT, name=i.name, key=key))
                     self.__result += (''.join(tmp_enum))
                     if enum.name:
                         self.__enums.append(enum.name)

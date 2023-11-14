@@ -19,7 +19,7 @@ packages = [{ include = "graphql_pydantic_converter" }]
 name = "graphql-pydantic-converter"
 description = "Convert pydantic schema to pydantic datamodel and build request from it"
 authors = ["Jozef Volak <jozef.volak@elisapolystar.com>"]
-version = '1.1.0'
+version = '1.1.1'
 readme = ["README.md", "CHANGELOG.md"]
 keywords = ["graphql", "pydantic"]
 license = "Apache 2.0"
@@ -35,11 +35,11 @@ reportGeneralTypeIssues = "none"
 line-length = 120
 extend-select = ['Q', 'RUF100', 'C90', 'UP', 'I', 'E', 'F', 'N', 'PL']
 fixable = ["A", "B", "C", "D", "E", "F", "G", "I", "N", "Q", "S", "T", "W", "ANN", "ARG", "BLE", "COM", "DJ", "DTZ", "EM", "ERA", "EXE", "FBT", "ICN", "INP", "ISC", "NPY", "PD", "PGH", "PIE", "PL", "PT", "PTH", "PYI", "RET", "RSE", "RUF", "SIM", "SLF", "TCH", "TID", "TRY", "UP", "YTT"]
-
 target-version = "py310"
+exclude = ['tests']
 
 [tool.ruff.isort]
-known-first-party = ['graphql_pydantic_converter']
+known-first-party = ['graphql_pydantic_converter', 'tests']
 force-single-line = true
 
 [tool.ruff.flake8-quotes]
