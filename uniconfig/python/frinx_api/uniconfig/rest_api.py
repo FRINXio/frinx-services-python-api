@@ -123,6 +123,7 @@ from . import OperationsUnmountNodePostResponse
 from . import OperationsUpgradeTemplatePostRequest
 from . import OperationsValidatePostRequest
 from . import OperationsValidatePostResponse
+from . import OperationsExecuteAndReadPostRequest
 
 
 class UniconfigRest:
@@ -156,7 +157,7 @@ class ExecuteAndExpect(UniconfigRest):
 class ExecuteAndRead(UniconfigRest):
     uri = '/operations/network-topology/topology={topology_id}/node={node_id}/yang-ext:mount/execute-and-read'
     method = 'POST'
-    request = None
+    request = OperationsExecuteAndReadPostRequest
     response = None
 
 

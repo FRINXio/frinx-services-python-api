@@ -1020,3 +1020,11 @@ class OperationsIsInSyncPostResponse(BaseModel):
         populate_by_name=True,
     )
     output: Optional[isinsync.Output] = None
+
+
+class OperationsExecuteAndReadPostRequest(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    input: Optional[executeandread.Input] = None
+
