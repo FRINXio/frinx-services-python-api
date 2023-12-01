@@ -69,6 +69,7 @@ from . import OperationsEnableDeviceLoggingPostRequest
 from . import OperationsEnableDeviceLoggingPostResponse
 from . import OperationsEnableLoggingPostRequest
 from . import OperationsEnableLoggingPostResponse
+from . import OperationsExecuteAndReadPostRequest
 from . import OperationsGetInstalledNodesPostRequest
 from . import OperationsGetInstalledNodesPostResponse
 from . import OperationsGetTemplateInfoPostRequest
@@ -123,7 +124,6 @@ from . import OperationsUnmountNodePostResponse
 from . import OperationsUpgradeTemplatePostRequest
 from . import OperationsValidatePostRequest
 from . import OperationsValidatePostResponse
-from . import OperationsExecuteAndReadPostRequest
 
 
 class UniconfigRest:
