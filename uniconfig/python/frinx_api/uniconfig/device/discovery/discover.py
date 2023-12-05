@@ -10,16 +10,7 @@ from pydantic import Field
 from pydantic import RootModel
 
 
-class TcpPortItem(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    end_port: Optional[int] = Field(None, alias='end-port', ge=0, le=65535)
-    port: Optional[int] = Field(None, ge=0, le=65535)
-    start_port: Optional[int] = Field(None, alias='start-port', ge=0, le=65535)
-
-
-class Address(BaseModel):
+class Addres(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -43,6 +34,15 @@ class Address(BaseModel):
     """
 
 
+class TcpPortItem(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    end_port: Optional[int] = Field(None, alias='end-port', ge=0, le=65535)
+    port: Optional[int] = Field(None, ge=0, le=65535)
+    start_port: Optional[int] = Field(None, alias='start-port', ge=0, le=65535)
+
+
 class UdpPortItem(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
@@ -62,33 +62,33 @@ class Input(BaseModel):
     """
     Check whether the host is reachable or not using ICMP protocol
     """
+    address: Optional[list[Addres]] = None
     tcp_port: Optional[list[TcpPortItem]] = Field(None, alias='tcp-port')
-    address: Optional[list[Address]] = None
     udp_port: Optional[list[UdpPortItem]] = Field(None, alias='udp-port')
 
 
-class AvailableUdpPort(RootModel[int]):
+class AvailableUdpPort(RootModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
     root: int = Field(..., ge=0, le=65535)
 
 
-class UnavailableTcpPort(RootModel[int]):
+class UnavailableTcpPort(RootModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
     root: int = Field(..., ge=0, le=65535)
 
 
-class AvailableTcpPort(RootModel[int]):
+class AvailableTcpPort(RootModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
     root: int = Field(..., ge=0, le=65535)
 
 
-class UnavailableUdpPort(RootModel[int]):
+class UnavailableUdpPort(RootModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
