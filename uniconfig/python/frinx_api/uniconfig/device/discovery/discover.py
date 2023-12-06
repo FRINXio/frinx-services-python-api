@@ -19,7 +19,7 @@ class TcpPortItem(BaseModel):
     start_port: Optional[int] = Field(None, alias='start-port', ge=0, le=65535)
 
 
-class Address(BaseModel):
+class Addres(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -63,32 +63,32 @@ class Input(BaseModel):
     Check whether the host is reachable or not using ICMP protocol
     """
     tcp_port: Optional[list[TcpPortItem]] = Field(None, alias='tcp-port')
-    address: Optional[list[Address]] = None
+    address: Optional[list[Addres]] = None
     udp_port: Optional[list[UdpPortItem]] = Field(None, alias='udp-port')
 
 
-class AvailableUdpPort(RootModel[int]):
+class AvailableUdpPort(RootModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
     root: int = Field(..., ge=0, le=65535)
 
 
-class UnavailableTcpPort(RootModel[int]):
+class UnavailableTcpPort(RootModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
     root: int = Field(..., ge=0, le=65535)
 
 
-class AvailableTcpPort(RootModel[int]):
+class AvailableTcpPort(RootModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
     root: int = Field(..., ge=0, le=65535)
 
 
-class UnavailableUdpPort(RootModel[int]):
+class UnavailableUdpPort(RootModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )

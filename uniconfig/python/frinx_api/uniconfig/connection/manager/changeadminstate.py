@@ -18,7 +18,7 @@ class Input(BaseModel):
     )
     node_id: str = Field(..., alias='node-id')
     """
-    Node identifier of CLI/NETCONF node.
+    Node identifier of CLI/NETCONF/GNMI node.
     """
     admin_state: Optional[AdminState] = Field(None, alias='admin-state')
 
@@ -29,6 +29,6 @@ class Output(BaseModel):
     )
     error_message: Optional[str] = Field(None, alias='error-message')
     """
-    Message that described occurred error during invocation of operation.
+    Message that described occured error during invocation of operation.
     """
     status: types.OperationResultType

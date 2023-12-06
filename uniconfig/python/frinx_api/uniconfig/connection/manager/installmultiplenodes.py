@@ -892,7 +892,7 @@ class Node(BaseModel):
     )
     node_id: str = Field(..., alias='node-id')
     """
-    Node identifier of CLI/NETCONF node.
+    Node identifier of CLI/NETCONF/GNMI node.
     """
     cli: Optional[Cli] = Field(
         None, title='connection.manager.installmultiplenodes.input.nodes.Cli'
@@ -927,11 +927,11 @@ class NodeResult(BaseModel):
     )
     node_id: str = Field(..., alias='node-id')
     """
-    Node identifier of CLI/NETCONF node.
+    Node identifier of CLI/NETCONF/GNMI node.
     """
     error_message: Optional[str] = Field(None, alias='error-message')
     """
-    Message that described occurred error during invocation of operation on a specific node.
+    Message that described occured error during invocation of operation on a specific node.
     """
     status: types.OperationResultType
 
