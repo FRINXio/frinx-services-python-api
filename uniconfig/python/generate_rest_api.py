@@ -73,7 +73,10 @@ def parse_swagger_scheme(scheme: dict[str, Any], req_res_refs: Iterable[str], im
         return modified_string
 
     def _get_cls(_endpoint: str, _method: str, *, request: bool = False, response: bool = False) -> str:
-        base = _up_format(endpoint, ['/', '-']).split('=')[0] + method.capitalize()
+        base = _up_format(
+            endpoint,
+            ['/', '-', ':', '={']
+        ).replace('{', '').replace('}', '') + method.capitalize()
         return str(base + {request: 'Request', response: 'Response'}.get(True))
 
     def _get_service_name(_endpoint: str) -> str:
