@@ -23,6 +23,12 @@ import argparse
 import sys
 from typing import Any
 from enum import Enum
+from collections import namedtuple
+from packaging import version
+
+
+PATTERN = re.compile(r"\|\s*([0-9.]+)\s*\|\s*([0-9., ]+)\s*\|")
+ReleaseMatrix = namedtuple('Matrix', ['docker_ver', 'lib_vers'])
 
 
 class Exit(Enum):
@@ -30,25 +36,78 @@ class Exit(Enum):
     ERROR = 1
 
 
-def find_lower_versions(version: str, release_file: str) -> Any:
-    table_pattern = re.compile(r'\| Docker Image Tag \| Python Library Version \|\n\|(.+)\n', re.DOTALL)
-    match = table_pattern.search(release_file)
-    if match:
-        table = match.group(1).strip().split("\n")
-        table = table[1:]
-        lower_version: dict[str, Any] = {}
-        for row in table:
-            docker_version = row.split('|')[1]
-            lib_version = row.split('|')[2]
-            if docker_version.strip() < version:
-                lower_version = dict(
-                        docker=docker_version.strip(),
-                        lib=lib_version.strip(),
+def read_lines(path: str) -> list[str]:
+    with open(path, 'r') as f:
+        return f.readlines()
+
+
+def sort_versions(versions: list[str]) -> list[str]:
+    versions.sort(key=lambda s: [int(u) for u in s.split('.')])
+    return versions
+
+
+def parse_versions_to_list(versions: str) -> list[str]:
+    return sort_versions(versions.strip().split(','))
+
+
+def release_matrix_sort(matrix_item):
+    return version.parse(matrix_item.docker_ver)
+
+
+def sort_release_matrix(lines: list[str]) -> list[ReleaseMatrix]:
+    docker_versions: list[str] = []
+    matrix: list[ReleaseMatrix] = []
+
+    for line_num, line in enumerate(lines, start=1):
+        match = PATTERN.match(line)
+        if match:
+            matrix.append(
+                ReleaseMatrix(
+                    docker_ver=match.group(1),
+                    lib_vers=parse_versions_to_list(match.group(2))
                 )
-            elif docker_version.strip() == version:
-                print(f'Version {version} already exist')
-                raise Exception()
-        return lower_version
+            )
+            docker_versions.append(match.group(1))
+    return sorted(matrix, key=release_matrix_sort)
+
+
+def get_docker_vers(matrix: list[ReleaseMatrix]) -> list[str]:
+    docker_vers = []
+    for matrix_item in matrix:
+        docker_vers.append(matrix_item.docker_ver)
+    return docker_vers
+
+
+def find_nearest_lower_version(new_docker_ver, docker_vers):
+    lower_versions = [ver for ver in docker_vers if version.parse(ver) < version.parse(new_docker_ver)]
+    if lower_versions:
+        nearest_lower_version = max(lower_versions, key=version.parse)
+        return nearest_lower_version
+    else:
+        return None
+
+
+def get_last_lib_vers_by_docker_ver(docker_ver, matrix):
+    for matrix_item in matrix:
+        if matrix_item.docker_ver == docker_ver:
+            return matrix_item.lib_vers[-1]
+    return None
+
+
+def find_lower_versions(docker_version: str, lines: list[str]) -> Any:
+    sorted_matrix = sort_release_matrix(lines)
+    docker_vers = get_docker_vers(sorted_matrix)
+    nearest_lower_docker_version = find_nearest_lower_version(docker_version, docker_vers)
+    last_lib_version = get_last_lib_vers_by_docker_ver(nearest_lower_docker_version, sorted_matrix)
+
+    if not nearest_lower_docker_version or not last_lib_version:
+        print("Previous version not found")
+        raise Exception()
+
+    return dict(
+        docker=nearest_lower_docker_version.strip(),
+        lib=last_lib_version.strip(),
+    )
 
 
 def main() -> None:
@@ -59,16 +118,14 @@ def main() -> None:
     args = parser.parse_args()
 
     try:
-        with open(args.path, 'r') as f:
-            content = f.read()
+        lines = read_lines(args.path)
+        versions = find_lower_versions(args.image_tag, lines)
 
-        version = find_lower_versions(args.image_tag, content)
-
-        print(f'LAST_DOCKER_TAG={version.get("docker", args.image_tag)}')
-        print(f'LAST_LIB_VERSION={version.get("lib", "1.0.0")}')
+        print(f'LAST_DOCKER_TAG={versions.get("docker", args.image_tag)}')
+        print(f'LAST_LIB_VERSION={versions.get("lib", "1.0.0")}')
 
     except Exception:
-        sys.exit(Exit.ERROR)
+        sys.exit(Exit.ERROR.value)
 
 
 if __name__ == '__main__':

@@ -2,7 +2,8 @@
 
 """
 This script updates the release matrix table in a RELEASE.md file
-by adding a new row with the specified Docker image tag and Python library version.
+by adding a new row with the specified Docker image tag and Python library version or
+add a new Python library version to the existing row.
 
 Usage:
     python release-update.py --image-tag 4.0.0 --lib-version 2.0.0 --path RELEASE.md
@@ -23,35 +24,40 @@ Output:
 import re
 import argparse
 
+PATTERN = re.compile(r"\|\s*([0-9.]+)\s*\|\s*([0-9., ]+)\s*\|")
 
-def find_insertion_index(table, version):
-    for i, row in enumerate(table):
-        docker_version = row.split('|')[1].strip()
-        if docker_version >= version:
-            return i
-    return len(table)
+
+def read_lines(path: str) -> list[str]:
+    with open(path, 'r') as f:
+        return f.readlines()
+
+
+def write_lines(path: str, lines: list[str]) -> None:
+    with open(path, 'w') as file:
+        file.writelines(lines)
+
+
+def find_docker_version_line(lines: list[str], image_tag: str, lib_version: str):
+    match_line_number = None
+    new_line = f"\n| {image_tag} | {lib_version} |"
+    for line_num, line in enumerate(lines, start=1):
+        match = PATTERN.match(line)
+        if match and image_tag == match.group(1):
+            match_line_number = line_num - 1
+            new_line = f"| {match.group(1)} | {match.group(2).strip()}, {lib_version} |"
+    return match_line_number, new_line
 
 
 def update_release_matrix(release_file: str, image_tag: str, lib_version: str) -> None:
-    with open(release_file, 'r') as f:
-        content = f.read()
+    lines = read_lines(release_file)
+    line_num, new_line = find_docker_version_line(lines, image_tag, lib_version)
 
-    table_pattern = re.compile(r'\| Docker Image Tag \| Python Library Version \|\n\|(.+)', re.DOTALL)
-    match = table_pattern.search(content)
-
-    if match:
-        table = match.group(1).strip().split("\n")
-        new_row = f"| {image_tag} | {lib_version} |"
-        insertion_index = find_insertion_index(table, image_tag)
-
-        table.insert(insertion_index, new_row)
-        updated_table = "\n".join(table)
-        updated_content = content.replace(table_pattern.search(content).group(1), updated_table)
-        with open(release_file, 'w') as f:
-            f.write(updated_content)
-
+    if line_num:
+        lines[line_num] = PATTERN.sub(new_line, lines[line_num])
     else:
-        print("Table not found in the release file.")
+        lines.append(new_line)
+
+    write_lines(release_file, lines)
 
 
 def main():
