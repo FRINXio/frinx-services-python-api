@@ -211,15 +211,15 @@ class SessionTimers(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    keepalive_delay: Optional[float] = Field(
-        None, alias='keepalive-delay', ge=0.0, le=4294967295.0
+    keepalive_delay: Optional[int] = Field(
+        None, alias='keepalive-delay', ge=0, le=4294967295
     )
     """
     Netconf connector sends keepalive RPCs while the session is idle, this delay specifies the delay between keepalive RPC in seconds
     If a value <1 is provided, no keepalives will be sent
     """
-    max_reconnection_attempts: Optional[float] = Field(
-        None, alias='max-reconnection-attempts', ge=0.0, le=4294967295.0
+    max_reconnection_attempts: Optional[int] = Field(
+        None, alias='max-reconnection-attempts', ge=0, le=4294967295
     )
     """
     Maximum number of reconnect retries. Non positive value or null is interpreted as infinity.
@@ -238,26 +238,26 @@ class SessionTimers(BaseModel):
     multiplied by this factor. By default, it is set to 1.5. This means that the next
     delay between attempts will be 3000 ms, then it will be 4500 ms, etc.
     """
-    confirm_commit_timeout: Optional[float] = Field(
-        None, alias='confirm-commit-timeout', ge=0.0, le=4294967295.0
+    confirm_commit_timeout: Optional[int] = Field(
+        None, alias='confirm-commit-timeout', ge=0, le=4294967295
     )
     """
     Timeout period in seconds to issued commit after confirmed-commit
     """
-    request_transaction_timeout: Optional[float] = Field(
-        None, alias='request-transaction-timeout', ge=0.0, le=4294967295.0
+    request_transaction_timeout: Optional[int] = Field(
+        None, alias='request-transaction-timeout', ge=0, le=4294967295
     )
     """
     Timeout in seconds for blocking operations within transactions.
     """
-    max_connection_attempts: Optional[float] = Field(
-        None, alias='max-connection-attempts', ge=0.0, le=4294967295.0
+    max_connection_attempts: Optional[int] = Field(
+        None, alias='max-connection-attempts', ge=0, le=4294967295
     )
     """
     Maximum number of connection retries. Non positive value or null is interpreted as infinity.
     """
-    initial_connection_timeout: Optional[float] = Field(
-        None, alias='initial-connection-timeout', ge=0.0, le=4294967295.0
+    initial_connection_timeout: Optional[int] = Field(
+        None, alias='initial-connection-timeout', ge=0, le=4294967295
     )
     """
     Specifies timeout in seconds after which connection must be established.
@@ -360,11 +360,11 @@ class Cli(BaseModel):
     keepalive_timeout: Optional[int] = Field(
         None, alias='keepalive-timeout', ge=0, le=65535
     )
-    cli_topology_max_connection_attempts_install: Optional[float] = Field(
+    cli_topology_max_connection_attempts_install: Optional[int] = Field(
         None,
         alias='cli-topology:max-connection-attempts-install',
-        ge=0.0,
-        le=4294967295.0,
+        ge=0,
+        le=4294967295,
     )
     """
     Maximum number of connection attempts used during installation of device.
@@ -379,15 +379,15 @@ class Cli(BaseModel):
     Settings related to encryption of arbitrary leaves/leaf-list using public key that
     is read from device on specified path.
     """
-    cli_topology_max_resend_command_attempt: Optional[float] = Field(
-        None, alias='cli-topology:max-resend-command-attempt', ge=0.0, le=4294967295.0
+    cli_topology_max_resend_command_attempt: Optional[int] = Field(
+        None, alias='cli-topology:max-resend-command-attempt', ge=0, le=4294967295
     )
     """
     Maximum number of re-send commands that are sent to device after first attempt.
     Value 0 disables resending.
     """
-    cli_topology_max_reconnection_attempts: Optional[float] = Field(
-        None, alias='cli-topology:max-reconnection-attempts', ge=0.0, le=4294967295.0
+    cli_topology_max_reconnection_attempts: Optional[int] = Field(
+        None, alias='cli-topology:max-reconnection-attempts', ge=0, le=4294967295
     )
     """
     Maximum number of reconnect retries. Non positive value or null is interpreted as infinity.
@@ -409,8 +409,8 @@ class Cli(BaseModel):
     cli_topology_device_version: Optional[str] = Field(
         None, alias='cli-topology:device-version'
     )
-    cli_topology_max_connection_attempts: Optional[float] = Field(
-        None, alias='cli-topology:max-connection-attempts', ge=0.0, le=4294967295.0
+    cli_topology_max_connection_attempts: Optional[int] = Field(
+        None, alias='cli-topology:max-connection-attempts', ge=0, le=4294967295
     )
     """
     Maximum number of connection attempts before connection initialization is marked as failed.
@@ -577,8 +577,8 @@ class Netconf(BaseModel):
     """
     Replace paths that point to config that should be handled as a one replace request
     """
-    max_reconnection_attempts: Optional[float] = Field(
-        None, alias='max-reconnection-attempts', ge=0.0, le=4294967295.0
+    max_reconnection_attempts: Optional[int] = Field(
+        None, alias='max-reconnection-attempts', ge=0, le=4294967295
     )
     """
     Maximum number of reconnect retries. Non positive value or null is interpreted as infinity.
@@ -601,8 +601,8 @@ class Netconf(BaseModel):
         alias='netconf-node-topology:yang-module-capabilities',
         title='netconf.node.topology.netconfnodeconnectionparameters.YangModuleCapabilities',
     )
-    max_connection_attempts: Optional[float] = Field(
-        None, alias='max-connection-attempts', ge=0.0, le=4294967295.0
+    max_connection_attempts: Optional[int] = Field(
+        None, alias='max-connection-attempts', ge=0, le=4294967295
     )
     """
     Maximum number of connection retries. Non positive value or null is interpreted as infinity.
@@ -662,8 +662,8 @@ class Netconf(BaseModel):
     If it is set to 'true' and NETCONF device supports notifications, NETCONF mountpoint will
     expose NETCONF notification and subscription services.
     """
-    confirm_timeout: Optional[float] = Field(
-        None, alias='confirm-timeout', ge=0.0, le=4294967295.0
+    confirm_timeout: Optional[int] = Field(
+        None, alias='confirm-timeout', ge=0, le=4294967295
     )
     """
     Timeout period in seconds to issued commit after confirmed-commit
@@ -772,8 +772,8 @@ class Netconf(BaseModel):
     """
     Forces reading of data sequentially when mounting device.
     """
-    keepalive_delay: Optional[float] = Field(
-        None, alias='keepalive-delay', ge=0.0, le=4294967295.0
+    keepalive_delay: Optional[int] = Field(
+        None, alias='keepalive-delay', ge=0, le=4294967295
     )
     """
     Netconf connector sends keepalive RPCs while the session is idle, this delay specifies the delay between keepalive RPC in seconds
@@ -782,14 +782,14 @@ class Netconf(BaseModel):
     netconf_node_topology_host: Optional[str] = Field(
         None, alias='netconf-node-topology:host'
     )
-    default_request_timeout_millis: Optional[float] = Field(
-        None, alias='default-request-timeout-millis', ge=0.0, le=4294967295.0
+    default_request_timeout_millis: Optional[int] = Field(
+        None, alias='default-request-timeout-millis', ge=0, le=4294967295
     )
     """
     Timeout in milliseconds for blocking operations within transactions.
     """
-    connection_timeout_millis: Optional[float] = Field(
-        None, alias='connection-timeout-millis', ge=0.0, le=4294967295.0
+    connection_timeout_millis: Optional[int] = Field(
+        None, alias='connection-timeout-millis', ge=0, le=4294967295
     )
     """
     Specifies timeout in milliseconds after which connection must be established.
@@ -892,7 +892,7 @@ class Node(BaseModel):
     )
     node_id: str = Field(..., alias='node-id')
     """
-    Node identifier of CLI/NETCONF node.
+    Node identifier of CLI/NETCONF/GNMI node.
     """
     cli: Optional[Cli] = Field(
         None, title='connection.manager.installmultiplenodes.input.nodes.Cli'
@@ -927,7 +927,7 @@ class NodeResult(BaseModel):
     )
     node_id: str = Field(..., alias='node-id')
     """
-    Node identifier of CLI/NETCONF node.
+    Node identifier of CLI/NETCONF/GNMI node.
     """
     error_message: Optional[str] = Field(None, alias='error-message')
     """

@@ -18,7 +18,7 @@ class Node(BaseModel):
     )
     node_id: str = Field(..., alias='node-id')
     """
-    Node identifier of CLI/NETCONF node.
+    Node identifier of CLI/NETCONF/GNMI node.
     """
     connection_type: Optional[ConnectionType] = Field(None, alias='connection-type')
 
@@ -36,7 +36,7 @@ class NodeResult(BaseModel):
     )
     node_id: str = Field(..., alias='node-id')
     """
-    Node identifier of CLI/NETCONF node.
+    Node identifier of CLI/NETCONF/GNMI node.
     """
     error_message: Optional[str] = Field(None, alias='error-message')
     """

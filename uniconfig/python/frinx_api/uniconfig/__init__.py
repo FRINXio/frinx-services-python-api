@@ -15,6 +15,8 @@ from .cli.unit.generic import executeandread
 from .cli.unit.generic import executeandreaduntil
 from .connection.manager import changeadminstate
 from .connection.manager import checkinstallednodes
+from .connection.manager import connectnode
+from .connection.manager import disconnectnode
 from .connection.manager import dryrunmountnode
 from .connection.manager import dryrununmountnode
 from .connection.manager import getinstallednodes
@@ -217,13 +219,6 @@ class OperationsNetworkTopologyTopologyTopologyIdNodeNodeIdYangExtMountExecuteAn
     output: Optional[executeandreaduntil.Output] = None
 
 
-class OperationsGetInstalledNodesPostResponse(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    output: Optional[getinstallednodes.Output] = None
-
-
 class OperationsCheckInstalledNodesPostRequest(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
@@ -236,6 +231,27 @@ class OperationsCheckInstalledNodesPostResponse(BaseModel):
         populate_by_name=True,
     )
     output: Optional[checkinstallednodes.Output] = None
+
+
+class OperationsConnectNodePostRequest(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    input: Optional[connectnode.Input] = None
+
+
+class OperationsGetInstalledNodesPostResponse(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    output: Optional[getinstallednodes.Output] = None
+
+
+class OperationsDisconnectNodePostRequest(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    input: Optional[disconnectnode.Input] = None
 
 
 class OperationsChangeEncryptionStatusPostRequest(BaseModel):
@@ -588,95 +604,18 @@ class OperationsQueryConfigPostResponse(BaseModel):
     output: Optional[queryconfig.Output] = None
 
 
-class OperationsUninstallNodePostRequest(BaseModel):
+class OperationsDryrunMountNodePostRequest(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    input: Optional[uninstallnode.Input] = None
+    input: Optional[dryrunmountnode.Input] = None
 
 
-class OperationsUninstallNodePostResponse(BaseModel):
+class OperationsDryrunMountNodePostResponse(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    output: Optional[uninstallnode.Output] = None
-
-
-class OperationsUninstallMultipleNodesPostRequest(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    input: Optional[uninstallmultiplenodes.Input] = None
-
-
-class OperationsUninstallMultipleNodesPostResponse(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    output: Optional[uninstallmultiplenodes.Output] = None
-
-
-class OperationsGetInstalledNodesPostRequest(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    input: Optional[getinstallednodes.Input] = None
-
-
-class OperationsInstallNodePostRequest(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    input: Optional[installnode.Input] = None
-
-
-class OperationsInstallNodePostResponse(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    output: Optional[installnode.Output] = None
-
-
-class OperationsChangeAdminStatePostRequest(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    input: Optional[changeadminstate.Input] = None
-
-
-class OperationsChangeAdminStatePostResponse(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    output: Optional[changeadminstate.Output] = None
-
-
-class OperationsUnmountNodePostRequest(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    input: Optional[unmountnode.Input] = None
-
-
-class OperationsUnmountNodePostResponse(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    output: Optional[unmountnode.Output] = None
-
-
-class OperationsDryrunUnmountNodePostRequest(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    input: Optional[dryrununmountnode.Input] = None
-
-
-class OperationsDryrunUnmountNodePostResponse(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    output: Optional[dryrununmountnode.Output] = None
+    output: Optional[dryrunmountnode.Output] = None
 
 
 class OperationsMountNodePostRequest(BaseModel):
@@ -707,18 +646,95 @@ class OperationsInstallMultipleNodesPostResponse(BaseModel):
     output: Optional[installmultiplenodes.Output] = None
 
 
-class OperationsDryrunMountNodePostRequest(BaseModel):
+class OperationsUninstallMultipleNodesPostRequest(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    input: Optional[dryrunmountnode.Input] = None
+    input: Optional[uninstallmultiplenodes.Input] = None
 
 
-class OperationsDryrunMountNodePostResponse(BaseModel):
+class OperationsUninstallMultipleNodesPostResponse(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    output: Optional[dryrunmountnode.Output] = None
+    output: Optional[uninstallmultiplenodes.Output] = None
+
+
+class OperationsGetInstalledNodesPostRequest(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    input: Optional[getinstallednodes.Input] = None
+
+
+class OperationsDryrunUnmountNodePostRequest(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    input: Optional[dryrununmountnode.Input] = None
+
+
+class OperationsDryrunUnmountNodePostResponse(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    output: Optional[dryrununmountnode.Output] = None
+
+
+class OperationsUnmountNodePostRequest(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    input: Optional[unmountnode.Input] = None
+
+
+class OperationsUnmountNodePostResponse(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    output: Optional[unmountnode.Output] = None
+
+
+class OperationsUninstallNodePostRequest(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    input: Optional[uninstallnode.Input] = None
+
+
+class OperationsUninstallNodePostResponse(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    output: Optional[uninstallnode.Output] = None
+
+
+class OperationsInstallNodePostRequest(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    input: Optional[installnode.Input] = None
+
+
+class OperationsInstallNodePostResponse(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    output: Optional[installnode.Output] = None
+
+
+class OperationsChangeAdminStatePostRequest(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    input: Optional[changeadminstate.Input] = None
+
+
+class OperationsChangeAdminStatePostResponse(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    output: Optional[changeadminstate.Output] = None
 
 
 class OperationsShowSubscriptionDataPostResponse(BaseModel):

@@ -18,7 +18,7 @@ class Input(BaseModel):
     )
     node_id: str = Field(..., alias='node-id')
     """
-    Node identifier of CLI/NETCONF node.
+    Node identifier of CLI/NETCONF/GNMI node.
     """
     connection_type: Optional[ConnectionType] = Field(None, alias='connection-type')
 

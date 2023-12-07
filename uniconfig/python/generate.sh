@@ -33,7 +33,7 @@ poetry run datamodel-codegen \
 poetry run python3 ./generate_rest_api.py --input /swagger/uniconfig.yaml --output ${REST_API_PATH}
 
 # apply patches
-cat ./patches/rest_api.txt >> ${REST_API_PATH}
+cat ./patches/rest_api_patch.txt >> ${REST_API_PATH}
 
 ## use default formatting
 poetry run ruff --fix . || true

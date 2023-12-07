@@ -18,7 +18,7 @@ class Input(BaseModel):
     )
     node_id: str = Field(..., alias='node-id')
     """
-    Node identifier of CLI/NETCONF node.
+    Node identifier of CLI/NETCONF/GNMI node.
     """
     admin_state: Optional[AdminState] = Field(None, alias='admin-state')
 

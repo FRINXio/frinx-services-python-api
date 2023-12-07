@@ -32,6 +32,7 @@ from . import OperationsCommitPostRequest
 from . import OperationsCommitPostResponse
 from . import OperationsCompareConfigPostRequest
 from . import OperationsCompareConfigPostResponse
+from . import OperationsConnectNodePostRequest
 from . import OperationsCopyManyToOnePostRequest
 from . import OperationsCopyManyToOnePostResponse
 from . import OperationsCopyOneToManyPostRequest
@@ -55,6 +56,7 @@ from . import OperationsDisableDeviceLoggingPostRequest
 from . import OperationsDisableDeviceLoggingPostResponse
 from . import OperationsDisableLoggingPostRequest
 from . import OperationsDisableLoggingPostResponse
+from . import OperationsDisconnectNodePostRequest
 from . import OperationsDiscoverPostRequest
 from . import OperationsDiscoverPostResponse
 from . import OperationsDryrunCommitPostRequest
@@ -85,6 +87,16 @@ from . import OperationsIsInSyncPostRequest
 from . import OperationsIsInSyncPostResponse
 from . import OperationsMountNodePostRequest
 from . import OperationsMountNodePostResponse
+from . import OperationsNetworkTopologyTopologyTopologyIdNodeNodeIdYangExtMountConfigCoveragePostRequest
+from . import OperationsNetworkTopologyTopologyTopologyIdNodeNodeIdYangExtMountConfigCoveragePostResponse
+from . import OperationsNetworkTopologyTopologyTopologyIdNodeNodeIdYangExtMountExecuteAndExpectPostRequest
+from . import OperationsNetworkTopologyTopologyTopologyIdNodeNodeIdYangExtMountExecuteAndExpectPostResponse
+from . import OperationsNetworkTopologyTopologyTopologyIdNodeNodeIdYangExtMountExecuteAndReadPostRequest
+from . import OperationsNetworkTopologyTopologyTopologyIdNodeNodeIdYangExtMountExecuteAndReadPostResponse
+from . import OperationsNetworkTopologyTopologyTopologyIdNodeNodeIdYangExtMountExecuteAndReadUntilPostRequest
+from . import OperationsNetworkTopologyTopologyTopologyIdNodeNodeIdYangExtMountExecuteAndReadUntilPostResponse
+from . import OperationsNetworkTopologyTopologyTopologyIdNodeNodeIdYangExtMountExecutePostRequest
+from . import OperationsNetworkTopologyTopologyTopologyIdNodeNodeIdYangExtMountExecutePostResponse
 from . import OperationsQueryConfigPostRequest
 from . import OperationsQueryConfigPostResponse
 from . import OperationsReadJournalPostRequest
@@ -135,85 +147,50 @@ class UniconfigRest:
 class ConfigCoverage(UniconfigRest):
     uri = '/operations/network-topology/topology={topology_id}/node={node_id}/yang-ext:mount/config-coverage'
     method = 'POST'
-    request = None
-    response = None
+    request = OperationsNetworkTopologyTopologyTopologyIdNodeNodeIdYangExtMountConfigCoveragePostRequest
+    response = OperationsNetworkTopologyTopologyTopologyIdNodeNodeIdYangExtMountConfigCoveragePostResponse
 
 
 class Execute(UniconfigRest):
     uri = '/operations/network-topology/topology={topology_id}/node={node_id}/yang-ext:mount/execute'
     method = 'POST'
-    request = None
-    response = None
+    request = OperationsNetworkTopologyTopologyTopologyIdNodeNodeIdYangExtMountExecutePostRequest
+    response = OperationsNetworkTopologyTopologyTopologyIdNodeNodeIdYangExtMountExecutePostResponse
 
 
 class ExecuteAndExpect(UniconfigRest):
     uri = '/operations/network-topology/topology={topology_id}/node={node_id}/yang-ext:mount/execute-and-expect'
     method = 'POST'
-    request = None
-    response = None
+    request = OperationsNetworkTopologyTopologyTopologyIdNodeNodeIdYangExtMountExecuteAndExpectPostRequest
+    response = OperationsNetworkTopologyTopologyTopologyIdNodeNodeIdYangExtMountExecuteAndExpectPostResponse
 
 
 class ExecuteAndRead(UniconfigRest):
     uri = '/operations/network-topology/topology={topology_id}/node={node_id}/yang-ext:mount/execute-and-read'
     method = 'POST'
-    request = None
-    response = None
+    request = OperationsNetworkTopologyTopologyTopologyIdNodeNodeIdYangExtMountExecuteAndReadPostRequest
+    response = OperationsNetworkTopologyTopologyTopologyIdNodeNodeIdYangExtMountExecuteAndReadPostResponse
 
 
 class ExecuteAndReadUntil(UniconfigRest):
     uri = '/operations/network-topology/topology={topology_id}/node={node_id}/yang-ext:mount/execute-and-read-until'
     method = 'POST'
-    request = None
-    response = None
+    request = OperationsNetworkTopologyTopologyTopologyIdNodeNodeIdYangExtMountExecuteAndReadUntilPostRequest
+    response = OperationsNetworkTopologyTopologyTopologyIdNodeNodeIdYangExtMountExecuteAndReadUntilPostResponse
 
 
-class UninstallNode(UniconfigRest):
-    uri = '/operations/uninstall-node'
+class DryrunMountNode(UniconfigRest):
+    uri = '/operations/dryrun-mount-node'
     method = 'POST'
-    request = OperationsUninstallNodePostRequest
-    response = OperationsUninstallNodePostResponse
+    request = OperationsDryrunMountNodePostRequest
+    response = OperationsDryrunMountNodePostResponse
 
 
-class UninstallMultipleNodes(UniconfigRest):
-    uri = '/operations/uninstall-multiple-nodes'
+class CheckInstalledNodes(UniconfigRest):
+    uri = '/operations/check-installed-nodes'
     method = 'POST'
-    request = OperationsUninstallMultipleNodesPostRequest
-    response = OperationsUninstallMultipleNodesPostResponse
-
-
-class GetInstalledNodes(UniconfigRest):
-    uri = '/operations/get-installed-nodes'
-    method = 'POST'
-    request = OperationsGetInstalledNodesPostRequest
-    response = OperationsGetInstalledNodesPostResponse
-
-
-class InstallNode(UniconfigRest):
-    uri = '/operations/install-node'
-    method = 'POST'
-    request = OperationsInstallNodePostRequest
-    response = OperationsInstallNodePostResponse
-
-
-class ChangeAdminState(UniconfigRest):
-    uri = '/operations/change-admin-state'
-    method = 'POST'
-    request = OperationsChangeAdminStatePostRequest
-    response = OperationsChangeAdminStatePostResponse
-
-
-class UnmountNode(UniconfigRest):
-    uri = '/operations/unmount-node'
-    method = 'POST'
-    request = OperationsUnmountNodePostRequest
-    response = OperationsUnmountNodePostResponse
-
-
-class DryrunUnmountNode(UniconfigRest):
-    uri = '/operations/dryrun-unmount-node'
-    method = 'POST'
-    request = OperationsDryrunUnmountNodePostRequest
-    response = OperationsDryrunUnmountNodePostResponse
+    request = OperationsCheckInstalledNodesPostRequest
+    response = OperationsCheckInstalledNodesPostResponse
 
 
 class MountNode(UniconfigRest):
@@ -230,18 +207,67 @@ class InstallMultipleNodes(UniconfigRest):
     response = OperationsInstallMultipleNodesPostResponse
 
 
-class CheckInstalledNodes(UniconfigRest):
-    uri = '/operations/check-installed-nodes'
+class UninstallMultipleNodes(UniconfigRest):
+    uri = '/operations/uninstall-multiple-nodes'
     method = 'POST'
-    request = OperationsCheckInstalledNodesPostRequest
-    response = OperationsCheckInstalledNodesPostResponse
+    request = OperationsUninstallMultipleNodesPostRequest
+    response = OperationsUninstallMultipleNodesPostResponse
 
 
-class DryrunMountNode(UniconfigRest):
-    uri = '/operations/dryrun-mount-node'
+class ConnectNode(UniconfigRest):
+    uri = '/operations/connect-node'
     method = 'POST'
-    request = OperationsDryrunMountNodePostRequest
-    response = OperationsDryrunMountNodePostResponse
+    request = OperationsConnectNodePostRequest
+    response = None
+
+
+class GetInstalledNodes(UniconfigRest):
+    uri = '/operations/get-installed-nodes'
+    method = 'POST'
+    request = OperationsGetInstalledNodesPostRequest
+    response = OperationsGetInstalledNodesPostResponse
+
+
+class DisconnectNode(UniconfigRest):
+    uri = '/operations/disconnect-node'
+    method = 'POST'
+    request = OperationsDisconnectNodePostRequest
+    response = None
+
+
+class DryrunUnmountNode(UniconfigRest):
+    uri = '/operations/dryrun-unmount-node'
+    method = 'POST'
+    request = OperationsDryrunUnmountNodePostRequest
+    response = OperationsDryrunUnmountNodePostResponse
+
+
+class UnmountNode(UniconfigRest):
+    uri = '/operations/unmount-node'
+    method = 'POST'
+    request = OperationsUnmountNodePostRequest
+    response = OperationsUnmountNodePostResponse
+
+
+class UninstallNode(UniconfigRest):
+    uri = '/operations/uninstall-node'
+    method = 'POST'
+    request = OperationsUninstallNodePostRequest
+    response = OperationsUninstallNodePostResponse
+
+
+class InstallNode(UniconfigRest):
+    uri = '/operations/install-node'
+    method = 'POST'
+    request = OperationsInstallNodePostRequest
+    response = OperationsInstallNodePostResponse
+
+
+class ChangeAdminState(UniconfigRest):
+    uri = '/operations/change-admin-state'
+    method = 'POST'
+    request = OperationsChangeAdminStatePostRequest
+    response = OperationsChangeAdminStatePostResponse
 
 
 class ChangeEncryptionStatus(UniconfigRest):
