@@ -8,8 +8,6 @@ from pydantic import BaseModel
 from pydantic import ConfigDict
 from pydantic import Field
 
-from ...frinx import types
-
 
 class TargetNodes(BaseModel):
     model_config = ConfigDict(
@@ -27,6 +25,17 @@ class Input(BaseModel):
         alias='target-nodes',
         title='uniconfig.manager.targetuniconfigunistorenodesfields.TargetNodes',
     )
+
+
+class DeletedDatum(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    data: Optional[str] = None
+    path: Optional[str] = None
+    """
+    Instance-identifier of deleted data node.
+    """
 
 
 class CreatedDatum(BaseModel):
@@ -52,17 +61,6 @@ class UpdatedDatum(BaseModel):
     data_actual: Optional[str] = Field(None, alias='data-actual')
 
 
-class DeletedDatum(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    data: Optional[str] = None
-    path: Optional[str] = None
-    """
-    Instance-identifier of deleted data node.
-    """
-
-
 class ReorderedList(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
@@ -71,33 +69,28 @@ class ReorderedList(BaseModel):
     """
     Instance-identifier of reordered list.
     """
-    intended_list_keys: Optional[str] = Field(None, alias='intended-list-keys')
     actual_list_keys: Optional[str] = Field(None, alias='actual-list-keys')
+    intended_list_keys: Optional[str] = Field(None, alias='intended-list-keys')
 
 
 class NodeResultItem(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
+    deleted_data: Optional[list[DeletedDatum]] = Field(None, alias='deleted-data')
+    """
+    Removed intended configuration against actual.
+    """
     node_id: Optional[str] = Field(None, alias='node-id')
     created_data: Optional[list[CreatedDatum]] = Field(None, alias='created-data')
     """
     Created intended configuration against actual.
     """
-    error_message: Optional[str] = Field(None, alias='error-message')
-    """
-    Error message describing cause of error.
-    """
+    topology_id: Optional[str] = Field(None, alias='topology-id')
     updated_data: Optional[list[UpdatedDatum]] = Field(None, alias='updated-data')
     """
     Updated intended configuration against actual.
     """
-    deleted_data: Optional[list[DeletedDatum]] = Field(None, alias='deleted-data')
-    """
-    Removed intended configuration against actual.
-    """
-    error_type: Optional[types.ErrorType] = Field(None, alias='error-type')
-    status: types.OperationResultType
     reordered_lists: Optional[list[ReorderedList]] = Field(
         None, alias='reordered-lists'
     )
@@ -124,10 +117,6 @@ class Output(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    error_message: Optional[str] = Field(None, alias='error-message')
-    """
-    Error message that describe overall problem.
-    """
     node_results: Optional[NodeResults] = Field(
         None,
         alias='node-results',
@@ -136,4 +125,3 @@ class Output(BaseModel):
     """
     Individual result of calculate-diff for given nodes.
     """
-    overall_status: types.OperationResultType = Field(..., alias='overall-status')

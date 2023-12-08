@@ -8,15 +8,6 @@ from pydantic import BaseModel
 from pydantic import ConfigDict
 from pydantic import Field
 
-from ...frinx import types
-
-
-class TargetNodes(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    node: Optional[list[str]] = None
-
 
 class Input(BaseModel):
     model_config = ConfigDict(
@@ -34,14 +25,9 @@ class Input(BaseModel):
     those N devices will be rolled back unless this option is set to false.
     The N+1 device will always be rolled back regardless of this option.
     """
-    target_nodes: Optional[TargetNodes] = Field(
-        None,
-        alias='target-nodes',
-        title='uniconfig.manager.targetnodesfields.TargetNodes',
-    )
     skip_unreachable_nodes: Optional[bool] = Field(None, alias='skip-unreachable-nodes')
     """
-    Option to skip nodes, that are unreachable at the time of commit. Other nodes will be committed
+    Option to skip nodes, that are unreachable at the time of commit. Other nodes will be commited
     """
     do_validate: Optional[bool] = Field(None, alias='do-validate')
     """
@@ -49,58 +35,11 @@ class Input(BaseModel):
     """
 
 
-class NodeResultItem(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    configuration_status: Optional[types.OperationResultType] = Field(
-        None, alias='configuration-status'
-    )
-    node_id: Optional[str] = Field(None, alias='node-id')
-    error_message: Optional[str] = Field(None, alias='error-message')
-    """
-    Error message describing cause of error.
-    """
-    configuration: Optional[str] = None
-    """
-    Cli commands or netconf RPCs that needs to be executed
-    on node to reach intended configuration state
-    """
-    rollback_status: Optional[types.OperationResultType] = Field(
-        None, alias='rollback-status'
-    )
-    error_type: Optional[types.ErrorType] = Field(None, alias='error-type')
-
-
-class NodeResults(BaseModel):
-    """
-    Result of configuration and rollback on each configured network element.
-    """
-
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    node_result: Optional[list[NodeResultItem]] = Field(None, alias='node-result')
-    """
-    Result of configuration and rollback on the given node.
-    Rollback status is empty if rollback was not executed.
-    """
-
-
 class Output(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    error_message: Optional[str] = Field(None, alias='error-message')
+    unreachable_nodes: Optional[list[str]] = Field(None, alias='unreachable-nodes')
     """
-    Error message that describe overall problem.
+    List of unreachable node identifiers.
     """
-    node_results: Optional[NodeResults] = Field(
-        None,
-        alias='node-results',
-        title='uniconfig.manager.commitoutputfields.NodeResults',
-    )
-    """
-    Result of configuration and rollback on each configured network element.
-    """
-    overall_status: types.OperationResultType = Field(..., alias='overall-status')

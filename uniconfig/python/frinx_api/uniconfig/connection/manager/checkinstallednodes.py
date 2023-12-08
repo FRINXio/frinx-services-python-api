@@ -27,11 +27,37 @@ class Input(BaseModel):
     )
 
 
+class NodeResultItem(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    node_id: Optional[str] = Field(None, alias='node-id')
+    topology_id: Optional[str] = Field(None, alias='topology-id')
+
+
+class NodeResults(BaseModel):
+    """
+    Individual result of node identifiers for given nodes.
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    node_result: Optional[list[NodeResultItem]] = Field(None, alias='node-result')
+    """
+    List of node identifiers.
+    """
+
+
 class Output(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    nodes: Optional[list[str]] = None
+    node_results: Optional[NodeResults] = Field(
+        None,
+        alias='node-results',
+        title='connection.manager.getinstallednodesoutputfields.NodeResults',
+    )
     """
-    List of node identifiers.
+    Individual result of node identifiers for given nodes.
     """

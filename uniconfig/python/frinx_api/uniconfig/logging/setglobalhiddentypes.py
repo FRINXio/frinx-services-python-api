@@ -8,8 +8,6 @@ from pydantic import BaseModel
 from pydantic import ConfigDict
 from pydantic import Field
 
-from . import RpcStatus
-
 
 class Input(BaseModel):
     model_config = ConfigDict(
@@ -17,16 +15,5 @@ class Input(BaseModel):
     )
     hidden_types: Optional[list[str]] = Field(None, alias='hidden-types')
     """
-    Types filtered and hidden at logger output.
+    Types filtered and hidden at logger ouptut.
     """
-
-
-class Output(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    message: Optional[str] = None
-    """
-    Information message about state of operation.
-    """
-    status: RpcStatus

@@ -19,7 +19,7 @@ class TcpPortItem(BaseModel):
     start_port: Optional[int] = Field(None, alias='start-port', ge=0, le=65535)
 
 
-class Address(BaseModel):
+class Addres(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -63,32 +63,32 @@ class Input(BaseModel):
     Check whether the host is reachable or not using ICMP protocol
     """
     tcp_port: Optional[list[TcpPortItem]] = Field(None, alias='tcp-port')
-    address: Optional[list[Address]] = None
+    address: Optional[list[Addres]] = None
     udp_port: Optional[list[UdpPortItem]] = Field(None, alias='udp-port')
 
 
-class AvailableUdpPort(RootModel[int]):
+class UnavailableTcpPort(RootModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
     root: int = Field(..., ge=0, le=65535)
 
 
-class UnavailableTcpPort(RootModel[int]):
+class AvailableTcpPort(RootModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
     root: int = Field(..., ge=0, le=65535)
 
 
-class AvailableTcpPort(RootModel[int]):
+class UnavailableUdpPort(RootModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
     root: int = Field(..., ge=0, le=65535)
 
 
-class UnavailableUdpPort(RootModel[int]):
+class AvailableUdpPort(RootModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -99,16 +99,6 @@ class DeviceItem(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    is_host_reachable: Optional[bool] = Field(None, alias='is-host-reachable')
-    """
-    If the host is reachable or not using ICMP protocol
-    """
-    available_udp_ports: Optional[list[AvailableUdpPort]] = Field(
-        None, alias='available-udp-ports'
-    )
-    """
-    All the available UDP ports
-    """
     host: Optional[str] = None
     """
     Host address either in IP (IPv4 or IPv6) format or in domain-name format
@@ -118,6 +108,10 @@ class DeviceItem(BaseModel):
     )
     """
     TCP ports that are unreachable
+    """
+    is_host_reachable: Optional[bool] = Field(None, alias='is-host-reachable')
+    """
+    If the host is reachable or not using ICMP protocol
     """
     available_tcp_ports: Optional[list[AvailableTcpPort]] = Field(
         None, alias='available-tcp-ports'
@@ -130,6 +124,12 @@ class DeviceItem(BaseModel):
     )
     """
     UDP ports that are unreachable
+    """
+    available_udp_ports: Optional[list[AvailableUdpPort]] = Field(
+        None, alias='available-udp-ports'
+    )
+    """
+    All the available UDP ports
     """
 
 

@@ -9,16 +9,3 @@ class DataTreeOperation(Enum):
     merge = 'merge'
     replace = 'replace'
     remove = 'remove'
-
-
-class ErrorType(Enum):
-    no_connection = 'no-connection'
-    device_processing_error = 'device-processing-error'
-    uniconfig_error = 'uniconfig-error'
-    cli_error = 'cli-error'
-    netconf_error = 'netconf-error'
-
-
-class OperationResultType(Enum):
-    complete = 'complete'
-    fail = 'fail'

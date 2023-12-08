@@ -8,8 +8,6 @@ from pydantic import BaseModel
 from pydantic import ConfigDict
 from pydantic import Field
 
-from ...frinx import types
-
 
 class TargetNodes(BaseModel):
     model_config = ConfigDict(
@@ -26,14 +24,6 @@ class Input(BaseModel):
     """
     Perform timestamp comparison(last known to Uniconfig vs current timestamp on device)
     before loading all configuration from a device.
-    """
-    skip_unreachable_nodes: Optional[bool] = Field(None, alias='skip-unreachable-nodes')
-    """
-    Option to skip nodes, that are unreachable at the time of commit. Other nodes will be committed
-    """
-    do_validate: Optional[bool] = Field(None, alias='do-validate')
-    """
-    Option to enable/disable validation at commit. Default value is true - validate
     """
     do_confirmed_commit: Optional[bool] = Field(None, alias='do-confirmed-commit')
     """
@@ -52,50 +42,11 @@ class Input(BaseModel):
         alias='target-nodes',
         title='uniconfig.manager.targetuniconfignodesfields.TargetNodes',
     )
-
-
-class NodeResultItem(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    node_id: Optional[str] = Field(None, alias='node-id')
-    error_type: Optional[types.ErrorType] = Field(None, alias='error-type')
-    error_message: Optional[str] = Field(None, alias='error-message')
+    skip_unreachable_nodes: Optional[bool] = Field(None, alias='skip-unreachable-nodes')
     """
-    Error message describing cause of error.
+    Option to skip nodes, that are unreachable at the time of commit. Other nodes will be commited
     """
-    status: types.OperationResultType
-
-
-class NodeResults(BaseModel):
+    do_validate: Optional[bool] = Field(None, alias='do-validate')
     """
-    Individual result of sync for given nodes.
+    Option to enable/disable validation at commit. Default value is true - validate
     """
-
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    node_result: Optional[list[NodeResultItem]] = Field(None, alias='node-result')
-    """
-    Result of synchronization of configuration to network element
-    from actual uniconfig node.
-    """
-
-
-class Output(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    error_message: Optional[str] = Field(None, alias='error-message')
-    """
-    Error message that describe overall problem.
-    """
-    node_results: Optional[NodeResults] = Field(
-        None,
-        alias='node-results',
-        title='uniconfig.manager.synctonetworkoutputfields.NodeResults',
-    )
-    """
-    Individual result of sync for given nodes.
-    """
-    overall_status: types.OperationResultType = Field(..., alias='overall-status')
