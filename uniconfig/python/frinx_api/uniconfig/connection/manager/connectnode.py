@@ -25,8 +25,8 @@ class Input(BaseModel):
     """
     Node identifier of CLI/NETCONF/GNMI/SUBSCRIPTION node.
     """
-    max_connection_attempts: Optional[float] = Field(
-        None, alias='max-connection-attempts', ge=0.0, le=4294967295.0
+    max_connection_attempts: Optional[int] = Field(
+        None, alias='max-connection-attempts', ge=0, le=4294967295
     )
     """
     Maximum number of connection retries. Non positive value or null is interpreted as infinity.

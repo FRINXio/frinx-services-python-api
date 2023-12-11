@@ -15,5 +15,5 @@ class Input(BaseModel):
     )
     hidden_types: Optional[list[str]] = Field(None, alias='hidden-types')
     """
-    Types filtered and hidden at logger ouptut.
+    Types filtered and hidden at logger output.
     """
