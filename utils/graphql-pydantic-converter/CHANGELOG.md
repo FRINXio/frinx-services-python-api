@@ -16,3 +16,6 @@
 # 1.1.1
 - Fix missing inputs for mutation and query render in extracted format
 - ENUM keys always uppercase
+
+# 1.2.0
+- Allow to populate by name
