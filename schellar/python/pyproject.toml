@@ -5,7 +5,7 @@ build-backend = "poetry.core.masonry.api"
 [tool.poetry.dependencies]
 python = "^3.10"
 pydantic = "^2"
-graphql-pydantic-converter = "^1.1"
+graphql-pydantic-converter = "^1.2"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.0.263"
@@ -30,6 +30,7 @@ Source = 'https://github.com/FRINXio/frinx-python-sdk'
 [tool.pyright]
 include = ['frinx_api']
 reportGeneralTypeIssues = "none"
+reportIncompatibleVariableOverride = false
 
 [tool.ruff]
 line-length = 120
