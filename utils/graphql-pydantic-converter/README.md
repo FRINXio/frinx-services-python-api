@@ -101,20 +101,20 @@ from schedule_api import Schedule, CreateScheduleMutation, CreateScheduleInput
 SCHEDULE: Schedule = Schedule(
     name=True,
     enabled=True,
-    workflowName=True,
-    workflowVersion=True,
-    cronString=True
+    workflow_name=True,
+    workflow_version=True,
+    cron_string=True
 )
 
 mutation = CreateScheduleMutation(
     payload=SCHEDULE,
     input=CreateScheduleInput(
         name='name',
-        workflowName='workflowName',
-        workflowVersion='workflowVersion',
-        cronString='* * * * *',
+        workflow_name='workflowName',
+        workflow_version='workflowVersion',
+        cron_string='* * * * *',
         enabled=True,
-        parallelRuns=False,
+        parallel_runs=False,
     )
 )
 

@@ -36,7 +36,8 @@ class Subscription(BaseModel):
     ...
 
     model_config = ConfigDict(
-        extra='forbid'
+        extra='forbid',
+        populate_by_name=True
     )
 
 
@@ -44,7 +45,8 @@ class Interface(BaseModel):
     ...
 
     model_config = ConfigDict(
-        extra='forbid'
+        extra='forbid',
+        populate_by_name=True
     )
 
 
@@ -52,6 +54,7 @@ class GraphqlSchemaType(BaseModel):
 
     model_config = ConfigDict(
         extra='forbid',
+        populate_by_name=True
     )
 
     @staticmethod
@@ -79,6 +82,12 @@ class GraphqlSchemaType(BaseModel):
 
 
 class Payload(BaseModel):
+
+    model_config = ConfigDict(
+        extra='forbid',
+        populate_by_name=True
+    )
+
     typename: bool = Field(default=False, alias='__typename')
 
     def dict_to_custom_string(self, any_object: Any) -> str:

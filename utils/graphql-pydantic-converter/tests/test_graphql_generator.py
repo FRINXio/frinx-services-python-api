@@ -70,11 +70,11 @@ class TestTaskGenerator:
             ),
             payload=AddBlueprintPayload(
                 blueprint=Blueprint(
-                    createdAt=True,
+                    created_at=True,
                     id=False,
                     name=True,
                     template=True,
-                    updatedAt=True
+                    updated_at=True
                 )
             )
         ).render(form='inline')
@@ -84,13 +84,13 @@ class TestTaskGenerator:
         reference = ('mutation { ClaimResource ( poolId: "00000000001",  description: "<description>",  userInput: '
                      '{ address: "0.0.0.0", port: 80 }) { Properties AlternativeId id } }')
         mutation = ClaimResourceMutation(
-            poolId='00000000001',
+            pool_id='00000000001',
             description='<description>',
-            userInput=dict(address='0.0.0.0', port=80),
+            user_input=dict(address='0.0.0.0', port=80),
             payload=Resource(
                 id=True,
-                Properties=True,
-                AlternativeId=True
+                properties=True,
+                alternative_id=True
             )
         ).render(form='inline')
         assert reference == mutation.query
@@ -114,11 +114,11 @@ class TestTaskGenerator:
 
         add_device_mutation = AddDeviceInput(
             name='name',
-            zoneId='zoneId',
-            mountParameters='{}',
-            labelIds=['id', 'ud'],
+            zone_id='zoneId',
+            mount_parameters='{}',
+            label_ids=['id', 'ud'],
             port=8080,
-            deviceSize=DeviceSize.MEDIUM,
+            device_size=DeviceSize.MEDIUM,
             booleans=True,
             dicts={
                 'a': 'a',
@@ -170,9 +170,9 @@ class TestTaskGenerator:
     def test_render_input_advanced(self) -> None:
         query = SearchPoolsByTagsQuery(
             tags=TagOr(
-                matchesAny=[
+                matches_any=[
                     TagAnd(
-                        matchesAll=[
+                        matches_all=[
                             'root_pool'
                         ]
                     )
@@ -181,20 +181,20 @@ class TestTaskGenerator:
             payload=ResourcePoolConnection(
                 edges=ResourcePoolEdge(
                     node=ResourcePool(
-                        Name=True,
-                        PoolProperties=True,
-                        PoolType=True,
+                        name=True,
+                        pool_properties=True,
+                        pool_type=True,
                         id=True,
-                        AllocationStrategy=AllocationStrategy(
-                            Description=True,
-                            Lang=True,
-                            Name=True,
-                            Script=True,
+                        allocation_strategy=AllocationStrategy(
+                            description=True,
+                            lang=True,
+                            name=True,
+                            script=True,
                             id=True
                         )
                     )
                 ),
-                totalCount=True
+                total_count=True
             )
         ).render(form='inline')
 
@@ -206,27 +206,27 @@ class TestTaskGenerator:
 
         query_render = SchedulesQuery(
             payload=ScheduleConnection(
-                pageInfo=PageInfoSchedule(
-                    hasNextPage=True,
-                    hasPreviousPage=True,
-                    startCursor=True,
-                    endCursor=True
+                page_info=PageInfoSchedule(
+                    has_next_page=True,
+                    has_previous_page=True,
+                    start_cursor=True,
+                    end_cursor=True
                 ),
                 edges=ScheduleEdge(
                     node=Schedule(
                         name=True,
-                        cronString=True,
+                        cron_string=True,
                         enabled=True
                     ),
                     cursor=True
                 ),
-                totalCount=True
+                total_count=True
             ),
             after='aaa',
             first=10,
             filter=SchedulesFilterInput(
-                workflowName='TEST_A',
-                workflowVersion='1'
+                workflow_name='TEST_A',
+                workflow_version='1'
             )
         ).render(form='inline')
 
@@ -262,9 +262,9 @@ class TestTaskGenerator:
 
         query_first = SearchPoolsByTagsQuery(
             tags=TagOr(
-                matchesAny=[
+                matches_any=[
                     TagAnd(
-                        matchesAll=[
+                        matches_all=[
                             'root_pool'
                         ]
                     )
@@ -273,44 +273,44 @@ class TestTaskGenerator:
             payload=ResourcePoolConnection(
                 edges=ResourcePoolEdge(
                     node=ResourcePool(
-                        Name=True,
+                        name=True,
                         id=True,
-                        PoolProperties=True,
-                        PoolType=True,
-                        AllocationStrategy=AllocationStrategy(
-                            Name=True
+                        pool_properties=True,
+                        pool_type=True,
+                        allocation_strategy=AllocationStrategy(
+                            name=True
                         )
                     )
                 ),
-                totalCount=True
+                total_count=True
             )
         )
 
         query_second = SchedulesQuery(
             payload=ScheduleConnection(
-                __typename=True,
-                pageInfo=PageInfoSchedule(
-                    __typename=True,
-                    hasNextPage=True,
-                    hasPreviousPage=True,
-                    startCursor=True,
-                    endCursor=True
+                typename=True,
+                page_info=PageInfoSchedule(
+                    typename=True,
+                    has_next_page=True,
+                    has_previous_page=True,
+                    start_cursor=True,
+                    end_cursor=True
                 ),
                 edges=ScheduleEdge(
                     node=Schedule(
                         name=True,
-                        cronString=True,
+                        cron_string=True,
                         enabled=True
                     ),
                     cursor=True
                 ),
-                totalCount=True
+                total_count=True
             ),
             after='aaa',
             first=10,
             filter=SchedulesFilterInput(
-                workflowName='TEST_A',
-                workflowVersion='1'
+                workflow_name='TEST_A',
+                workflow_version='1'
             )
         )
 
@@ -333,9 +333,9 @@ class TestTaskGenerator:
 
         query_first = SearchPoolsByTagsQuery(
             tags=TagOr(
-                matchesAny=[
+                matches_any=[
                     TagAnd(
-                        matchesAll=[
+                        matches_all=[
                             'root_pool'
                         ]
                     )
@@ -344,44 +344,44 @@ class TestTaskGenerator:
             payload=ResourcePoolConnection(
                 edges=ResourcePoolEdge(
                     node=ResourcePool(
-                        Name=True,
+                        name=True,
                         id=True,
-                        PoolProperties=True,
-                        PoolType=True,
-                        AllocationStrategy=AllocationStrategy(
-                            Name=True
+                        pool_properties=True,
+                        pool_type=True,
+                        allocation_strategy=AllocationStrategy(
+                            name=True
                         )
                     )
                 ),
-                totalCount=True
+                total_count=True
             )
         )
 
         query_second = SchedulesQuery(
             payload=ScheduleConnection(
-                __typename=True,
-                pageInfo=PageInfoSchedule(
-                    __typename=True,
-                    hasNextPage=True,
-                    hasPreviousPage=True,
-                    startCursor=True,
-                    endCursor=True
+                typename=True,
+                page_info=PageInfoSchedule(
+                    typename=True,
+                    has_next_page=True,
+                    has_previous_page=True,
+                    start_cursor=True,
+                    end_cursor=True
                 ),
                 edges=ScheduleEdge(
                     node=Schedule(
                         name=True,
-                        cronString=True,
+                        cron_string=True,
                         enabled=True
                     ),
                     cursor=True
                 ),
-                totalCount=True
+                total_count=True
             ),
             after='aaa',
             first=10,
             filter=SchedulesFilterInput(
-                workflowName='TEST_A',
-                workflowVersion='1'
+                workflow_name='TEST_A',
+                workflow_version='1'
             )
         )
 
@@ -430,9 +430,9 @@ class TestTaskGenerator:
 
         query = SearchPoolsByTagsQuery(
             tags=TagOr(
-                matchesAny=[
+                matches_any=[
                     TagAnd(
-                        matchesAll=[
+                        matches_all=[
                             'root_pool'
                         ]
                     )
@@ -441,16 +441,16 @@ class TestTaskGenerator:
             payload=ResourcePoolConnection(
                 edges=ResourcePoolEdge(
                     node=ResourcePool(
-                        Name=True,
+                        name=True,
                         id=True,
-                        PoolProperties=True,
-                        PoolType=True,
-                        AllocationStrategy=AllocationStrategy(
-                            Name=True
+                        pool_properties=True,
+                        pool_type=True,
+                        allocation_strategy=AllocationStrategy(
+                            name=True
                         )
                     )
                 ),
-                totalCount=True
+                total_count=True
             )
         )
 
@@ -468,17 +468,17 @@ class TestTaskGenerator:
             payload=Schedule(
                 name=True,
                 enabled=True,
-                workflowName=True,
-                workflowVersion=True,
-                cronString=True
+                workflow_name=True,
+                workflow_version=True,
+                cron_string=True
             ),
             input=CreateScheduleInput(
                 name='name',
-                workflowName='workflowName',
-                workflowVersion='workflowVersion',
-                cronString='* * * * *',
+                workflow_name='workflowName',
+                workflow_version='workflowVersion',
+                cron_string='* * * * *',
                 enabled=True,
-                parallelRuns=False,
+                parallel_runs=False,
             )
         )
 
