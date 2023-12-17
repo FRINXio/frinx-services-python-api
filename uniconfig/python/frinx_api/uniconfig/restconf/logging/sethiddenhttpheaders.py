@@ -8,8 +8,6 @@ from pydantic import BaseModel
 from pydantic import ConfigDict
 from pydantic import Field
 
-from ... import logging
-
 
 class Input(BaseModel):
     model_config = ConfigDict(
@@ -20,14 +18,3 @@ class Input(BaseModel):
     List of HTTP headers (names of the headers) which content is hidden in the logs.
     Names of the HTTP headers are not case-sensitive.
     """
-
-
-class Output(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    message: Optional[str] = None
-    """
-    Information message about state of operation.
-    """
-    status: logging.RpcStatus

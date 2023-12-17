@@ -18,6 +18,8 @@ class ConnectionType(Enum):
     gnmi = 'gnmi'
     netconf_dryrun_connection = 'netconf-dryrun-connection'
     cli_dryrun_connection = 'cli-dryrun-connection'
+    snmp = 'snmp'
+    gnmi_dryrun_connection = 'gnmi-dryrun-connection'
 
 
 class MountType(Enum):
@@ -27,3 +29,5 @@ class MountType(Enum):
     gnmi = 'gnmi'
     netconf_dryrun_connection = 'netconf-dryrun-connection'
     cli_dryrun_connection = 'cli-dryrun-connection'
+    snmp = 'snmp'
+    gnmi_dryrun_connection = 'gnmi-dryrun-connection'

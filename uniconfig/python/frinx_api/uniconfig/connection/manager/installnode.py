@@ -10,7 +10,6 @@ from pydantic import ConfigDict
 from pydantic import Field
 
 from ...cli import topology
-from ...frinx import types
 from ...netconf.node import topology as topology_1
 from ...uniconfig import config
 
@@ -158,7 +157,7 @@ class NetconfNodeTopologyOdlHelloMessageCapabilities(BaseModel):
     """
 
 
-class NetconfSubscriptionsStreamItem(BaseModel):
+class SubscriptionsStreamItem(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -176,9 +175,13 @@ class NetconfSubscriptionsStreamItem(BaseModel):
     It is not valid to specify start times that are later than the current time. If the <startTime> specified
     is earlier than the log can support, the replay will begin with the earliest available notification.
     """
-    stream_name: Optional[str] = Field(None, alias='stream-name')
+    stream_name: str = Field(..., alias='stream-name')
     """
     Identifier of the notification stream.
+    """
+    paths: Optional[list[str]] = None
+    """
+    Paths to which subscribe on data change events
     """
 
 
@@ -230,8 +233,8 @@ class SessionTimers(BaseModel):
     reconnenction_attempts_multiplier: Optional[int] = Field(
         None,
         alias='reconnenction-attempts-multiplier',
-        ge=-922337203685477630,
-        le=922337203685477630,
+        ge=-922337203685477600,
+        le=922337203685477600,
     )
     """
     After each reconnection attempt, the delay between reconnection attempts is
@@ -363,7 +366,7 @@ class Cli(BaseModel):
     cli_topology_max_connection_attempts_install: Optional[int] = Field(
         None,
         alias='cli-topology:max-connection-attempts-install',
-        ge=0,
+        ge=0.0,
         le=4294967295,
     )
     """
@@ -668,8 +671,14 @@ class Netconf(BaseModel):
     """
     Timeout period in seconds to issued commit after confirmed-commit
     """
+    subscriptions_stream: Optional[list[SubscriptionsStreamItem]] = Field(
+        None, alias='subscriptions:stream'
+    )
+    """
+    List of available streams to which subscription can be created.
+    """
     sleep_factor: Optional[int] = Field(
-        None, alias='sleep-factor', ge=-922337203685477630, le=922337203685477630
+        None, alias='sleep-factor', ge=-922337203685477600, le=922337203685477600
     )
     """
     After each reconnection attempt, the delay between reconnection attempts is
@@ -715,12 +724,6 @@ class Netconf(BaseModel):
     When the underlying node is connected, its NETCONF context
     is available verbatim under this container through the
     mount extension.
-    """
-    netconf_subscriptions_stream: Optional[
-        list[NetconfSubscriptionsStreamItem]
-    ] = Field(None, alias='netconf-subscriptions:stream')
-    """
-    List of available streams to which subscription can be created.
     """
     netconf_node_topology_non_module_capabilities: Optional[
         NetconfNodeTopologyNonModuleCapabilities
@@ -851,6 +854,12 @@ class Gnmi(BaseModel):
     uniconfig_config_admin_state: Optional[config.AdminState] = Field(
         None, alias='uniconfig-config:admin-state'
     )
+    subscriptions_stream: Optional[list[SubscriptionsStreamItem]] = Field(
+        None, alias='subscriptions:stream'
+    )
+    """
+    List of available streams to which subscription can be created.
+    """
     uniconfig_config_crypto: Optional[UniconfigConfigCrypto] = Field(
         None,
         alias='uniconfig-config:crypto',
@@ -910,14 +919,9 @@ class Input(BaseModel):
     """
     gNMI node settings.
     """
-
-
-class Output(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
+    snmp: Optional[dict[str, Any]] = Field(
+        None, title='connection.manager.installnodeinputfields.Snmp'
     )
-    error_message: Optional[str] = Field(None, alias='error-message')
     """
-    Message that described occurred error during invocation of operation.
+    snmp node settings.
     """
-    status: types.OperationResultType

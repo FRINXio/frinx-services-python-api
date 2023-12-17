@@ -8,7 +8,6 @@ from pydantic import BaseModel
 from pydantic import ConfigDict
 from pydantic import Field
 
-from ... import logging
 from . import GnmiMessageType
 
 
@@ -21,14 +20,3 @@ class Input(BaseModel):
     List of gNMI message types, based on which the broker will log the message content.
     Names of the gNMI message types are not case-sensitive.
     """
-
-
-class Output(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    message: Optional[str] = None
-    """
-    Information message about state of operation.
-    """
-    status: logging.RpcStatus

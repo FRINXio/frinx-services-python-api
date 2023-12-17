@@ -6,9 +6,6 @@ from typing import Optional
 
 from pydantic import BaseModel
 from pydantic import ConfigDict
-from pydantic import Field
-
-from ...frinx import types
 
 
 class Input(BaseModel):
@@ -19,14 +16,3 @@ class Input(BaseModel):
     """
     Name of snapshot.
     """
-
-
-class Output(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    error_message: Optional[str] = Field(None, alias='error-message')
-    """
-    Error message that describe overall problem.
-    """
-    overall_status: types.OperationResultType = Field(..., alias='overall-status')

@@ -9,6 +9,6 @@ class TagIdentityref(Enum):
     template_tags_delete = 'template-tags:delete'
     template_tags_create = 'template-tags:create'
     template_tags_merge = 'template-tags:merge'
-    template_tags_update = 'template-tags:update'
     template_tags_replace = 'template-tags:replace'
+    template_tags_update = 'template-tags:update'
     template_tags_operation = 'template-tags:operation'

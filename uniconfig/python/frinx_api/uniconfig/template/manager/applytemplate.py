@@ -8,8 +8,6 @@ from pydantic import BaseModel
 from pydantic import ConfigDict
 from pydantic import Field
 
-from ...frinx import types
-
 
 class TypedLeafValue(BaseModel):
     model_config = ConfigDict(
@@ -74,31 +72,3 @@ class Input(BaseModel):
     uniconfig_node: Optional[list[UniconfigNodeItem]] = Field(
         None, alias='uniconfig-node'
     )
-
-
-class NodeResultItem(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    node_id: Optional[str] = Field(None, alias='node-id')
-    error_type: Optional[types.ErrorType] = Field(None, alias='error-type')
-    error_message: Optional[str] = Field(None, alias='error-message')
-    """
-    Error message describing cause of error.
-    """
-    status: types.OperationResultType
-
-
-class Output(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    error_message: Optional[str] = Field(None, alias='error-message')
-    """
-    Error message that describe overall problem.
-    """
-    node_result: Optional[list[NodeResultItem]] = Field(None, alias='node-result')
-    """
-    RPC results per target Uniconfig node to which template is applied.
-    """
-    overall_status: types.OperationResultType = Field(..., alias='overall-status')

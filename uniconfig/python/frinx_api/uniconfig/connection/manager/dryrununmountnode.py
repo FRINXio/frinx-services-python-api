@@ -8,7 +8,6 @@ from pydantic import BaseModel
 from pydantic import ConfigDict
 from pydantic import Field
 
-from ...frinx import types
 from . import ConnectionType
 
 
@@ -21,14 +20,3 @@ class Input(BaseModel):
     Node identifier of CLI/NETCONF/GNMI node.
     """
     connection_type: Optional[ConnectionType] = Field(None, alias='connection-type')
-
-
-class Output(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    error_message: Optional[str] = Field(None, alias='error-message')
-    """
-    Message that described occurred error during invocation of operation.
-    """
-    status: types.OperationResultType

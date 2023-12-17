@@ -8,8 +8,6 @@ from pydantic import BaseModel
 from pydantic import ConfigDict
 from pydantic import Field
 
-from . import RpcStatus
-
 
 class Input(BaseModel):
     model_config = ConfigDict(
@@ -23,14 +21,3 @@ class Input(BaseModel):
     """
     Logging broker identifier.
     """
-
-
-class Output(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    message: Optional[str] = None
-    """
-    Information message about state of operation.
-    """
-    status: RpcStatus

@@ -8,8 +8,6 @@ from pydantic import BaseModel
 from pydantic import ConfigDict
 from pydantic import Field
 
-from ...frinx import types
-
 
 class TargetTransactions(BaseModel):
     model_config = ConfigDict(
@@ -34,52 +32,3 @@ class Input(BaseModel):
         alias='target-transactions',
         title='transaction.log.targetuuidsfields.TargetTransactions',
     )
-
-
-class ResultItem(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    transaction_id: Optional[str] = Field(None, alias='transaction-id')
-    """
-    Transaction identifier.
-    """
-    error_type: Optional[types.ErrorType] = Field(None, alias='error-type')
-    error_message: Optional[str] = Field(None, alias='error-message')
-    """
-    Error message describing cause of error.
-    """
-    status: Optional[types.OperationResultType] = None
-
-
-class RevertOutput(BaseModel):
-    """
-    Results of reverted changes.
-    """
-
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    result: Optional[list[ResultItem]] = None
-    """
-    Result of reverted changes.
-    """
-
-
-class Output(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    error_message: Optional[str] = Field(None, alias='error-message')
-    """
-    Error message that describe overall problem.
-    """
-    revert_output: Optional[RevertOutput] = Field(
-        None,
-        alias='revert-output',
-        title='transaction.log.revertoutputfields.RevertOutput',
-    )
-    """
-    Results of reverted changes.
-    """
-    overall_status: types.OperationResultType = Field(..., alias='overall-status')

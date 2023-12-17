@@ -8,7 +8,6 @@ from pydantic import BaseModel
 from pydantic import ConfigDict
 from pydantic import Field
 
-from ...frinx import types
 from . import Datastore
 from . import Operation
 
@@ -28,14 +27,3 @@ class Input(BaseModel):
     Target path under which data from source paths is put/merged.
     """
     operation: Optional[Operation] = None
-
-
-class Output(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    result: Optional[types.OperationResultType] = None
-    error_message: Optional[str] = Field(None, alias='error-message')
-    """
-    Error message describing operation failure.
-    """

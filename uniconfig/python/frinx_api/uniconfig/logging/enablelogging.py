@@ -2,13 +2,9 @@
 
 from __future__ import annotations
 
-from typing import Optional
-
 from pydantic import BaseModel
 from pydantic import ConfigDict
 from pydantic import Field
-
-from . import RpcStatus
 
 
 class Input(BaseModel):
@@ -19,14 +15,3 @@ class Input(BaseModel):
     """
     Logging broker identifier.
     """
-
-
-class Output(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    message: Optional[str] = None
-    """
-    Information message about state of operation.
-    """
-    status: RpcStatus

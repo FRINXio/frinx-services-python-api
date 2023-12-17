@@ -8,7 +8,6 @@ from pydantic import BaseModel
 from pydantic import ConfigDict
 from pydantic import Field
 
-from ...frinx import types
 from . import TagIdentityref
 
 
@@ -16,15 +15,15 @@ class Template(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    yang_repository: Optional[str] = Field(None, alias='yang-repository')
-    """
-    Name of yang-repository used for parsing of template configuration.
-    It contains identifier of the YANG schema repository.
-    """
     template_configuration: str = Field(..., alias='template-configuration')
     """
     Template configuration without wrapping 'configuration' element
     (only content of template).
+    """
+    yang_repository: Optional[str] = Field(None, alias='yang-repository')
+    """
+    Name of yang-repository used for parsing of template configuration.
+    It contains identifier of the YANG schema repository.
     """
     template_name: str = Field(..., alias='template-name')
     """
@@ -53,31 +52,3 @@ class Input(BaseModel):
     """
     List of template tags that are additionally written into template configuration.
     """
-
-
-class NodeResultItem(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    node_id: Optional[str] = Field(None, alias='node-id')
-    error_type: Optional[types.ErrorType] = Field(None, alias='error-type')
-    error_message: Optional[str] = Field(None, alias='error-message')
-    """
-    Error message describing cause of error.
-    """
-    status: types.OperationResultType
-
-
-class Output(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    error_message: Optional[str] = Field(None, alias='error-message')
-    """
-    Error message that describe overall problem.
-    """
-    node_result: Optional[list[NodeResultItem]] = Field(None, alias='node-result')
-    """
-    RPC results per target template node.
-    """
-    overall_status: types.OperationResultType = Field(..., alias='overall-status')

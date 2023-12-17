@@ -8,7 +8,6 @@ from pydantic import BaseModel
 from pydantic import ConfigDict
 from pydantic import Field
 
-from ... import logging
 from . import HttpMethod
 
 
@@ -23,14 +22,3 @@ class Input(BaseModel):
     HTTP requests (and associated HTTP responses) are not logged if request's HTTP method is set
     to one of the methods in this list.
     """
-
-
-class Output(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    message: Optional[str] = None
-    """
-    Information message about state of operation.
-    """
-    status: logging.RpcStatus
