@@ -65,7 +65,7 @@ jobs:
           popd || exit 1
 
       - name: Check changed files
-        uses: tj-actions/verify-changed-files@v16
+        uses: tj-actions/verify-changed-files@v17
         id: verify-changed-files
 
       - name: Update changelog
