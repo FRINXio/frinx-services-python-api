@@ -30,4 +30,4 @@ poetry run datamodel-codegen \
 ## use default formatting
 poetry run ruff --fix . || true
 
-#chown -R "${uid}:${gid}" frinx_api/python/*
+chown -R "${uid}:${gid}" "${API_PATH}/*"

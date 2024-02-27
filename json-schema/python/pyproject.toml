@@ -11,16 +11,14 @@ ruff = "^0.0.263"
 pyright = "^1.1.317"
 datamodel-code-generator = {extras = ["http"], version = "^0.21.3"}
 mypy = "1.3.0"
-pyyaml = "^6.0.1"
-types-pyyaml = "^6.0.12.12"
 
 [tool.poetry]
 packages = [{ include = "frinx_api" }]
 name = "frinx-json-schemas"
 description = "JSON schemas to pydantic basemodel converter"
 authors = ["Jakub Bogusciak <jakub.bogusciak@elisapolystar.com>"]
-version = "0.1.1"
-readme = ["README.md"]
+version = "0.0.1"
+readme = ["README.md", "CHANGELOG.md", "RELEASE.md"]
 keywords = ["json-schema"]
 license = "Apache 2.0"
 
