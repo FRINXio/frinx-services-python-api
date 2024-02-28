@@ -7,6 +7,7 @@ from typing import Optional
 
 from pydantic import BaseModel
 from pydantic import ConfigDict
+from pydantic import Field
 
 
 class DeviceSize(Enum):
@@ -51,9 +52,9 @@ class DeviceRegistration(BaseModel):
     """
     device_address: Optional[str] = None
     """
-    The address of the device.
+    The address / hostname of the device.
     """
-    device_port: Optional[int] = None
+    device_port: Optional[int] = Field(None, ge=0, le=65535)
     """
     The port of the device.
     """

@@ -1,5 +1,5 @@
 {
-  "$schema": "https://frinx.io",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://frinx.io/device-registration.json",
   "title": "Device registration",
   "description": "Device registration schema",
@@ -20,12 +20,14 @@
       "type": "string"
     },
     "device_address": {
-      "description": "The address of the device.",
+      "description": "The address / hostname of the device.",
       "type": "string"
     },
     "device_port": {
       "description": "The port of the device.",
-      "type": "integer"
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 65535
     },
     "zone_id": {
       "description": "The zone ID of the device.",
