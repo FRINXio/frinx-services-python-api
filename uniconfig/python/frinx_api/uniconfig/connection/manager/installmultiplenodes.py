@@ -10,7 +10,6 @@ from pydantic import ConfigDict
 from pydantic import Field
 
 from ...cli import topology
-from ...frinx import types
 from ...netconf.node import topology as topology_1
 from ...uniconfig import config
 
@@ -158,7 +157,7 @@ class NetconfNodeTopologyOdlHelloMessageCapabilities(BaseModel):
     """
 
 
-class NetconfSubscriptionsStreamItem(BaseModel):
+class SubscriptionsStreamItem(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -176,9 +175,13 @@ class NetconfSubscriptionsStreamItem(BaseModel):
     It is not valid to specify start times that are later than the current time. If the <startTime> specified
     is earlier than the log can support, the replay will begin with the earliest available notification.
     """
-    stream_name: Optional[str] = Field(None, alias='stream-name')
+    stream_name: str = Field(..., alias='stream-name')
     """
     Identifier of the notification stream.
+    """
+    paths: Optional[list[str]] = None
+    """
+    Paths to which subscribe on data change events
     """
 
 
@@ -227,11 +230,11 @@ class SessionTimers(BaseModel):
     and for any subsequent disconnect-connect cycles, max-reconnect-attempts will be used.
     This enables users using different amount of reconnects for initial attempts vs subsequent reconnects.
     """
-    reconnenction_attempts_multiplier: Optional[int] = Field(
+    reconnenction_attempts_multiplier: Optional[float] = Field(
         None,
         alias='reconnenction-attempts-multiplier',
-        ge=-922337203685477630,
-        le=922337203685477630,
+        ge=-9.223372036854776e17,
+        le=9.223372036854776e17,
     )
     """
     After each reconnection attempt, the delay between reconnection attempts is
@@ -361,10 +364,7 @@ class Cli(BaseModel):
         None, alias='keepalive-timeout', ge=0, le=65535
     )
     cli_topology_max_connection_attempts_install: Optional[int] = Field(
-        None,
-        alias='cli-topology:max-connection-attempts-install',
-        ge=0,
-        le=4294967295,
+        None, alias='cli-topology:max-connection-attempts-install', ge=0, le=4294967295
     )
     """
     Maximum number of connection attempts used during installation of device.
@@ -451,6 +451,12 @@ class Cli(BaseModel):
     cli_topology_transport_type: Optional[topology.TransportTypeEnumeration] = Field(
         None, alias='cli-topology:transport-type'
     )
+    uniconfig_config_store_without_mount: Optional[bool] = Field(
+        None, alias='uniconfig-config:store-without-mount'
+    )
+    """
+    In case we just want to store node metadata in the database without creating of mountpoint.
+    """
     blacklist: Optional[Blacklist] = Field(
         None, title='uniconfig.config.uniconfigconfignodefields.nodes.bl.Blacklist'
     )
@@ -668,8 +674,14 @@ class Netconf(BaseModel):
     """
     Timeout period in seconds to issued commit after confirmed-commit
     """
-    sleep_factor: Optional[int] = Field(
-        None, alias='sleep-factor', ge=-922337203685477630, le=922337203685477630
+    subscriptions_stream: Optional[list[SubscriptionsStreamItem]] = Field(
+        None, alias='subscriptions:stream'
+    )
+    """
+    List of available streams to which subscription can be created.
+    """
+    sleep_factor: Optional[float] = Field(
+        None, alias='sleep-factor', ge=-9.223372036854776e17, le=9.223372036854776e17
     )
     """
     After each reconnection attempt, the delay between reconnection attempts is
@@ -716,12 +728,6 @@ class Netconf(BaseModel):
     is available verbatim under this container through the
     mount extension.
     """
-    netconf_subscriptions_stream: Optional[
-        list[NetconfSubscriptionsStreamItem]
-    ] = Field(None, alias='netconf-subscriptions:stream')
-    """
-    List of available streams to which subscription can be created.
-    """
     netconf_node_topology_non_module_capabilities: Optional[
         NetconfNodeTopologyNonModuleCapabilities
     ] = Field(
@@ -743,6 +749,12 @@ class Netconf(BaseModel):
         alias='key-based',
         title='netconf.node.topology.netconfnodecredentials.credentials.keyauth.KeyBased',
     )
+    uniconfig_config_store_without_mount: Optional[bool] = Field(
+        None, alias='uniconfig-config:store-without-mount'
+    )
+    """
+    In case we just want to store node metadata in the database without creating of mountpoint.
+    """
     blacklist: Optional[Blacklist] = Field(
         None, title='uniconfig.config.uniconfigconfignodefields.nodes.bl.Blacklist'
     )
@@ -824,12 +836,6 @@ class Gnmi(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    uniconfig_config_sequence_read_active: Optional[bool] = Field(
-        None, alias='uniconfig-config:sequence-read-active'
-    )
-    """
-    Forces reading of data sequentially when mounting device.
-    """
     uniconfig_config_confirmed_commit_enabled: Optional[bool] = Field(
         None, alias='uniconfig-config:confirmed-commit-enabled'
     )
@@ -842,23 +848,14 @@ class Gnmi(BaseModel):
     """
     Replace paths that point to config that should be handled as a one replace request
     """
-    uniconfig_config_store_failed_installation: Optional[bool] = Field(
-        None, alias='uniconfig-config:store-failed-installation'
-    )
-    """
-    In case UniConfig fails to install the device, it will still populate the database.
-    """
     uniconfig_config_admin_state: Optional[config.AdminState] = Field(
         None, alias='uniconfig-config:admin-state'
     )
-    uniconfig_config_crypto: Optional[UniconfigConfigCrypto] = Field(
-        None,
-        alias='uniconfig-config:crypto',
-        title='uniconfig.config.uniconfigconfignodefields.Crypto',
+    uniconfig_config_store_without_mount: Optional[bool] = Field(
+        None, alias='uniconfig-config:store-without-mount'
     )
     """
-    Settings related to encryption of arbitrary leaves/leaf-list using public key that
-    is read from device on specified path.
+    In case we just want to store node metadata in the database without creating of mountpoint.
     """
     blacklist: Optional[Blacklist] = Field(
         None, title='uniconfig.config.uniconfigconfignodefields.nodes.bl.Blacklist'
@@ -872,18 +869,45 @@ class Gnmi(BaseModel):
     """
     Specifies whether to send validate RPC before commit RPC.
     """
-    uniconfig_config_uniconfig_native_enabled: Optional[bool] = Field(
-        None, alias='uniconfig-config:uniconfig-native-enabled'
-    )
-    uniconfig_config_install_uniconfig_node_enabled: Optional[bool] = Field(
-        None, alias='uniconfig-config:install-uniconfig-node-enabled'
-    )
     whitelist: Optional[Whitelist] = Field(
         None, title='uniconfig.config.uniconfigconfignodefields.nodes.wl.Whitelist'
     )
     """
     Reads which are invoked for sync-from-network and initial config read.
     """
+    uniconfig_config_sequence_read_active: Optional[bool] = Field(
+        None, alias='uniconfig-config:sequence-read-active'
+    )
+    """
+    Forces reading of data sequentially when mounting device.
+    """
+    uniconfig_config_store_failed_installation: Optional[bool] = Field(
+        None, alias='uniconfig-config:store-failed-installation'
+    )
+    """
+    In case UniConfig fails to install the device, it will still populate the database.
+    """
+    subscriptions_stream: Optional[list[SubscriptionsStreamItem]] = Field(
+        None, alias='subscriptions:stream'
+    )
+    """
+    List of available streams to which subscription can be created.
+    """
+    uniconfig_config_crypto: Optional[UniconfigConfigCrypto] = Field(
+        None,
+        alias='uniconfig-config:crypto',
+        title='uniconfig.config.uniconfigconfignodefields.Crypto',
+    )
+    """
+    Settings related to encryption of arbitrary leaves/leaf-list using public key that
+    is read from device on specified path.
+    """
+    uniconfig_config_uniconfig_native_enabled: Optional[bool] = Field(
+        None, alias='uniconfig-config:uniconfig-native-enabled'
+    )
+    uniconfig_config_install_uniconfig_node_enabled: Optional[bool] = Field(
+        None, alias='uniconfig-config:install-uniconfig-node-enabled'
+    )
 
 
 class Node(BaseModel):
@@ -912,6 +936,12 @@ class Node(BaseModel):
     """
     gNMI node settings.
     """
+    snmp: Optional[dict[str, Any]] = Field(
+        None, title='connection.manager.installmultiplenodesinputfields.nodes.Snmp'
+    )
+    """
+    SNMP node settings.
+    """
 
 
 class Input(BaseModel):
@@ -919,30 +949,3 @@ class Input(BaseModel):
         populate_by_name=True,
     )
     nodes: Optional[list[Node]] = None
-
-
-class NodeResult(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    node_id: str = Field(..., alias='node-id')
-    """
-    Node identifier of CLI/NETCONF/GNMI node.
-    """
-    error_message: Optional[str] = Field(None, alias='error-message')
-    """
-    Message that described occurred error during invocation of operation on a specific node.
-    """
-    status: types.OperationResultType
-
-
-class Output(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    error_message: Optional[str] = Field(None, alias='error-message')
-    """
-    Error message that describe overall problem.
-    """
-    node_results: Optional[list[NodeResult]] = Field(None, alias='node-results')
-    overall_status: types.OperationResultType = Field(..., alias='overall-status')

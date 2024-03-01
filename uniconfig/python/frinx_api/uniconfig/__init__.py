@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from enum import Enum
 from typing import Optional
 
 from pydantic import BaseModel
@@ -26,6 +25,7 @@ from .connection.manager import mountnode
 from .connection.manager import uninstallmultiplenodes
 from .connection.manager import uninstallnode
 from .connection.manager import unmountnode
+from .crypto import changeencryptionkeys
 from .crypto import changeencryptionstatus
 from .data.change.events import createdatachangesubscription
 from .data.change.events import deletedatachangesubscription
@@ -74,9 +74,11 @@ from .uniconfig.manager import commit
 from .uniconfig.manager import compareconfig
 from .uniconfig.manager import health
 from .uniconfig.manager import isinsync
+from .uniconfig.manager import readproperties
 from .uniconfig.manager import replaceconfigwithoperational
 from .uniconfig.manager import syncfromnetwork
 from .uniconfig.manager import synctonetwork
+from .uniconfig.manager import updateproperties
 from .uniconfig.manager import validate
 from .uniconfig.query import queryconfig
 
@@ -102,10 +104,11 @@ class OperationsGetTemplateNodesPostRequest(BaseModel):
     )
 
 
-class Content(Enum):
-    nonconfig = 'nonconfig'
-    config = 'config'
-    all = 'all'
+class OperationsCloseTransactionPostRequest(BaseModel):
+    pass
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
 
 
 class OperationsCreateTransactionPostRequest(BaseModel):
@@ -116,13 +119,6 @@ class OperationsCreateTransactionPostRequest(BaseModel):
 
 
 class OperationsHealthPostRequest(BaseModel):
-    pass
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-
-
-class OperationsCloseTransactionPostRequest(BaseModel):
     pass
     model_config = ConfigDict(
         populate_by_name=True,
@@ -268,11 +264,11 @@ class OperationsChangeEncryptionStatusPostResponse(BaseModel):
     output: Optional[changeencryptionstatus.Output] = None
 
 
-class OperationsShowSubscriptionDataPostRequest(BaseModel):
+class OperationsChangeEncryptionKeysPostResponse(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    input: Optional[showsubscriptiondata.Input] = None
+    output: Optional[changeencryptionkeys.Output] = None
 
 
 class OperationsDeleteDataChangeSubscriptionPostRequest(BaseModel):
@@ -287,6 +283,13 @@ class OperationsCreateDataChangeSubscriptionPostResponse(BaseModel):
         populate_by_name=True,
     )
     output: Optional[createdatachangesubscription.Output] = None
+
+
+class OperationsShowSubscriptionDataPostRequest(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    input: Optional[showsubscriptiondata.Input] = None
 
 
 class OperationsDiscoverPostRequest(BaseModel):
@@ -308,6 +311,13 @@ class OperationsDryrunCommitPostRequest(BaseModel):
         populate_by_name=True,
     )
     input: Optional[dryruncommit.Input] = None
+
+
+class OperationsDryrunCommitPostResponse(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    output: Optional[dryruncommit.Output] = None
 
 
 class OperationsReadJournalPostResponse(BaseModel):
@@ -513,62 +523,6 @@ class OperationsRevertChangesPostRequest(BaseModel):
     input: Optional[revertchanges.Input] = None
 
 
-class OperationsSyncToNetworkPostRequest(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    input: Optional[synctonetwork.Input] = None
-
-
-class OperationsHealthPostResponse(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    output: Optional[health.Output] = None
-
-
-class OperationsReplaceConfigWithOperationalPostRequest(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    input: Optional[replaceconfigwithoperational.Input] = None
-
-
-class OperationsValidatePostRequest(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    input: Optional[validate.Input] = None
-
-
-class OperationsCommitPostRequest(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    input: Optional[commit.Input] = None
-
-
-class OperationsCheckedCommitPostRequest(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    input: Optional[checkedcommit.Input] = None
-
-
-class OperationsCompareConfigPostRequest(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    input: Optional[compareconfig.Input] = None
-
-
-class OperationsCalculateDiffPostRequest(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    input: Optional[calculatediff.Input] = None
-
-
 class OperationsSyncFromNetworkPostRequest(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
@@ -583,11 +537,130 @@ class OperationsCalculateGitLikeDiffPostRequest(BaseModel):
     input: Optional[calculategitlikediff.Input] = None
 
 
+class OperationsCalculateGitLikeDiffPostResponse(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    output: Optional[calculategitlikediff.Output] = None
+
+
+class OperationsUpdatePropertiesPostRequest(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    input: Optional[updateproperties.Input] = None
+
+
+class OperationsUpdatePropertiesPostResponse(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    output: Optional[updateproperties.Output] = None
+
+
 class OperationsIsInSyncPostRequest(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
     input: Optional[isinsync.Input] = None
+
+
+class OperationsIsInSyncPostResponse(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    output: Optional[isinsync.Output] = None
+
+
+class OperationsSyncToNetworkPostRequest(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    input: Optional[synctonetwork.Input] = None
+
+
+class OperationsReadPropertiesPostRequest(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    input: Optional[readproperties.Input] = None
+
+
+class OperationsReadPropertiesPostResponse(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    output: Optional[readproperties.Output] = None
+
+
+class OperationsHealthPostResponse(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    output: Optional[health.Output] = None
+
+
+class OperationsValidatePostRequest(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    input: Optional[validate.Input] = None
+
+
+class OperationsReplaceConfigWithOperationalPostRequest(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    input: Optional[replaceconfigwithoperational.Input] = None
+
+
+class OperationsCommitPostRequest(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    input: Optional[commit.Input] = None
+
+
+class OperationsCommitPostResponse(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    output: Optional[commit.Output] = None
+
+
+class OperationsCheckedCommitPostRequest(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    input: Optional[checkedcommit.Input] = None
+
+
+class OperationsCalculateDiffPostRequest(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    input: Optional[calculatediff.Input] = None
+
+
+class OperationsCalculateDiffPostResponse(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    output: Optional[calculatediff.Output] = None
+
+
+class OperationsCompareConfigPostRequest(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    input: Optional[compareconfig.Input] = None
+
+
+class OperationsCompareConfigPostResponse(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    output: Optional[compareconfig.Output] = None
 
 
 class OperationsQueryConfigPostRequest(BaseModel):
@@ -611,25 +684,11 @@ class OperationsDryrunMountNodePostRequest(BaseModel):
     input: Optional[dryrunmountnode.Input] = None
 
 
-class OperationsDryrunMountNodePostResponse(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    output: Optional[dryrunmountnode.Output] = None
-
-
 class OperationsMountNodePostRequest(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
     input: Optional[mountnode.Input] = None
-
-
-class OperationsMountNodePostResponse(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    output: Optional[mountnode.Output] = None
 
 
 class OperationsInstallMultipleNodesPostRequest(BaseModel):
@@ -639,25 +698,11 @@ class OperationsInstallMultipleNodesPostRequest(BaseModel):
     input: Optional[installmultiplenodes.Input] = None
 
 
-class OperationsInstallMultipleNodesPostResponse(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    output: Optional[installmultiplenodes.Output] = None
-
-
 class OperationsUninstallMultipleNodesPostRequest(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
     input: Optional[uninstallmultiplenodes.Input] = None
-
-
-class OperationsUninstallMultipleNodesPostResponse(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    output: Optional[uninstallmultiplenodes.Output] = None
 
 
 class OperationsGetInstalledNodesPostRequest(BaseModel):
@@ -674,25 +719,11 @@ class OperationsDryrunUnmountNodePostRequest(BaseModel):
     input: Optional[dryrununmountnode.Input] = None
 
 
-class OperationsDryrunUnmountNodePostResponse(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    output: Optional[dryrununmountnode.Output] = None
-
-
 class OperationsUnmountNodePostRequest(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
     input: Optional[unmountnode.Input] = None
-
-
-class OperationsUnmountNodePostResponse(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    output: Optional[unmountnode.Output] = None
 
 
 class OperationsUninstallNodePostRequest(BaseModel):
@@ -702,25 +733,11 @@ class OperationsUninstallNodePostRequest(BaseModel):
     input: Optional[uninstallnode.Input] = None
 
 
-class OperationsUninstallNodePostResponse(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    output: Optional[uninstallnode.Output] = None
-
-
 class OperationsInstallNodePostRequest(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
     input: Optional[installnode.Input] = None
-
-
-class OperationsInstallNodePostResponse(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    output: Optional[installnode.Output] = None
 
 
 class OperationsChangeAdminStatePostRequest(BaseModel):
@@ -730,18 +747,11 @@ class OperationsChangeAdminStatePostRequest(BaseModel):
     input: Optional[changeadminstate.Input] = None
 
 
-class OperationsChangeAdminStatePostResponse(BaseModel):
+class OperationsChangeEncryptionKeysPostRequest(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    output: Optional[changeadminstate.Output] = None
-
-
-class OperationsShowSubscriptionDataPostResponse(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    output: Optional[showsubscriptiondata.Output] = None
+    input: Optional[changeencryptionkeys.Input] = None
 
 
 class OperationsCreateDataChangeSubscriptionPostRequest(BaseModel):
@@ -751,11 +761,11 @@ class OperationsCreateDataChangeSubscriptionPostRequest(BaseModel):
     input: Optional[createdatachangesubscription.Input] = None
 
 
-class OperationsDryrunCommitPostResponse(BaseModel):
+class OperationsShowSubscriptionDataPostResponse(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    output: Optional[dryruncommit.Output] = None
+    output: Optional[showsubscriptiondata.Output] = None
 
 
 class OperationsSetMessageTypesPostRequest(BaseModel):
@@ -765,81 +775,11 @@ class OperationsSetMessageTypesPostRequest(BaseModel):
     input: Optional[setmessagetypes.Input] = None
 
 
-class OperationsSetMessageTypesPostResponse(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    output: Optional[setmessagetypes.Output] = None
-
-
-class OperationsEnableDefaultDeviceLoggingPostResponse(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    output: Optional[enabledefaultdevicelogging.Output] = None
-
-
-class OperationsDisableLoggingPostResponse(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    output: Optional[disablelogging.Output] = None
-
-
-class OperationsSetGlobalHiddenTypesPostResponse(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    output: Optional[setglobalhiddentypes.Output] = None
-
-
-class OperationsDisableDeviceLoggingPostResponse(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    output: Optional[disabledevicelogging.Output] = None
-
-
-class OperationsDisableDefaultDeviceLoggingPostResponse(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    output: Optional[disabledefaultdevicelogging.Output] = None
-
-
-class OperationsEnableDeviceLoggingPostResponse(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    output: Optional[enabledevicelogging.Output] = None
-
-
-class OperationsEnableLoggingPostResponse(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    output: Optional[enablelogging.Output] = None
-
-
-class OperationsSetHiddenHttpHeadersPostResponse(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    output: Optional[sethiddenhttpheaders.Output] = None
-
-
 class OperationsSetHiddenHttpMethodsPostRequest(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
     input: Optional[sethiddenhttpmethods.Input] = None
-
-
-class OperationsSetHiddenHttpMethodsPostResponse(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    output: Optional[sethiddenhttpmethods.Output] = None
 
 
 class OperationsRegisterRepositoryPostResponse(BaseModel):
@@ -849,53 +789,11 @@ class OperationsRegisterRepositoryPostResponse(BaseModel):
     output: Optional[registerrepository.Output] = None
 
 
-class OperationsDeleteSnapshotPostResponse(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    output: Optional[deletesnapshot.Output] = None
-
-
-class OperationsCreateSnapshotPostResponse(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    output: Optional[createsnapshot.Output] = None
-
-
-class OperationsReplaceConfigWithSnapshotPostResponse(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    output: Optional[replaceconfigwithsnapshot.Output] = None
-
-
 class OperationsCopyOneToOnePostRequest(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
     input: Optional[copyonetoone.Input] = None
-
-
-class OperationsCopyOneToOnePostResponse(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    output: Optional[copyonetoone.Output] = None
-
-
-class OperationsCopyOneToManyPostRequest(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    input: Optional[copyonetomany.Input] = None
-
-
-class OperationsCopyOneToManyPostResponse(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    output: Optional[copyonetomany.Output] = None
 
 
 class OperationsCalculateSubtreeDiffPostRequest(BaseModel):
@@ -905,25 +803,25 @@ class OperationsCalculateSubtreeDiffPostRequest(BaseModel):
     input: Optional[calculatesubtreediff.Input] = None
 
 
-class OperationsCopyManyToOnePostRequest(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    input: Optional[copymanytoone.Input] = None
-
-
-class OperationsCopyManyToOnePostResponse(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    output: Optional[copymanytoone.Output] = None
-
-
 class OperationsCalculateSubtreeGitLikeDiffPostRequest(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
     input: Optional[calculatesubtreegitlikediff.Input] = None
+
+
+class OperationsCopyOneToManyPostRequest(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    input: Optional[copyonetomany.Input] = None
+
+
+class OperationsCopyManyToOnePostRequest(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    input: Optional[copymanytoone.Input] = None
 
 
 class OperationsBulkEditPostRequest(BaseModel):
@@ -933,106 +831,8 @@ class OperationsBulkEditPostRequest(BaseModel):
     input: Optional[bulkedit.Input] = None
 
 
-class OperationsBulkEditPostResponse(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    output: Optional[bulkedit.Output] = None
-
-
-class OperationsApplyTemplatePostResponse(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    output: Optional[applytemplate.Output] = None
-
-
 class OperationsCreateMultipleTemplatesPostRequest(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
     input: Optional[createmultipletemplates.Input] = None
-
-
-class OperationsCreateMultipleTemplatesPostResponse(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    output: Optional[createmultipletemplates.Output] = None
-
-
-class OperationsRevertChangesPostResponse(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    output: Optional[revertchanges.Output] = None
-
-
-class OperationsSyncToNetworkPostResponse(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    output: Optional[synctonetwork.Output] = None
-
-
-class OperationsReplaceConfigWithOperationalPostResponse(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    output: Optional[replaceconfigwithoperational.Output] = None
-
-
-class OperationsValidatePostResponse(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    output: Optional[validate.Output] = None
-
-
-class OperationsCommitPostResponse(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    output: Optional[commit.Output] = None
-
-
-class OperationsCheckedCommitPostResponse(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    output: Optional[checkedcommit.Output] = None
-
-
-class OperationsCompareConfigPostResponse(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    output: Optional[compareconfig.Output] = None
-
-
-class OperationsCalculateDiffPostResponse(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    output: Optional[calculatediff.Output] = None
-
-
-class OperationsSyncFromNetworkPostResponse(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    output: Optional[syncfromnetwork.Output] = None
-
-
-class OperationsCalculateGitLikeDiffPostResponse(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    output: Optional[calculategitlikediff.Output] = None
-
-
-class OperationsIsInSyncPostResponse(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    output: Optional[isinsync.Output] = None
