@@ -11,7 +11,8 @@ jobs:
   generate-api-from-image:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+
       - name: Parse docker
         run: |
           echo "IMAGE_NAMESPACE=$(echo $IMAGE | cut -d '/' -f 1)" >> "$GITHUB_ENV"
@@ -104,7 +105,7 @@ jobs:
         with:
           title: "[${{ env.IMAGE_REPO }}] Release package for ${{ inputs.image }}"
           commit-message: "[${{ env.IMAGE_REPO }}] Create and publish packages for ${{ env.IMAGE_TAG }}"
-          branch-suffix: short-commit-hash
+          branch-suffix: timestamp
           labels: automated-pr
           delete-branch: true
           reviewers: Jozefiel
