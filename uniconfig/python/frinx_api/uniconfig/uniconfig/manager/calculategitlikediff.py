@@ -8,8 +8,6 @@ from pydantic import BaseModel
 from pydantic import ConfigDict
 from pydantic import Field
 
-from ...frinx import types
-
 
 class TargetNodes(BaseModel):
     model_config = ConfigDict(
@@ -52,12 +50,7 @@ class NodeResultItem(BaseModel):
     All changes that happened between intended and actual uniconfig node
     """
     node_id: Optional[str] = Field(None, alias='node-id')
-    error_type: Optional[types.ErrorType] = Field(None, alias='error-type')
-    error_message: Optional[str] = Field(None, alias='error-message')
-    """
-    Error message describing cause of error.
-    """
-    status: types.OperationResultType
+    topology_id: Optional[str] = Field(None, alias='topology-id')
 
 
 class NodeResults(BaseModel):
@@ -78,10 +71,6 @@ class Output(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    error_message: Optional[str] = Field(None, alias='error-message')
-    """
-    Error message that describe overall problem.
-    """
     node_results: Optional[NodeResults] = Field(
         None,
         alias='node-results',
@@ -90,4 +79,3 @@ class Output(BaseModel):
     """
     Individual result of calculate-diff for given nodes.
     """
-    overall_status: types.OperationResultType = Field(..., alias='overall-status')
