@@ -14,30 +14,42 @@ from pydantic import PrivateAttr
 
 String: typing.TypeAlias = str
 Float: typing.TypeAlias = float
-JSON: typing.TypeAlias = typing.Any
 ID: typing.TypeAlias = str
 Int: typing.TypeAlias = int
 Boolean: typing.TypeAlias = bool
+JSON: typing.TypeAlias = typing.Any
 
 
 class CoordinatesNodeType(ENUM):
-    device = 'device'
-    network = 'network'
+    DEVICE = 'device'
+    NETWORK = 'network'
 
 
-class TopologyDiffCollectionTypes(ENUM):
-    net = 'net'
-    phy = 'phy'
-
-
-class NodeStatus(ENUM):
-    ok = 'ok'
-    unknown = 'unknown'
+class TopologyType(ENUM):
+    PHYSICALTOPOLOGY = 'PhysicalTopology'
+    PTPTOPOLOGY = 'PtpTopology'
+    ETHTOPOLOGY = 'EthTopology'
+    NETWORKTOPOLOGY = 'NetworkTopology'
 
 
 class NetRoutingPathOutputCollections(ENUM):
-    NetDevice = 'NetDevice'
-    NetInterface = 'NetInterface'
+    NETDEVICE = 'NetDevice'
+    NETINTERFACE = 'NetInterface'
+
+
+class NodeStatus(ENUM):
+    OK = 'ok'
+    UNKNOWN = 'unknown'
+
+
+class PtpPathOutputCollections(ENUM):
+    PTPDEVICE = 'PtpDevice'
+    PTPINTERFACE = 'PtpInterface'
+
+
+class SyncePathOutputCollections(ENUM):
+    SYNCEDEVICE = 'SynceDevice'
+    SYNCEINTERFACE = 'SynceInterface'
 
 
 class Node(Interface):
@@ -75,6 +87,43 @@ class PhyInterfaceFilter(Input):
     name: typing.Optional[String] = Field(default=None)
 
 
+class PtpDeviceFilter(Input):
+    label: typing.Optional[String] = Field(default=None)
+    name: typing.Optional[String] = Field(default=None)
+    clock_type: typing.Optional[String] = Field(default=None)
+    domain: typing.Optional[Int] = Field(default=None)
+    ptp_profile: typing.Optional[String] = Field(default=None)
+    clock_id: typing.Optional[String] = Field(default=None)
+    clock_class: typing.Optional[Int] = Field(default=None)
+    clock_accuracy: typing.Optional[String] = Field(default=None)
+    clock_variance: typing.Optional[String] = Field(default=None)
+    time_recovery_status: typing.Optional[String] = Field(default=None)
+
+
+class PtpInterfaceFilter(Input):
+    status: typing.Optional[NodeStatus] = Field(default=None)
+    name: typing.Optional[String] = Field(default=None)
+    ptp_status: typing.Optional[String] = Field(default=None)
+    admin_oper_status: typing.Optional[String] = Field(default=None)
+    ptsf_unusable: typing.Optional[String] = Field(default=None)
+
+
+class SynceDeviceFilter(Input):
+    label: typing.Optional[String] = Field(default=None)
+    name: typing.Optional[String] = Field(default=None)
+    selected_for_use: typing.Optional[String] = Field(default=None)
+
+
+class SynceInterfaceFilter(Input):
+    status: typing.Optional[NodeStatus] = Field(default=None)
+    name: typing.Optional[String] = Field(default=None)
+    synce_enabled: typing.Optional[Boolean] = Field(default=None)
+    rx_quality_level: typing.Optional[String] = Field(default=None)
+    qualified_for_use: typing.Optional[String] = Field(default=None)
+    not_qualified_due_to: typing.Optional[String] = Field(default=None)
+    not_selected_due_to: typing.Optional[String] = Field(default=None)
+
+
 class CreateBackupResponse(Payload):
     db_name: typing.Optional[Boolean] = Field(default=False)
 
@@ -92,11 +141,21 @@ class DeleteBackupsResponsePayload(BaseModel):
 
 
 class CoordinatesResponse(Payload):
+    not_installed: typing.Optional[Boolean] = Field(default=False)
+    installed: typing.Optional[InstalledDevices] = Field(default=None)
+
+
+class CoordinatesResponsePayload(BaseModel):
+    not_installed: typing.Optional[typing.Optional[list[typing.Optional[String]]]] = Field(default=None)
+    installed: typing.Optional[InstalledDevicesPayload] = Field(default=None)
+
+
+class InstalledDevices(Payload):
     not_updated: typing.Optional[Boolean] = Field(default=False)
     updated: typing.Optional[Boolean] = Field(default=False)
 
 
-class CoordinatesResponsePayload(BaseModel):
+class InstalledDevicesPayload(BaseModel):
     not_updated: typing.Optional[typing.Optional[list[typing.Optional[String]]]] = Field(default=None)
     updated: typing.Optional[typing.Optional[list[typing.Optional[String]]]] = Field(default=None)
 
@@ -149,12 +208,28 @@ class PhyDevicesQuery(Query):
     payload: PhyDeviceConnection
 
 
+class PtpDevicesQuery(Query):
+    _name: str = PrivateAttr('ptpDevices')
+    filters: typing.Optional[PtpDeviceFilter] = Field(default=None, json_schema_extra={'type': 'PtpDeviceFilter'})
+    first: typing.Optional[Int] = Field(default=None, json_schema_extra={'type': 'Int'})
+    cursor: typing.Optional[String] = Field(default=None, json_schema_extra={'type': 'String'})
+    payload: PtpDeviceConnection
+
+
 class NetDevicesQuery(Query):
     _name: str = PrivateAttr('netDevices')
     filters: typing.Optional[NetDeviceFilter] = Field(default=None, json_schema_extra={'type': 'NetDeviceFilter'})
     first: typing.Optional[Int] = Field(default=None, json_schema_extra={'type': 'Int'})
     cursor: typing.Optional[String] = Field(default=None, json_schema_extra={'type': 'String'})
     payload: NetDeviceConnection
+
+
+class SynceDevicesQuery(Query):
+    _name: str = PrivateAttr('synceDevices')
+    filters: typing.Optional[SynceDeviceFilter] = Field(default=None, json_schema_extra={'type': 'SynceDeviceFilter'})
+    first: typing.Optional[Int] = Field(default=None, json_schema_extra={'type': 'Int'})
+    cursor: typing.Optional[String] = Field(default=None, json_schema_extra={'type': 'String'})
+    payload: SynceDeviceConnection
 
 
 class NetRoutingPathsQuery(Query):
@@ -165,30 +240,45 @@ class NetRoutingPathsQuery(Query):
     payload: NetRoutingPathConnection
 
 
+class PtpPathToGmClockQuery(Query):
+    _name: str = PrivateAttr('ptpPathToGmClock')
+    device_from: ID = Field(alias='deviceFrom', json_schema_extra={'type': 'ID!'})
+    output_collection: typing.Optional[PtpPathOutputCollections] = Field(default=None, alias='outputCollection', json_schema_extra={'type': 'PtpPathOutputCollections'})
+    payload: PtpPath
+
+
+class SyncePathToGmQuery(Query):
+    _name: str = PrivateAttr('syncePathToGm')
+    device_from: ID = Field(alias='deviceFrom', json_schema_extra={'type': 'ID!'})
+    output_collection: typing.Optional[SyncePathOutputCollections] = Field(default=None, alias='outputCollection', json_schema_extra={'type': 'SyncePathOutputCollections'})
+    payload: SyncePath
+
+
+class PtpDiffSynceQuery(Query):
+    _name: str = PrivateAttr('ptpDiffSynce')
+    filters: typing.Optional[PtpDeviceFilter] = Field(default=None, json_schema_extra={'type': 'PtpDeviceFilter'})
+    first: typing.Optional[Int] = Field(default=None, json_schema_extra={'type': 'Int'})
+    cursor: typing.Optional[String] = Field(default=None, json_schema_extra={'type': 'String'})
+    payload: PtpDiffSynceConnection
+
+
 class BackupsQuery(Query):
     _name: str = PrivateAttr('backups')
 
 
 class TopologyDiffQuery(Query):
     _name: str = PrivateAttr('topologyDiff')
-    new_db: typing.Optional[String] = Field(default=None, json_schema_extra={'type': 'String'})
-    old_db: typing.Optional[String] = Field(default=None, json_schema_extra={'type': 'String'})
-    collection_type: TopologyDiffCollectionTypes = Field(json_schema_extra={'type': 'TopologyDiffCollectionTypes!'})
+    new_db: String = Field(json_schema_extra={'type': 'String!'})
+    old_db: String = Field(json_schema_extra={'type': 'String!'})
+    collection_type: TopologyType = Field(json_schema_extra={'type': 'TopologyType!'})
     payload: TopologyResponse
-
-
-class PhyHasAndInterfacesQuery(Query):
-    _name: str = PrivateAttr('phyHasAndInterfaces')
-
-
-class PhyLinksAndDevicesQuery(Query):
-    _name: str = PrivateAttr('phyLinksAndDevices')
 
 
 class CommonNodesQuery(Query):
     _name: str = PrivateAttr('commonNodes')
     selected_nodes: typing.Optional[list[String]] = Field(default=None, json_schema_extra={'type': '[String!]!'})
     db_name: typing.Optional[String] = Field(default=None, json_schema_extra={'type': 'String'})
+    topology_type: typing.Optional[TopologyType] = Field(default=None, json_schema_extra={'type': 'TopologyType'})
     payload: CommonNodesResponse
 
 
@@ -216,6 +306,15 @@ class PhyDevicesData(BaseModel):
     phy_devices: PhyDeviceConnectionPayload = Field(alias='phyDevices')
 
 
+class PtpDevicesQueryResponse(BaseModel):
+    data: typing.Optional[PtpDevicesData] = Field(default=None)
+    errors: typing.Optional[typing.Any] = Field(default=None)
+
+
+class PtpDevicesData(BaseModel):
+    ptp_devices: PtpDeviceConnectionPayload = Field(alias='ptpDevices')
+
+
 class NetDevicesQueryResponse(BaseModel):
     data: typing.Optional[NetDevicesData] = Field(default=None)
     errors: typing.Optional[typing.Any] = Field(default=None)
@@ -225,6 +324,15 @@ class NetDevicesData(BaseModel):
     net_devices: NetDeviceConnectionPayload = Field(alias='netDevices')
 
 
+class SynceDevicesQueryResponse(BaseModel):
+    data: typing.Optional[SynceDevicesData] = Field(default=None)
+    errors: typing.Optional[typing.Any] = Field(default=None)
+
+
+class SynceDevicesData(BaseModel):
+    synce_devices: SynceDeviceConnectionPayload = Field(alias='synceDevices')
+
+
 class NetRoutingPathsQueryResponse(BaseModel):
     data: typing.Optional[NetRoutingPathsData] = Field(default=None)
     errors: typing.Optional[typing.Any] = Field(default=None)
@@ -232,6 +340,33 @@ class NetRoutingPathsQueryResponse(BaseModel):
 
 class NetRoutingPathsData(BaseModel):
     net_routing_paths: typing.Optional[NetRoutingPathConnectionPayload] = Field(alias='netRoutingPaths')
+
+
+class PtpPathToGmClockQueryResponse(BaseModel):
+    data: typing.Optional[PtpPathToGmClockData] = Field(default=None)
+    errors: typing.Optional[typing.Any] = Field(default=None)
+
+
+class PtpPathToGmClockData(BaseModel):
+    ptp_path_to_gm_clock: PtpPathPayload = Field(alias='ptpPathToGmClock')
+
+
+class SyncePathToGmQueryResponse(BaseModel):
+    data: typing.Optional[SyncePathToGmData] = Field(default=None)
+    errors: typing.Optional[typing.Any] = Field(default=None)
+
+
+class SyncePathToGmData(BaseModel):
+    synce_path_to_gm: SyncePathPayload = Field(alias='syncePathToGm')
+
+
+class PtpDiffSynceQueryResponse(BaseModel):
+    data: typing.Optional[PtpDiffSynceData] = Field(default=None)
+    errors: typing.Optional[typing.Any] = Field(default=None)
+
+
+class PtpDiffSynceData(BaseModel):
+    ptp_diff_synce: PtpDiffSynceConnectionPayload = Field(alias='ptpDiffSynce')
 
 
 class TopologyDiffQueryResponse(BaseModel):
@@ -274,14 +409,16 @@ class DeleteBackupsMutation(Mutation):
 class UpdateCoordinatesMutation(Mutation):
     _name: str = PrivateAttr('updateCoordinates')
     coordinates_list: typing.Optional[list[CoordinatesInput]] = Field(default=None, json_schema_extra={'type': '[CoordinatesInput!]!'})
+    topology_type: typing.Optional[TopologyType] = Field(default=None, json_schema_extra={'type': 'TopologyType'})
     payload: CoordinatesResponse
 
 
 class UpdateNodeStatusMutation(Mutation):
     _name: str = PrivateAttr('updateNodeStatus')
     device_name: String = Field(json_schema_extra={'type': 'String!'})
-    status: String = Field(json_schema_extra={'type': 'String!'})
+    status: NodeStatus = Field(json_schema_extra={'type': 'NodeStatus!'})
     interface_name: typing.Optional[String] = Field(default=None, json_schema_extra={'type': 'String'})
+    topology_type: typing.Optional[TopologyType] = Field(default=None, json_schema_extra={'type': 'TopologyType'})
     payload: Boolean
 
 
@@ -291,6 +428,15 @@ class SyncMutation(Mutation):
     devices: typing.Optional[list[String]] = Field(default=None, json_schema_extra={'type': '[String]'})
     labels: typing.Optional[list[String]] = Field(default=None, json_schema_extra={'type': '[String]'})
     payload: SyncResponse
+
+
+class EnableRemoteDebugSessionMutation(Mutation):
+    _name: str = PrivateAttr('enableRemoteDebugSession')
+    host: String = Field(json_schema_extra={'type': 'String!'})
+    port: typing.Optional[Int] = Field(default=None, json_schema_extra={'type': 'Int'})
+    stdout_to_server: typing.Optional[Boolean] = Field(default=None, json_schema_extra={'type': 'Boolean'})
+    stderr_to_server: typing.Optional[Boolean] = Field(default=None, json_schema_extra={'type': 'Boolean'})
+    payload: Boolean
 
 
 class DeleteBackupsMutationResponse(BaseModel):
@@ -327,6 +473,15 @@ class SyncMutationResponse(BaseModel):
 
 class SyncData(BaseModel):
     sync: SyncResponsePayload
+
+
+class EnableRemoteDebugSessionMutationResponse(BaseModel):
+    data: typing.Optional[EnableRemoteDebugSessionData] = Field(default=None)
+    errors: typing.Optional[typing.Any] = Field(default=None)
+
+
+class EnableRemoteDebugSessionData(BaseModel):
+    enable_remote_debug_session: typing.Optional[String] = Field(alias='enableRemoteDebugSession')
 
 
 class Coordinates(Payload):
@@ -382,7 +537,7 @@ class NetInterface(Payload):
     ip_address: typing.Optional[Boolean] = Field(default=False, alias='ipAddress')
     net_device: typing.Optional[NetDevice] = Field(default=None, alias='netDevice')
     igp_metric: typing.Optional[Boolean] = Field(default=False)
-    net_link: typing.Optional[NetInterface] = Field(default=None, alias='netLink')
+    net_links: typing.Optional[NetLinkConnection] = Field(default=None, alias='netLinks')
 
 
 class NetInterfacePayload(BaseModel):
@@ -390,7 +545,7 @@ class NetInterfacePayload(BaseModel):
     ip_address: typing.Optional[typing.Optional[String]] = Field(default=None, alias='ipAddress')
     net_device: typing.Optional[NetDevicePayload] = Field(default=None, alias='netDevice')
     igp_metric: typing.Optional[typing.Optional[Int]] = Field(default=None)
-    net_link: typing.Optional[NetInterfacePayload] = Field(default=None, alias='netLink')
+    net_links: typing.Optional[NetLinkConnectionPayload] = Field(default=None, alias='netLinks')
 
 
 class NetInterfaceEdge(Payload):
@@ -411,6 +566,28 @@ class NetInterfaceConnection(Payload):
 class NetInterfaceConnectionPayload(BaseModel):
     page_info: typing.Optional[PageInfoPayload] = Field(default=None, alias='pageInfo')
     edges: typing.Optional[typing.Optional[list[NetInterfaceEdgePayload]]] = Field(default=None)
+
+
+class NetLinkEdge(Payload):
+    link: typing.Optional[Boolean] = Field(default=False)
+    cursor: typing.Optional[Boolean] = Field(default=False)
+    node: typing.Optional[NetInterface] = Field(default=None)
+
+
+class NetLinkEdgePayload(BaseModel):
+    link: typing.Optional[typing.Optional[ID]] = Field(default=None)
+    cursor: typing.Optional[typing.Optional[String]] = Field(default=None)
+    node: typing.Optional[NetInterfacePayload] = Field(default=None)
+
+
+class NetLinkConnection(Payload):
+    page_info: typing.Optional[PageInfo] = Field(default=None, alias='pageInfo')
+    edges: typing.Optional[NetLinkEdge] = Field(default=None)
+
+
+class NetLinkConnectionPayload(BaseModel):
+    page_info: typing.Optional[PageInfoPayload] = Field(default=None, alias='pageInfo')
+    edges: typing.Optional[typing.Optional[list[NetLinkEdgePayload]]] = Field(default=None)
 
 
 class NetNetwork(Payload):
@@ -539,38 +716,20 @@ class PhyDeviceDetailsPayload(BaseModel):
     sw_version: typing.Optional[typing.Optional[String]] = Field(default=None)
 
 
-class PhyHasAndInterfacesResponse(Payload):
-    phy_has_and_interfaces_data: typing.Optional[Boolean] = Field(default=False)
-
-
-class PhyHasAndInterfacesResponsePayload(BaseModel):
-    phy_has_and_interfaces_data: typing.Optional[typing.Optional[JSON]] = Field(default=None)
-
-
-class PhyLinksAndDevicesResponse(Payload):
-    phy_links_and_devices_data: typing.Optional[Boolean] = Field(default=False)
-
-
-class PhyLinksAndDevicesResponsePayload(BaseModel):
-    phy_links_and_devices_data: typing.Optional[typing.Optional[JSON]] = Field(default=None)
-
-
 class PhyInterface(Payload):
     id: typing.Optional[Boolean] = Field(default=False)
-    id_link: typing.Optional[Boolean] = Field(default=False, alias='idLink')
     name: typing.Optional[Boolean] = Field(default=False)
     status: typing.Optional[Boolean] = Field(default=False)
     phy_device: typing.Optional[PhyDevice] = Field(default=None, alias='phyDevice')
-    phy_link: typing.Optional[PhyInterface] = Field(default=None, alias='phyLink')
+    phy_links: typing.Optional[PhyLinkConnection] = Field(default=None, alias='phyLinks')
 
 
 class PhyInterfacePayload(BaseModel):
     id: typing.Optional[typing.Optional[ID]] = Field(default=None)
-    id_link: typing.Optional[typing.Optional[ID]] = Field(default=None, alias='idLink')
     name: typing.Optional[typing.Optional[String]] = Field(default=None)
-    status: typing.Optional[typing.Optional[String]] = Field(default=None)
+    status: typing.Optional[typing.Optional[NodeStatus]] = Field(default=None)
     phy_device: typing.Optional[PhyDevicePayload] = Field(default=None, alias='phyDevice')
-    phy_link: typing.Optional[PhyInterfacePayload] = Field(default=None, alias='phyLink')
+    phy_links: typing.Optional[PhyLinkConnectionPayload] = Field(default=None, alias='phyLinks')
 
 
 class PhyInterfaceEdge(Payload):
@@ -593,6 +752,352 @@ class PhyInterfaceConnectionPayload(BaseModel):
     edges: typing.Optional[typing.Optional[list[PhyInterfaceEdgePayload]]] = Field(default=None)
 
 
+class PhyLinkEdge(Payload):
+    link: typing.Optional[Boolean] = Field(default=False)
+    cursor: typing.Optional[Boolean] = Field(default=False)
+    node: typing.Optional[PhyInterface] = Field(default=None)
+
+
+class PhyLinkEdgePayload(BaseModel):
+    link: typing.Optional[typing.Optional[ID]] = Field(default=None)
+    cursor: typing.Optional[typing.Optional[String]] = Field(default=None)
+    node: typing.Optional[PhyInterfacePayload] = Field(default=None)
+
+
+class PhyLinkConnection(Payload):
+    page_info: typing.Optional[PageInfo] = Field(default=None, alias='pageInfo')
+    edges: typing.Optional[PhyLinkEdge] = Field(default=None)
+
+
+class PhyLinkConnectionPayload(BaseModel):
+    page_info: typing.Optional[PageInfoPayload] = Field(default=None, alias='pageInfo')
+    edges: typing.Optional[typing.Optional[list[PhyLinkEdgePayload]]] = Field(default=None)
+
+
+class PtpDevice(Payload):
+    id: typing.Optional[Boolean] = Field(default=False)
+    name: typing.Optional[Boolean] = Field(default=False)
+    coordinates: typing.Optional[Coordinates] = Field(default=None)
+    details: typing.Optional[PtpDeviceDetails] = Field(default=None)
+    status: typing.Optional[Boolean] = Field(default=False)
+    labels: typing.Optional[Boolean] = Field(default=False)
+    ptp_interfaces: typing.Optional[PtpInterfaceConnection] = Field(default=None, alias='ptpInterfaces')
+
+
+class PtpDevicePayload(BaseModel):
+    id: typing.Optional[typing.Optional[ID]] = Field(default=None)
+    name: typing.Optional[typing.Optional[String]] = Field(default=None)
+    coordinates: typing.Optional[CoordinatesPayload] = Field(default=None)
+    details: typing.Optional[PtpDeviceDetailsPayload] = Field(default=None)
+    status: typing.Optional[typing.Optional[NodeStatus]] = Field(default=None)
+    labels: typing.Optional[typing.Optional[list[typing.Optional[String]]]] = Field(default=None)
+    ptp_interfaces: typing.Optional[PtpInterfaceConnectionPayload] = Field(default=None, alias='ptpInterfaces')
+
+
+class PtpDeviceEdge(Payload):
+    cursor: typing.Optional[Boolean] = Field(default=False)
+    node: typing.Optional[PtpDevice] = Field(default=None)
+
+
+class PtpDeviceEdgePayload(BaseModel):
+    cursor: typing.Optional[typing.Optional[String]] = Field(default=None)
+    node: typing.Optional[PtpDevicePayload] = Field(default=None)
+
+
+class PtpDeviceConnection(Payload):
+    page_info: typing.Optional[PageInfo] = Field(default=None, alias='pageInfo')
+    edges: typing.Optional[PtpDeviceEdge] = Field(default=None)
+
+
+class PtpDeviceConnectionPayload(BaseModel):
+    page_info: typing.Optional[PageInfoPayload] = Field(default=None, alias='pageInfo')
+    edges: typing.Optional[typing.Optional[list[PtpDeviceEdgePayload]]] = Field(default=None)
+
+
+class PtpDeviceDetails(Payload):
+    clock_type: typing.Optional[Boolean] = Field(default=False)
+    domain: typing.Optional[Boolean] = Field(default=False)
+    ptp_profile: typing.Optional[Boolean] = Field(default=False)
+    clock_id: typing.Optional[Boolean] = Field(default=False)
+    parent_clock_id: typing.Optional[Boolean] = Field(default=False)
+    gm_clock_id: typing.Optional[Boolean] = Field(default=False)
+    clock_class: typing.Optional[Boolean] = Field(default=False)
+    clock_accuracy: typing.Optional[Boolean] = Field(default=False)
+    clock_variance: typing.Optional[Boolean] = Field(default=False)
+    time_recovery_status: typing.Optional[Boolean] = Field(default=False)
+    global_priority: typing.Optional[Boolean] = Field(default=False)
+    user_priority: typing.Optional[Boolean] = Field(default=False)
+
+
+class PtpDeviceDetailsPayload(BaseModel):
+    clock_type: typing.Optional[typing.Optional[String]] = Field(default=None)
+    domain: typing.Optional[typing.Optional[Int]] = Field(default=None)
+    ptp_profile: typing.Optional[typing.Optional[String]] = Field(default=None)
+    clock_id: typing.Optional[typing.Optional[String]] = Field(default=None)
+    parent_clock_id: typing.Optional[typing.Optional[String]] = Field(default=None)
+    gm_clock_id: typing.Optional[typing.Optional[String]] = Field(default=None)
+    clock_class: typing.Optional[typing.Optional[Int]] = Field(default=None)
+    clock_accuracy: typing.Optional[typing.Optional[String]] = Field(default=None)
+    clock_variance: typing.Optional[typing.Optional[String]] = Field(default=None)
+    time_recovery_status: typing.Optional[typing.Optional[String]] = Field(default=None)
+    global_priority: typing.Optional[typing.Optional[Int]] = Field(default=None)
+    user_priority: typing.Optional[typing.Optional[Int]] = Field(default=None)
+
+
+class PtpInterface(Payload):
+    id: typing.Optional[Boolean] = Field(default=False)
+    name: typing.Optional[Boolean] = Field(default=False)
+    status: typing.Optional[Boolean] = Field(default=False)
+    details: typing.Optional[PtpInterfaceDetails] = Field(default=None)
+    ptp_device: typing.Optional[PtpDevice] = Field(default=None, alias='ptpDevice')
+    ptp_links: typing.Optional[PtpLinkConnection] = Field(default=None, alias='ptpLinks')
+
+
+class PtpInterfacePayload(BaseModel):
+    id: typing.Optional[typing.Optional[ID]] = Field(default=None)
+    name: typing.Optional[typing.Optional[String]] = Field(default=None)
+    status: typing.Optional[typing.Optional[NodeStatus]] = Field(default=None)
+    details: typing.Optional[PtpInterfaceDetailsPayload] = Field(default=None)
+    ptp_device: typing.Optional[PtpDevicePayload] = Field(default=None, alias='ptpDevice')
+    ptp_links: typing.Optional[PtpLinkConnectionPayload] = Field(default=None, alias='ptpLinks')
+
+
+class PtpInterfaceEdge(Payload):
+    cursor: typing.Optional[Boolean] = Field(default=False)
+    node: typing.Optional[PtpInterface] = Field(default=None)
+
+
+class PtpInterfaceEdgePayload(BaseModel):
+    cursor: typing.Optional[typing.Optional[String]] = Field(default=None)
+    node: typing.Optional[PtpInterfacePayload] = Field(default=None)
+
+
+class PtpInterfaceConnection(Payload):
+    page_info: typing.Optional[PageInfo] = Field(default=None, alias='pageInfo')
+    edges: typing.Optional[PtpInterfaceEdge] = Field(default=None)
+
+
+class PtpInterfaceConnectionPayload(BaseModel):
+    page_info: typing.Optional[PageInfoPayload] = Field(default=None, alias='pageInfo')
+    edges: typing.Optional[typing.Optional[list[PtpInterfaceEdgePayload]]] = Field(default=None)
+
+
+class PtpLinkEdge(Payload):
+    link: typing.Optional[Boolean] = Field(default=False)
+    cursor: typing.Optional[Boolean] = Field(default=False)
+    node: typing.Optional[PtpInterface] = Field(default=None)
+
+
+class PtpLinkEdgePayload(BaseModel):
+    link: typing.Optional[typing.Optional[ID]] = Field(default=None)
+    cursor: typing.Optional[typing.Optional[String]] = Field(default=None)
+    node: typing.Optional[PtpInterfacePayload] = Field(default=None)
+
+
+class PtpLinkConnection(Payload):
+    page_info: typing.Optional[PageInfo] = Field(default=None, alias='pageInfo')
+    edges: typing.Optional[PtpLinkEdge] = Field(default=None)
+
+
+class PtpLinkConnectionPayload(BaseModel):
+    page_info: typing.Optional[PageInfoPayload] = Field(default=None, alias='pageInfo')
+    edges: typing.Optional[typing.Optional[list[PtpLinkEdgePayload]]] = Field(default=None)
+
+
+class PtpInterfaceDetails(Payload):
+    ptp_status: typing.Optional[Boolean] = Field(default=False)
+    ptsf_unusable: typing.Optional[Boolean] = Field(default=False)
+    admin_oper_status: typing.Optional[Boolean] = Field(default=False)
+
+
+class PtpInterfaceDetailsPayload(BaseModel):
+    ptp_status: typing.Optional[typing.Optional[String]] = Field(default=None)
+    ptsf_unusable: typing.Optional[typing.Optional[String]] = Field(default=None)
+    admin_oper_status: typing.Optional[typing.Optional[String]] = Field(default=None)
+
+
+class PtpPath(Payload):
+    nodes: typing.Optional[Boolean] = Field(default=False)
+    complete: typing.Optional[Boolean] = Field(default=False)
+
+
+class PtpPathPayload(BaseModel):
+    nodes: typing.Optional[typing.Optional[list[typing.Optional[ID]]]] = Field(default=None)
+    complete: typing.Optional[typing.Optional[Boolean]] = Field(default=None)
+
+
+class PtpDiffSynce(Payload):
+    id: typing.Optional[Boolean] = Field(default=False)
+    ptp_upstream_interface: typing.Optional[Boolean] = Field(default=False, alias='ptpUpstreamInterface')
+    ptp_upstream_interface_name: typing.Optional[Boolean] = Field(default=False, alias='ptpUpstreamInterfaceName')
+    ptp_upstream_interface_status: typing.Optional[Boolean] = Field(default=False, alias='ptpUpstreamInterfaceStatus')
+    synce_id: typing.Optional[Boolean] = Field(default=False, alias='synceId')
+    synce_upstream_interface_name: typing.Optional[Boolean] = Field(default=False, alias='synceUpstreamInterfaceName')
+
+
+class PtpDiffSyncePayload(BaseModel):
+    id: typing.Optional[typing.Optional[ID]] = Field(default=None)
+    ptp_upstream_interface: typing.Optional[typing.Optional[ID]] = Field(default=None, alias='ptpUpstreamInterface')
+    ptp_upstream_interface_name: typing.Optional[typing.Optional[String]] = Field(default=None, alias='ptpUpstreamInterfaceName')
+    ptp_upstream_interface_status: typing.Optional[typing.Optional[String]] = Field(default=None, alias='ptpUpstreamInterfaceStatus')
+    synce_id: typing.Optional[typing.Optional[ID]] = Field(default=None, alias='synceId')
+    synce_upstream_interface_name: typing.Optional[typing.Optional[String]] = Field(default=None, alias='synceUpstreamInterfaceName')
+
+
+class PtpDiffSynceEdge(Payload):
+    cursor: typing.Optional[Boolean] = Field(default=False)
+    node: typing.Optional[PtpDiffSynce] = Field(default=None)
+
+
+class PtpDiffSynceEdgePayload(BaseModel):
+    cursor: typing.Optional[typing.Optional[String]] = Field(default=None)
+    node: typing.Optional[PtpDiffSyncePayload] = Field(default=None)
+
+
+class PtpDiffSynceConnection(Payload):
+    page_info: typing.Optional[PageInfo] = Field(default=None, alias='pageInfo')
+    edges: typing.Optional[PtpDiffSynceEdge] = Field(default=None)
+
+
+class PtpDiffSynceConnectionPayload(BaseModel):
+    page_info: typing.Optional[PageInfoPayload] = Field(default=None, alias='pageInfo')
+    edges: typing.Optional[typing.Optional[list[PtpDiffSynceEdgePayload]]] = Field(default=None)
+
+
+class SynceDevice(Payload):
+    id: typing.Optional[Boolean] = Field(default=False)
+    name: typing.Optional[Boolean] = Field(default=False)
+    coordinates: typing.Optional[Coordinates] = Field(default=None)
+    details: typing.Optional[SynceDeviceDetails] = Field(default=None)
+    status: typing.Optional[Boolean] = Field(default=False)
+    labels: typing.Optional[Boolean] = Field(default=False)
+    synce_interfaces: typing.Optional[SynceInterfaceConnection] = Field(default=None, alias='synceInterfaces')
+
+
+class SynceDevicePayload(BaseModel):
+    id: typing.Optional[typing.Optional[ID]] = Field(default=None)
+    name: typing.Optional[typing.Optional[String]] = Field(default=None)
+    coordinates: typing.Optional[CoordinatesPayload] = Field(default=None)
+    details: typing.Optional[SynceDeviceDetailsPayload] = Field(default=None)
+    status: typing.Optional[typing.Optional[NodeStatus]] = Field(default=None)
+    labels: typing.Optional[typing.Optional[list[typing.Optional[String]]]] = Field(default=None)
+    synce_interfaces: typing.Optional[SynceInterfaceConnectionPayload] = Field(default=None, alias='synceInterfaces')
+
+
+class SynceDeviceEdge(Payload):
+    cursor: typing.Optional[Boolean] = Field(default=False)
+    node: typing.Optional[SynceDevice] = Field(default=None)
+
+
+class SynceDeviceEdgePayload(BaseModel):
+    cursor: typing.Optional[typing.Optional[String]] = Field(default=None)
+    node: typing.Optional[SynceDevicePayload] = Field(default=None)
+
+
+class SynceDeviceConnection(Payload):
+    page_info: typing.Optional[PageInfo] = Field(default=None, alias='pageInfo')
+    edges: typing.Optional[SynceDeviceEdge] = Field(default=None)
+
+
+class SynceDeviceConnectionPayload(BaseModel):
+    page_info: typing.Optional[PageInfoPayload] = Field(default=None, alias='pageInfo')
+    edges: typing.Optional[typing.Optional[list[SynceDeviceEdgePayload]]] = Field(default=None)
+
+
+class SynceDeviceDetails(Payload):
+    selected_for_use: typing.Optional[Boolean] = Field(default=False)
+
+
+class SynceDeviceDetailsPayload(BaseModel):
+    selected_for_use: typing.Optional[typing.Optional[String]] = Field(default=None)
+
+
+class SynceInterface(Payload):
+    id: typing.Optional[Boolean] = Field(default=False)
+    name: typing.Optional[Boolean] = Field(default=False)
+    status: typing.Optional[Boolean] = Field(default=False)
+    synce_device: typing.Optional[SynceDevice] = Field(default=None, alias='synceDevice')
+    synce_links: typing.Optional[SynceLinkConnection] = Field(default=None, alias='synceLinks')
+    details: typing.Optional[SynceInterfaceDetails] = Field(default=None)
+
+
+class SynceInterfacePayload(BaseModel):
+    id: typing.Optional[typing.Optional[ID]] = Field(default=None)
+    name: typing.Optional[typing.Optional[String]] = Field(default=None)
+    status: typing.Optional[typing.Optional[NodeStatus]] = Field(default=None)
+    synce_device: typing.Optional[SynceDevicePayload] = Field(default=None, alias='synceDevice')
+    synce_links: typing.Optional[SynceLinkConnectionPayload] = Field(default=None, alias='synceLinks')
+    details: typing.Optional[SynceInterfaceDetailsPayload] = Field(default=None)
+
+
+class SynceLinkConnection(Payload):
+    page_info: typing.Optional[PageInfo] = Field(default=None, alias='pageInfo')
+    edges: typing.Optional[SynceLinkEdge] = Field(default=None)
+
+
+class SynceLinkConnectionPayload(BaseModel):
+    page_info: typing.Optional[PageInfoPayload] = Field(default=None, alias='pageInfo')
+    edges: typing.Optional[typing.Optional[list[SynceLinkEdgePayload]]] = Field(default=None)
+
+
+class SynceLinkEdge(Payload):
+    link: typing.Optional[Boolean] = Field(default=False)
+    cursor: typing.Optional[Boolean] = Field(default=False)
+    node: typing.Optional[SynceInterface] = Field(default=None)
+
+
+class SynceLinkEdgePayload(BaseModel):
+    link: typing.Optional[typing.Optional[ID]] = Field(default=None)
+    cursor: typing.Optional[typing.Optional[String]] = Field(default=None)
+    node: typing.Optional[SynceInterfacePayload] = Field(default=None)
+
+
+class SynceInterfaceEdge(Payload):
+    cursor: typing.Optional[Boolean] = Field(default=False)
+    node: typing.Optional[SynceInterface] = Field(default=None)
+
+
+class SynceInterfaceEdgePayload(BaseModel):
+    cursor: typing.Optional[typing.Optional[String]] = Field(default=None)
+    node: typing.Optional[SynceInterfacePayload] = Field(default=None)
+
+
+class SynceInterfaceConnection(Payload):
+    page_info: typing.Optional[PageInfo] = Field(default=None, alias='pageInfo')
+    edges: typing.Optional[SynceInterfaceEdge] = Field(default=None)
+
+
+class SynceInterfaceConnectionPayload(BaseModel):
+    page_info: typing.Optional[PageInfoPayload] = Field(default=None, alias='pageInfo')
+    edges: typing.Optional[typing.Optional[list[SynceInterfaceEdgePayload]]] = Field(default=None)
+
+
+class SynceInterfaceDetails(Payload):
+    synce_enabled: typing.Optional[Boolean] = Field(default=False)
+    rx_quality_level: typing.Optional[Boolean] = Field(default=False)
+    qualified_for_use: typing.Optional[Boolean] = Field(default=False)
+    not_qualified_due_to: typing.Optional[Boolean] = Field(default=False)
+    not_selected_due_to: typing.Optional[Boolean] = Field(default=False)
+
+
+class SynceInterfaceDetailsPayload(BaseModel):
+    synce_enabled: typing.Optional[typing.Optional[Boolean]] = Field(default=None)
+    rx_quality_level: typing.Optional[typing.Optional[String]] = Field(default=None)
+    qualified_for_use: typing.Optional[typing.Optional[String]] = Field(default=None)
+    not_qualified_due_to: typing.Optional[typing.Optional[String]] = Field(default=None)
+    not_selected_due_to: typing.Optional[typing.Optional[String]] = Field(default=None)
+
+
+class SyncePath(Payload):
+    nodes: typing.Optional[Boolean] = Field(default=False)
+    complete: typing.Optional[Boolean] = Field(default=False)
+
+
+class SyncePathPayload(BaseModel):
+    nodes: typing.Optional[typing.Optional[list[typing.Optional[ID]]]] = Field(default=None)
+    complete: typing.Optional[typing.Optional[Boolean]] = Field(default=None)
+
+
 Node.model_rebuild()
 CoordinatesInput.model_rebuild()
 NetDeviceFilter.model_rebuild()
@@ -600,12 +1105,18 @@ NetInterfaceFilter.model_rebuild()
 NetNetworkFilter.model_rebuild()
 PhyDeviceFilter.model_rebuild()
 PhyInterfaceFilter.model_rebuild()
+PtpDeviceFilter.model_rebuild()
+PtpInterfaceFilter.model_rebuild()
+SynceDeviceFilter.model_rebuild()
+SynceInterfaceFilter.model_rebuild()
 CreateBackupResponse.model_rebuild()
 CreateBackupResponsePayload.model_rebuild()
 DeleteBackupsResponse.model_rebuild()
 DeleteBackupsResponsePayload.model_rebuild()
 CoordinatesResponse.model_rebuild()
 CoordinatesResponsePayload.model_rebuild()
+InstalledDevices.model_rebuild()
+InstalledDevicesPayload.model_rebuild()
 TopologyResponse.model_rebuild()
 TopologyResponsePayload.model_rebuild()
 CommonNodesResponse.model_rebuild()
@@ -616,22 +1127,35 @@ SyncResponse.model_rebuild()
 SyncResponsePayload.model_rebuild()
 NodeQuery.model_rebuild()
 PhyDevicesQuery.model_rebuild()
+PtpDevicesQuery.model_rebuild()
 NetDevicesQuery.model_rebuild()
+SynceDevicesQuery.model_rebuild()
 NetRoutingPathsQuery.model_rebuild()
+PtpPathToGmClockQuery.model_rebuild()
+SyncePathToGmQuery.model_rebuild()
+PtpDiffSynceQuery.model_rebuild()
 BackupsQuery.model_rebuild()
 TopologyDiffQuery.model_rebuild()
-PhyHasAndInterfacesQuery.model_rebuild()
-PhyLinksAndDevicesQuery.model_rebuild()
 CommonNodesQuery.model_rebuild()
 ProvidersQuery.model_rebuild()
 ProviderQuery.model_rebuild()
 NodeQueryResponse.model_rebuild()
 PhyDevicesQueryResponse.model_rebuild()
 PhyDevicesData.model_rebuild()
+PtpDevicesQueryResponse.model_rebuild()
+PtpDevicesData.model_rebuild()
 NetDevicesQueryResponse.model_rebuild()
 NetDevicesData.model_rebuild()
+SynceDevicesQueryResponse.model_rebuild()
+SynceDevicesData.model_rebuild()
 NetRoutingPathsQueryResponse.model_rebuild()
 NetRoutingPathsData.model_rebuild()
+PtpPathToGmClockQueryResponse.model_rebuild()
+PtpPathToGmClockData.model_rebuild()
+SyncePathToGmQueryResponse.model_rebuild()
+SyncePathToGmData.model_rebuild()
+PtpDiffSynceQueryResponse.model_rebuild()
+PtpDiffSynceData.model_rebuild()
 TopologyDiffQueryResponse.model_rebuild()
 TopologyDiffData.model_rebuild()
 CommonNodesQueryResponse.model_rebuild()
@@ -643,6 +1167,7 @@ DeleteBackupsMutation.model_rebuild()
 UpdateCoordinatesMutation.model_rebuild()
 UpdateNodeStatusMutation.model_rebuild()
 SyncMutation.model_rebuild()
+EnableRemoteDebugSessionMutation.model_rebuild()
 DeleteBackupsMutationResponse.model_rebuild()
 DeleteBackupsData.model_rebuild()
 UpdateCoordinatesMutationResponse.model_rebuild()
@@ -651,6 +1176,8 @@ UpdateNodeStatusMutationResponse.model_rebuild()
 UpdateNodeStatusData.model_rebuild()
 SyncMutationResponse.model_rebuild()
 SyncData.model_rebuild()
+EnableRemoteDebugSessionMutationResponse.model_rebuild()
+EnableRemoteDebugSessionData.model_rebuild()
 Coordinates.model_rebuild()
 CoordinatesPayload.model_rebuild()
 NetDevice.model_rebuild()
@@ -665,6 +1192,10 @@ NetInterfaceEdge.model_rebuild()
 NetInterfaceEdgePayload.model_rebuild()
 NetInterfaceConnection.model_rebuild()
 NetInterfaceConnectionPayload.model_rebuild()
+NetLinkEdge.model_rebuild()
+NetLinkEdgePayload.model_rebuild()
+NetLinkConnection.model_rebuild()
+NetLinkConnectionPayload.model_rebuild()
 NetNetwork.model_rebuild()
 NetNetworkPayload.model_rebuild()
 NetNetworkEdge.model_rebuild()
@@ -687,13 +1218,63 @@ PhyDeviceConnection.model_rebuild()
 PhyDeviceConnectionPayload.model_rebuild()
 PhyDeviceDetails.model_rebuild()
 PhyDeviceDetailsPayload.model_rebuild()
-PhyHasAndInterfacesResponse.model_rebuild()
-PhyHasAndInterfacesResponsePayload.model_rebuild()
-PhyLinksAndDevicesResponse.model_rebuild()
-PhyLinksAndDevicesResponsePayload.model_rebuild()
 PhyInterface.model_rebuild()
 PhyInterfacePayload.model_rebuild()
 PhyInterfaceEdge.model_rebuild()
 PhyInterfaceEdgePayload.model_rebuild()
 PhyInterfaceConnection.model_rebuild()
 PhyInterfaceConnectionPayload.model_rebuild()
+PhyLinkEdge.model_rebuild()
+PhyLinkEdgePayload.model_rebuild()
+PhyLinkConnection.model_rebuild()
+PhyLinkConnectionPayload.model_rebuild()
+PtpDevice.model_rebuild()
+PtpDevicePayload.model_rebuild()
+PtpDeviceEdge.model_rebuild()
+PtpDeviceEdgePayload.model_rebuild()
+PtpDeviceConnection.model_rebuild()
+PtpDeviceConnectionPayload.model_rebuild()
+PtpDeviceDetails.model_rebuild()
+PtpDeviceDetailsPayload.model_rebuild()
+PtpInterface.model_rebuild()
+PtpInterfacePayload.model_rebuild()
+PtpInterfaceEdge.model_rebuild()
+PtpInterfaceEdgePayload.model_rebuild()
+PtpInterfaceConnection.model_rebuild()
+PtpInterfaceConnectionPayload.model_rebuild()
+PtpLinkEdge.model_rebuild()
+PtpLinkEdgePayload.model_rebuild()
+PtpLinkConnection.model_rebuild()
+PtpLinkConnectionPayload.model_rebuild()
+PtpInterfaceDetails.model_rebuild()
+PtpInterfaceDetailsPayload.model_rebuild()
+PtpPath.model_rebuild()
+PtpPathPayload.model_rebuild()
+PtpDiffSynce.model_rebuild()
+PtpDiffSyncePayload.model_rebuild()
+PtpDiffSynceEdge.model_rebuild()
+PtpDiffSynceEdgePayload.model_rebuild()
+PtpDiffSynceConnection.model_rebuild()
+PtpDiffSynceConnectionPayload.model_rebuild()
+SynceDevice.model_rebuild()
+SynceDevicePayload.model_rebuild()
+SynceDeviceEdge.model_rebuild()
+SynceDeviceEdgePayload.model_rebuild()
+SynceDeviceConnection.model_rebuild()
+SynceDeviceConnectionPayload.model_rebuild()
+SynceDeviceDetails.model_rebuild()
+SynceDeviceDetailsPayload.model_rebuild()
+SynceInterface.model_rebuild()
+SynceInterfacePayload.model_rebuild()
+SynceLinkConnection.model_rebuild()
+SynceLinkConnectionPayload.model_rebuild()
+SynceLinkEdge.model_rebuild()
+SynceLinkEdgePayload.model_rebuild()
+SynceInterfaceEdge.model_rebuild()
+SynceInterfaceEdgePayload.model_rebuild()
+SynceInterfaceConnection.model_rebuild()
+SynceInterfaceConnectionPayload.model_rebuild()
+SynceInterfaceDetails.model_rebuild()
+SynceInterfaceDetailsPayload.model_rebuild()
+SyncePath.model_rebuild()
+SyncePathPayload.model_rebuild()
