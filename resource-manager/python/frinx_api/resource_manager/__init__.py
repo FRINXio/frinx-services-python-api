@@ -22,14 +22,25 @@ String: typing.TypeAlias = str
 
 
 class AllocationStrategyLang(ENUM):
-    js = 'js'
-    py = 'py'
+    JS = 'js'
+    PY = 'py'
+    GO = 'go'
+
+
+class OrderDirection(ENUM):
+    ASC = 'ASC'
+    DESC = 'DESC'
 
 
 class PoolType(ENUM):
-    allocating = 'allocating'
-    set = 'set'
-    singleton = 'singleton'
+    ALLOCATING = 'allocating'
+    SET = 'set'
+    SINGLETON = 'singleton'
+
+
+class ResourcePoolOrderField(ENUM):
+    NAME = 'name'
+    DEALOCATIONSAFETYPERIOD = 'dealocationSafetyPeriod'
 
 
 class Node(Interface):
@@ -136,6 +147,11 @@ class ResourcePoolInput(Input):
     resource_pool_id: ID = Field(alias='ResourcePoolID')
     resource_pool_name: String = Field(alias='ResourcePoolName')
     pool_properties: Map = Field(alias='poolProperties')
+
+
+class SortResourcePoolsInput(Input):
+    direction: OrderDirection
+    field: typing.Optional[ResourcePoolOrderField] = Field(default=None)
 
 
 class TagAnd(Input):
@@ -627,26 +643,18 @@ class UpdateResourceAltIdData(BaseModel):
     update_resource_alt_id: ResourcePayload = Field(alias='UpdateResourceAltId')
 
 
-class OutputCursor(Payload):
-    id: typing.Optional[Boolean] = Field(default=False, alias='ID')
-
-
-class OutputCursorPayload(BaseModel):
-    id: typing.Optional[typing.Optional[String]] = Field(default=None, alias='ID')
-
-
 class PageInfo(Payload):
-    end_cursor: typing.Optional[OutputCursor] = Field(default=None, alias='endCursor')
+    end_cursor: typing.Optional[Boolean] = Field(default=False, alias='endCursor')
     has_next_page: typing.Optional[Boolean] = Field(default=False, alias='hasNextPage')
     has_previous_page: typing.Optional[Boolean] = Field(default=False, alias='hasPreviousPage')
-    start_cursor: typing.Optional[OutputCursor] = Field(default=None, alias='startCursor')
+    start_cursor: typing.Optional[Boolean] = Field(default=False, alias='startCursor')
 
 
 class PageInfoPayload(BaseModel):
-    end_cursor: typing.Optional[OutputCursorPayload] = Field(default=None, alias='endCursor')
+    end_cursor: typing.Optional[typing.Optional[Cursor]] = Field(default=None, alias='endCursor')
     has_next_page: typing.Optional[typing.Optional[Boolean]] = Field(default=None, alias='hasNextPage')
     has_previous_page: typing.Optional[typing.Optional[Boolean]] = Field(default=None, alias='hasPreviousPage')
-    start_cursor: typing.Optional[OutputCursorPayload] = Field(default=None, alias='startCursor')
+    start_cursor: typing.Optional[typing.Optional[Cursor]] = Field(default=None, alias='startCursor')
 
 
 class PoolCapacityPayload(Payload):
@@ -701,8 +709,8 @@ class QueryResourcesQuery(Query):
     pool_id: ID = Field(alias='poolId', json_schema_extra={'type': 'ID!'})
     first: typing.Optional[Int] = Field(default=None, json_schema_extra={'type': 'Int'})
     last: typing.Optional[Int] = Field(default=None, json_schema_extra={'type': 'Int'})
-    before: typing.Optional[String] = Field(default=None, json_schema_extra={'type': 'String'})
-    after: typing.Optional[String] = Field(default=None, json_schema_extra={'type': 'String'})
+    before: typing.Optional[Cursor] = Field(default=None, json_schema_extra={'type': 'Cursor'})
+    after: typing.Optional[Cursor] = Field(default=None, json_schema_extra={'type': 'Cursor'})
     payload: ResourceConnection
 
 
@@ -712,8 +720,8 @@ class QueryResourcesByAltIdQuery(Query):
     pool_id: typing.Optional[ID] = Field(default=None, alias='poolId', json_schema_extra={'type': 'ID'})
     first: typing.Optional[Int] = Field(default=None, json_schema_extra={'type': 'Int'})
     last: typing.Optional[Int] = Field(default=None, json_schema_extra={'type': 'Int'})
-    before: typing.Optional[String] = Field(default=None, json_schema_extra={'type': 'String'})
-    after: typing.Optional[String] = Field(default=None, json_schema_extra={'type': 'String'})
+    before: typing.Optional[Cursor] = Field(default=None, json_schema_extra={'type': 'Cursor'})
+    after: typing.Optional[Cursor] = Field(default=None, json_schema_extra={'type': 'Cursor'})
     payload: ResourceConnection
 
 
@@ -754,6 +762,7 @@ class QueryEmptyResourcePoolsQuery(Query):
     last: typing.Optional[Int] = Field(default=None, json_schema_extra={'type': 'Int'})
     before: typing.Optional[Cursor] = Field(default=None, json_schema_extra={'type': 'Cursor'})
     after: typing.Optional[Cursor] = Field(default=None, json_schema_extra={'type': 'Cursor'})
+    sort_by: typing.Optional[SortResourcePoolsInput] = Field(default=None, alias='sortBy', json_schema_extra={'type': 'SortResourcePoolsInput'})
     payload: ResourcePoolConnection
 
 
@@ -766,6 +775,7 @@ class QueryResourcePoolsQuery(Query):
     before: typing.Optional[Cursor] = Field(default=None, json_schema_extra={'type': 'Cursor'})
     after: typing.Optional[Cursor] = Field(default=None, json_schema_extra={'type': 'Cursor'})
     filter_by_resources: typing.Optional[Map] = Field(default=None, alias='filterByResources', json_schema_extra={'type': 'Map'})
+    sort_by: typing.Optional[SortResourcePoolsInput] = Field(default=None, alias='sortBy', json_schema_extra={'type': 'SortResourcePoolsInput'})
     payload: ResourcePoolConnection
 
 
@@ -795,6 +805,7 @@ class QueryRootResourcePoolsQuery(Query):
     before: typing.Optional[Cursor] = Field(default=None, json_schema_extra={'type': 'Cursor'})
     after: typing.Optional[Cursor] = Field(default=None, json_schema_extra={'type': 'Cursor'})
     filter_by_resources: typing.Optional[Map] = Field(default=None, alias='filterByResources', json_schema_extra={'type': 'Map'})
+    sort_by: typing.Optional[SortResourcePoolsInput] = Field(default=None, alias='sortBy', json_schema_extra={'type': 'SortResourcePoolsInput'})
     payload: ResourcePoolConnection
 
 
@@ -807,6 +818,7 @@ class QueryLeafResourcePoolsQuery(Query):
     before: typing.Optional[Cursor] = Field(default=None, json_schema_extra={'type': 'Cursor'})
     after: typing.Optional[Cursor] = Field(default=None, json_schema_extra={'type': 'Cursor'})
     filter_by_resources: typing.Optional[Map] = Field(default=None, alias='filterByResources', json_schema_extra={'type': 'Map'})
+    sort_by: typing.Optional[SortResourcePoolsInput] = Field(default=None, alias='sortBy', json_schema_extra={'type': 'SortResourcePoolsInput'})
     payload: ResourcePoolConnection
 
 
@@ -1010,12 +1022,12 @@ class ResourceConnectionPayload(BaseModel):
 
 
 class ResourceEdge(Payload):
-    cursor: typing.Optional[OutputCursor] = Field(default=None)
+    cursor: typing.Optional[Boolean] = Field(default=False)
     node: typing.Optional[Resource] = Field(default=None)
 
 
 class ResourceEdgePayload(BaseModel):
-    cursor: typing.Optional[OutputCursorPayload] = Field(default=None)
+    cursor: typing.Optional[typing.Optional[Cursor]] = Field(default=None)
     node: typing.Optional[ResourcePayload] = Field(default=None)
 
 
@@ -1028,6 +1040,7 @@ class ResourcePool(Payload):
     pool_type: typing.Optional[Boolean] = Field(default=False, alias='PoolType')
     resource_type: typing.Optional[ResourceType] = Field(default=None, alias='ResourceType')
     resources: typing.Optional[Resource] = Field(default=None, alias='Resources')
+    dealocation_safety_period: typing.Optional[Boolean] = Field(default=False, alias='DealocationSafetyPeriod')
     tags: typing.Optional[Tag] = Field(default=None, alias='Tags')
     allocated_resources: typing.Optional[ResourceConnection] = Field(default=None, alias='allocatedResources')
     id: typing.Optional[Boolean] = Field(default=False)
@@ -1042,6 +1055,7 @@ class ResourcePoolPayload(BaseModel):
     pool_type: typing.Optional[typing.Optional[PoolType]] = Field(default=None, alias='PoolType')
     resource_type: typing.Optional[ResourceTypePayload] = Field(default=None, alias='ResourceType')
     resources: typing.Optional[typing.Optional[list[ResourcePayload]]] = Field(default=None, alias='Resources')
+    dealocation_safety_period: typing.Optional[typing.Optional[Int]] = Field(default=None, alias='DealocationSafetyPeriod')
     tags: typing.Optional[typing.Optional[list[TagPayload]]] = Field(default=None, alias='Tags')
     allocated_resources: typing.Optional[ResourceConnectionPayload] = Field(default=None, alias='allocatedResources')
     id: typing.Optional[typing.Optional[ID]] = Field(default=None)
@@ -1060,12 +1074,12 @@ class ResourcePoolConnectionPayload(BaseModel):
 
 
 class ResourcePoolEdge(Payload):
-    cursor: typing.Optional[OutputCursor] = Field(default=None)
+    cursor: typing.Optional[Boolean] = Field(default=False)
     node: typing.Optional[ResourcePool] = Field(default=None)
 
 
 class ResourcePoolEdgePayload(BaseModel):
-    cursor: typing.Optional[OutputCursorPayload] = Field(default=None)
+    cursor: typing.Optional[typing.Optional[Cursor]] = Field(default=None)
     node: typing.Optional[ResourcePoolPayload] = Field(default=None)
 
 
@@ -1143,6 +1157,7 @@ DeleteResourceTypeInput.model_rebuild()
 DeleteTagInput.model_rebuild()
 ResourceInput.model_rebuild()
 ResourcePoolInput.model_rebuild()
+SortResourcePoolsInput.model_rebuild()
 TagAnd.model_rebuild()
 TagOr.model_rebuild()
 TagPoolInput.model_rebuild()
@@ -1243,8 +1258,6 @@ UpdateResourceTypeNameMutationResponse.model_rebuild()
 UpdateResourceTypeNameData.model_rebuild()
 UpdateResourceAltIdMutationResponse.model_rebuild()
 UpdateResourceAltIdData.model_rebuild()
-OutputCursor.model_rebuild()
-OutputCursorPayload.model_rebuild()
 PageInfo.model_rebuild()
 PageInfoPayload.model_rebuild()
 PoolCapacityPayload.model_rebuild()
