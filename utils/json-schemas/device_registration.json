@@ -40,7 +40,7 @@
     },
     "mount_parameters": {
       "description": "Mount parameters.",
-      "type": "string"
+      "type": "object"
     },
     "vendor": {
       "description": "The device vendor.",
