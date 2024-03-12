@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from enum import Enum
+from typing import Any
 from typing import Optional
 
 from pydantic import BaseModel
@@ -66,7 +67,7 @@ class DeviceRegistration(BaseModel):
     """
     The state the device is in.
     """
-    mount_parameters: Optional[str] = None
+    mount_parameters: Optional[dict[str, Any]] = None
     """
     Mount parameters.
     """
