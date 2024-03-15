@@ -4,7 +4,9 @@
   "title": "Device removal",
   "description": "Device removal schema",
   "type": "object",
-  "required": ["device_name"],
+  "required": [
+    "device_name"
+  ],
   "properties": {
     "device_name": {
       "description": "The name of the device.",

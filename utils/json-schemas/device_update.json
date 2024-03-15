@@ -1,78 +1,97 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://frinx.io/device_update.json",
-  "title": "Device update",
-  "description": "Device update schema",
-  "type": "object",
-  "required": ["device_name"],
-  "properties": {
-    "device_name": {
-      "description": "The name of the device.",
-      "type": "string"
+  "allOf": [
+    {
+      "$ref": "device_parent.json"
     },
-    "device_size": {
-      "description": "The size of the device.",
-      "type": ["string", "null"],
-      "enum": ["SMALL", "MEDIUM", "LARGE"]
-    },
-    "device_type": {
-      "description": "The type of the device.",
-      "type": ["string", "null"]
-    },
-    "device_address": {
-      "description": "The address / hostname of the device.",
-      "type": ["string", "null"]
-    },
-    "device_port": {
-      "description": "The port of the device.",
-      "type": ["integer", "null"],
-      "minimum": 0,
-      "maximum": 65535
-    },
-    "zone_id": {
-      "description": "The zone ID of the device.",
-      "type": "string"
-    },
-    "service_state": {
-      "description": "The state the device is in.",
-      "type": ["string", "null"],
-      "enum": ["IN_SERVICE", "OUT_OF_SERVICE", "PLANNING"]
-    },
-    "mount_parameters": {
-      "description": "Mount parameters.",
-      "type": ["object", "null"]
-    },
-    "vendor": {
-      "description": "The device vendor.",
-      "type": ["string", "null"]
-    },
-    "model": {
-      "description": "The model of the device.",
-      "type": ["string", "null"]
-    },
-    "blueprint_id": {
-      "description": "The blueprint ID of the device.",
-      "type": ["string", "null"]
-    },
-    "username": {
-      "description": "Device username.",
-      "type": ["string", "null"]
-    },
-    "password": {
-      "description": "Device password",
-      "type": ["string", "null"]
-    },
-    "version": {
-      "description": "The version of the device.",
-      "type": ["string", "null"]
-    },
-    "label_ids": {
-      "description": "Array of label IDs assigned to the device.",
-      "type": ["array", "null"],
-      "items": {
-        "description": "Specific label ID.",
-        "type": "string"
+    {
+      "properties": {
+        "device_size": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "device_type": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "device_address": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "device_port": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "service_state": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "mount_parameters": {
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "vendor": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "model": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "blueprint_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "username": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "password": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "version": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "label_ids": {
+          "type": [
+            "array",
+            "null"
+          ]
+        }
       }
     }
-  }
+  ],
+  "title": "Device update",
+  "description": "Device update schema using merge behavior",
+  "type": "object",
+  "required": [
+    "device_name"
+  ]
 }
