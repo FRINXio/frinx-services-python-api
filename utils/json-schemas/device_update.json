@@ -1,10 +1,10 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://frinx.io/device_registration.json",
-  "title": "Device registration",
-  "description": "Device registration schema",
+  "$id": "https://frinx.io/device_update.json",
+  "title": "Device update",
+  "description": "Device update schema",
   "type": "object",
-  "required": ["device_name", "zone_id"],
+  "required": ["device_name"],
   "properties": {
     "device_name": {
       "description": "The name of the device.",
@@ -12,20 +12,20 @@
     },
     "device_size": {
       "description": "The size of the device.",
-      "type": "string",
+      "type": ["string", "null"],
       "enum": ["SMALL", "MEDIUM", "LARGE"]
     },
     "device_type": {
       "description": "The type of the device.",
-      "type": "string"
+      "type": ["string", "null"]
     },
     "device_address": {
       "description": "The address / hostname of the device.",
-      "type": "string"
+      "type": ["string", "null"]
     },
     "device_port": {
       "description": "The port of the device.",
-      "type": "integer",
+      "type": ["integer", "null"],
       "minimum": 0,
       "maximum": 65535
     },
@@ -35,40 +35,40 @@
     },
     "service_state": {
       "description": "The state the device is in.",
-      "type": "string",
+      "type": ["string", "null"],
       "enum": ["IN_SERVICE", "OUT_OF_SERVICE", "PLANNING"]
     },
     "mount_parameters": {
       "description": "Mount parameters.",
-      "type": "object"
+      "type": ["object", "null"]
     },
     "vendor": {
       "description": "The device vendor.",
-      "type": "string"
+      "type": ["string", "null"]
     },
     "model": {
       "description": "The model of the device.",
-      "type": "string"
+      "type": ["string", "null"]
     },
     "blueprint_id": {
       "description": "The blueprint ID of the device.",
-      "type": "string"
+      "type": ["string", "null"]
     },
     "username": {
       "description": "Device username.",
-      "type": "string"
+      "type": ["string", "null"]
     },
     "password": {
       "description": "Device password",
-      "type": "string"
+      "type": ["string", "null"]
     },
     "version": {
       "description": "The version of the device.",
-      "type": "string"
+      "type": ["string", "null"]
     },
     "label_ids": {
       "description": "Array of label IDs assigned to the device.",
-      "type": "array",
+      "type": ["array", "null"],
       "items": {
         "description": "Specific label ID.",
         "type": "string"

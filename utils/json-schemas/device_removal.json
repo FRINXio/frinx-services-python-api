@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://frinx.io/device_removal.json",
+  "title": "Device removal",
+  "description": "Device removal schema",
+  "type": "object",
+  "required": ["device_name"],
+  "properties": {
+    "device_name": {
+      "description": "The name of the device.",
+      "type": "string"
+    }
+  }
+}
