@@ -2,12 +2,8 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://frinx.io/device_parent.json",
   "title": "Device parent schema",
-  "description": "Parent schema for registration and update",
+  "description": "Parent schema for registration and update (All fields are optional)",
   "type": "object",
-  "required": [
-    "device_name",
-    "zone_id"
-  ],
   "properties": {
     "device_name": {
       "description": "The name of the device.",

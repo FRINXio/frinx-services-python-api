@@ -39,7 +39,7 @@ class DeviceParentSchema(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    device_name: str
+    device_name: Optional[str] = None
     """
     The name of the device.
     """
@@ -59,7 +59,7 @@ class DeviceParentSchema(BaseModel):
     """
     The port of the device.
     """
-    zone_id: str
+    zone_id: Optional[str] = None
     """
     The zone ID of the device.
     """
