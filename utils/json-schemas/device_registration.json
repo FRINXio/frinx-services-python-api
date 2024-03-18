@@ -1,78 +1,16 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://frinx.io/device_registration.json",
+  "allOf": [
+    {
+      "$ref": "device_parent.json"
+    }
+  ],
   "title": "Device registration",
   "description": "Device registration schema",
   "type": "object",
-  "required": ["device_name", "zone_id"],
-  "properties": {
-    "device_name": {
-      "description": "The name of the device.",
-      "type": "string"
-    },
-    "device_size": {
-      "description": "The size of the device.",
-      "type": "string",
-      "enum": ["SMALL", "MEDIUM", "LARGE"]
-    },
-    "device_type": {
-      "description": "The type of the device.",
-      "type": "string"
-    },
-    "device_address": {
-      "description": "The address / hostname of the device.",
-      "type": "string"
-    },
-    "device_port": {
-      "description": "The port of the device.",
-      "type": "integer",
-      "minimum": 0,
-      "maximum": 65535
-    },
-    "zone_id": {
-      "description": "The zone ID of the device.",
-      "type": "string"
-    },
-    "service_state": {
-      "description": "The state the device is in.",
-      "type": "string",
-      "enum": ["IN_SERVICE", "OUT_OF_SERVICE", "PLANNING"]
-    },
-    "mount_parameters": {
-      "description": "Mount parameters.",
-      "type": "object"
-    },
-    "vendor": {
-      "description": "The device vendor.",
-      "type": "string"
-    },
-    "model": {
-      "description": "The model of the device.",
-      "type": "string"
-    },
-    "blueprint_id": {
-      "description": "The blueprint ID of the device.",
-      "type": "string"
-    },
-    "username": {
-      "description": "Device username.",
-      "type": "string"
-    },
-    "password": {
-      "description": "Device password",
-      "type": "string"
-    },
-    "version": {
-      "description": "The version of the device.",
-      "type": "string"
-    },
-    "label_ids": {
-      "description": "Array of label IDs assigned to the device.",
-      "type": "array",
-      "items": {
-        "description": "Specific label ID.",
-        "type": "string"
-      }
-    }
-  }
+  "required": [
+    "device_name",
+    "zone_id"
+  ]
 }
