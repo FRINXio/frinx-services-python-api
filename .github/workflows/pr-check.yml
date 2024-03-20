@@ -31,8 +31,8 @@ jobs:
         id: python
         with:
           filters: |
-            inventory/python:
-              - 'inventory/python/**'
+            frinx-inventory-server/python:
+              - 'frinx-inventory-server/python/**'
             resource-manager/python:
               - 'resource-manager/python/**'
             schellar/python:
