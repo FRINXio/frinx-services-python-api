@@ -19,3 +19,6 @@
 
 # 1.2.0
 - Allow to populate by name
+
+# 1.2.1
+- Fix rendering issue when payload is bool

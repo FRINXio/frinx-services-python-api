@@ -155,3 +155,15 @@ class CreateScheduleMutation(Mutation):
     _name: str = PrivateAttr('createSchedule')
     input: CreateScheduleInput = Field(json_schema_extra={'type': 'CreateScheduleInput!'})
     payload: Schedule
+
+
+class DeleteScheduleMutation(Mutation):
+    _name: str = PrivateAttr('deleteSchedule')
+    name: String = Field(json_schema_extra={'type': 'String!'})
+    payload: Boolean
+
+
+class DeleteScheduleQuery(Query):
+    _name: str = PrivateAttr('deleteScheduleQuery')
+    name: String = Field(json_schema_extra={'type': 'String!'})
+    payload: Boolean

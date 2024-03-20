@@ -167,7 +167,7 @@ class Mutation(GraphqlSchemaType):
     payload: Payload | bool
     _name: str
     _operation: str = 'mutation'
-    _query = Template('$operation $operation_name$variable_def { $projects$aggregations { $payload } }')
+    _query = Template('$operation $operation_name$variable_def { $projects$aggregations $payload }')
 
     def dict_to_custom_string(self, value: Any) -> str:
         match value:
@@ -206,7 +206,7 @@ class Mutation(GraphqlSchemaType):
 
         arguments = ', '.join(variables)
 
-        return QueryForm(f'mutation {{ {self._name} ({arguments}) {{ {payload} }} }}')
+        return QueryForm(f'mutation {{ {self._name} ({arguments}) {payload} }}')
 
     def _extracted_variables(self, payload: str) -> QueryForm:
         input_dict: dict[str, Any] = self.model_dump(exclude={'_name', 'payload'}, exclude_none=True, by_alias=True)
@@ -251,7 +251,7 @@ class Mutation(GraphqlSchemaType):
     def render(self, form: typing.Literal['inline', 'extracted'] = 'extracted') -> QueryForm:
         payload: str = ''
         if isinstance(self.payload, Payload):
-            payload = self.payload.render()
+            payload = f'{{ {self.payload.render()} }}'
         if form == 'inline':
             return self._inline_variables(payload)
         else:
@@ -259,10 +259,10 @@ class Mutation(GraphqlSchemaType):
 
 
 class Query(GraphqlSchemaType):
-    payload: Payload
+    payload: Payload | bool
     _name: str
     _operation: str = 'query'
-    _query = Template('$operation $operation_name$variable_def { $projects$aggregations { $payload } }')
+    _query = Template('$operation $operation_name$variable_def { $projects$aggregations $payload }')
 
     def parse_inputs(self, value: Any) -> str:
         match value:
@@ -334,7 +334,7 @@ class Query(GraphqlSchemaType):
         if arguments:
             arguments = f' ( {arguments} )'
 
-        return QueryForm(f'{{ {self._name}{arguments} {{ {payload} }} }}')
+        return QueryForm(f'{{ {self._name}{arguments} {payload} }}')
 
     def _extracted_variables(self, payload: str) -> QueryForm:
         input_dict: dict[str, Any] = self.model_dump(exclude={'_name', 'payload'}, exclude_none=True, by_alias=True)
@@ -377,7 +377,11 @@ class Query(GraphqlSchemaType):
         )
 
     def render(self, form: typing.Literal['inline', 'extracted'] = 'extracted') -> QueryForm:
-        payload: str = self.dict_to_custom_string(self.payload.model_dump(exclude_none=True, by_alias=True))
+
+        payload: str = ''
+        if isinstance(self.payload, Payload):
+            payload = f'{{ {self.dict_to_custom_string(self.payload.model_dump(exclude_none=True, by_alias=True))} }}'
+
         if form == 'inline':
             return self._inline_variables(payload)
         else:
