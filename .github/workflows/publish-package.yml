@@ -17,8 +17,8 @@ jobs:
         id: python
         with:
           filters: |
-            inventory/python:
-              - 'inventory/python/RELEASE.md'
+            frinx-inventory-server/python:
+              - 'frinx-inventory-server/python/RELEASE.md'
             resource-manager/python:
               - 'resource-manager/python/RELEASE.md'
             schellar/python:
