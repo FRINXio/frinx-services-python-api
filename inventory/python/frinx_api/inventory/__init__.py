@@ -21,6 +21,11 @@ Upload: typing.TypeAlias = typing.Any
 Float: typing.TypeAlias = float
 
 
+class SortDirection(ENUM):
+    ASC = 'ASC'
+    DESC = 'DESC'
+
+
 class DeviceServiceState(ENUM):
     PLANNING = 'PLANNING'
     IN_SERVICE = 'IN_SERVICE'
@@ -40,18 +45,20 @@ class DeviceSize(ENUM):
 
 
 class SortDeviceBy(ENUM):
-    NAME = 'NAME'
-    CREATED_AT = 'CREATED_AT'
-
-
-class SortDirection(ENUM):
-    ASC = 'ASC'
-    DESC = 'DESC'
+    NAME = 'name'
+    CREATEDAT = 'createdAt'
+    SERVICESTATE = 'serviceState'
 
 
 class GraphEdgeStatus(ENUM):
-    ok = 'ok'
-    unknown = 'unknown'
+    OK = 'ok'
+    UNKNOWN = 'unknown'
+
+
+class TopologyLayer(ENUM):
+    PHYSICALTOPOLOGY = 'PhysicalTopology'
+    PTPTOPOLOGY = 'PtpTopology'
+    ETHTOPOLOGY = 'EthTopology'
 
 
 class Node(Interface):
@@ -116,6 +123,18 @@ class CSVImportInput(Input):
     file: Upload
 
 
+class BulkInstallDevicesInput(Input):
+    device_ids: typing.Optional[list[String]] = Field(default=None, alias='deviceIds')
+
+
+class BulkUninstallDevicesInput(Input):
+    device_ids: typing.Optional[list[String]] = Field(default=None, alias='deviceIds')
+
+
+class FilterZonesInput(Input):
+    name: String
+
+
 class AddZoneInput(Input):
     name: String
 
@@ -145,6 +164,10 @@ class ApplySnapshotInput(Input):
     name: String
 
 
+class FilterLabelsInput(Input):
+    name: String
+
+
 class AddLocationInput(Input):
     name: String
     country_id: String = Field(alias='countryId')
@@ -170,6 +193,11 @@ class GraphNodeCoordinatesInput(Input):
     y: Float
 
 
+class UpdateGraphNodeCoordinatesInput(Input):
+    coordinates: typing.Optional[list[GraphNodeCoordinatesInput]] = Field(default=None)
+    layer: typing.Optional[TopologyLayer] = Field(default=None)
+
+
 class CreateLabelInput(Input):
     name: String
 
@@ -188,6 +216,14 @@ class PageInfoPayload(BaseModel):
     has_previous_page: typing.Optional[typing.Optional[Boolean]] = Field(default=None, alias='hasPreviousPage')
 
 
+class IsOkResponse(Payload):
+    is_ok: typing.Optional[Boolean] = Field(default=False, alias='isOk')
+
+
+class IsOkResponsePayload(BaseModel):
+    is_ok: typing.Optional[typing.Optional[Boolean]] = Field(default=None, alias='isOk')
+
+
 class Device(Payload):
     id: typing.Optional[Boolean] = Field(default=False)
     name: typing.Optional[Boolean] = Field(default=False)
@@ -195,6 +231,7 @@ class Device(Payload):
     updated_at: typing.Optional[Boolean] = Field(default=False, alias='updatedAt')
     model: typing.Optional[Boolean] = Field(default=False)
     vendor: typing.Optional[Boolean] = Field(default=False)
+    version: typing.Optional[Boolean] = Field(default=False)
     port: typing.Optional[Boolean] = Field(default=False)
     address: typing.Optional[Boolean] = Field(default=False)
     mount_parameters: typing.Optional[Boolean] = Field(default=False, alias='mountParameters')
@@ -215,6 +252,7 @@ class DevicePayload(BaseModel):
     updated_at: typing.Optional[typing.Optional[String]] = Field(default=None, alias='updatedAt')
     model: typing.Optional[typing.Optional[String]] = Field(default=None)
     vendor: typing.Optional[typing.Optional[String]] = Field(default=None)
+    version: typing.Optional[typing.Optional[String]] = Field(default=None)
     port: typing.Optional[typing.Optional[Int]] = Field(default=None)
     address: typing.Optional[typing.Optional[String]] = Field(default=None)
     mount_parameters: typing.Optional[typing.Optional[String]] = Field(default=None, alias='mountParameters')
@@ -304,6 +342,22 @@ class CSVImport(Payload):
 
 class CSVImportPayload(BaseModel):
     is_ok: typing.Optional[typing.Optional[Boolean]] = Field(default=None, alias='isOk')
+
+
+class BulkInstallDevicePayload(Payload):
+    installed_devices: typing.Optional[Device] = Field(default=None, alias='installedDevices')
+
+
+class BulkInstallDevicePayloadPayload(BaseModel):
+    installed_devices: typing.Optional[typing.Optional[list[DevicePayload]]] = Field(default=None, alias='installedDevices')
+
+
+class BulkUninstallDevicePayload(Payload):
+    uninstalled_devices: typing.Optional[Device] = Field(default=None, alias='uninstalledDevices')
+
+
+class BulkUninstallDevicePayloadPayload(BaseModel):
+    uninstalled_devices: typing.Optional[typing.Optional[list[DevicePayload]]] = Field(default=None, alias='uninstalledDevices')
 
 
 class Zone(Payload):
@@ -426,12 +480,10 @@ class DeleteSnapshotPayloadPayload(BaseModel):
 
 class ApplySnapshotPayload(Payload):
     is_ok: typing.Optional[Boolean] = Field(default=False, alias='isOk')
-    output: typing.Optional[Boolean] = Field(default=False)
 
 
 class ApplySnapshotPayloadPayload(BaseModel):
     is_ok: typing.Optional[typing.Optional[Boolean]] = Field(default=None, alias='isOk')
-    output: typing.Optional[typing.Optional[String]] = Field(default=None)
 
 
 class DiffData(Payload):
@@ -736,6 +788,18 @@ class RevertChangesPayloadPayload(BaseModel):
     is_ok: typing.Optional[typing.Optional[Boolean]] = Field(default=None, alias='isOk')
 
 
+class PtpGraphNodeInterfaceDetails(Payload):
+    ptp_status: typing.Optional[Boolean] = Field(default=False, alias='ptpStatus')
+    admin_oper_status: typing.Optional[Boolean] = Field(default=False, alias='adminOperStatus')
+    ptsf_unusable: typing.Optional[Boolean] = Field(default=False, alias='ptsfUnusable')
+
+
+class PtpGraphNodeInterfaceDetailsPayload(BaseModel):
+    ptp_status: typing.Optional[typing.Optional[String]] = Field(default=None, alias='ptpStatus')
+    admin_oper_status: typing.Optional[typing.Optional[String]] = Field(default=None, alias='adminOperStatus')
+    ptsf_unusable: typing.Optional[typing.Optional[String]] = Field(default=None, alias='ptsfUnusable')
+
+
 class GraphNodeInterface(Payload):
     id: typing.Optional[Boolean] = Field(default=False)
     status: typing.Optional[Boolean] = Field(default=False)
@@ -746,6 +810,20 @@ class GraphNodeInterfacePayload(BaseModel):
     id: typing.Optional[typing.Optional[String]] = Field(default=None)
     status: typing.Optional[typing.Optional[GraphEdgeStatus]] = Field(default=None)
     name: typing.Optional[typing.Optional[String]] = Field(default=None)
+
+
+class PtpGraphNodeInterface(Payload):
+    id: typing.Optional[Boolean] = Field(default=False)
+    status: typing.Optional[Boolean] = Field(default=False)
+    name: typing.Optional[Boolean] = Field(default=False)
+    details: typing.Optional[PtpGraphNodeInterfaceDetails] = Field(default=None)
+
+
+class PtpGraphNodeInterfacePayload(BaseModel):
+    id: typing.Optional[typing.Optional[String]] = Field(default=None)
+    status: typing.Optional[typing.Optional[GraphEdgeStatus]] = Field(default=None)
+    name: typing.Optional[typing.Optional[String]] = Field(default=None)
+    details: typing.Optional[PtpGraphNodeInterfaceDetailsPayload] = Field(default=None)
 
 
 class GraphNodeCoordinates(Payload):
@@ -764,6 +842,7 @@ class GraphNode(Payload):
     coordinates: typing.Optional[GraphNodeCoordinates] = Field(default=None)
     device_type: typing.Optional[Boolean] = Field(default=False, alias='deviceType')
     software_version: typing.Optional[Boolean] = Field(default=False, alias='softwareVersion')
+    name: typing.Optional[Boolean] = Field(default=False)
     device: typing.Optional[Device] = Field(default=None)
 
 
@@ -773,6 +852,7 @@ class GraphNodePayload(BaseModel):
     coordinates: typing.Optional[GraphNodeCoordinatesPayload] = Field(default=None)
     device_type: typing.Optional[typing.Optional[String]] = Field(default=None, alias='deviceType')
     software_version: typing.Optional[typing.Optional[String]] = Field(default=None, alias='softwareVersion')
+    name: typing.Optional[typing.Optional[String]] = Field(default=None)
     device: typing.Optional[DevicePayload] = Field(default=None)
 
 
@@ -788,12 +868,14 @@ class EdgeSourceTargetPayload(BaseModel):
 
 class GraphEdge(Payload):
     id: typing.Optional[Boolean] = Field(default=False)
+    weight: typing.Optional[Boolean] = Field(default=False)
     source: typing.Optional[EdgeSourceTarget] = Field(default=None)
     target: typing.Optional[EdgeSourceTarget] = Field(default=None)
 
 
 class GraphEdgePayload(BaseModel):
     id: typing.Optional[typing.Optional[ID]] = Field(default=None)
+    weight: typing.Optional[typing.Optional[Int]] = Field(default=None)
     source: typing.Optional[EdgeSourceTargetPayload] = Field(default=None)
     target: typing.Optional[EdgeSourceTargetPayload] = Field(default=None)
 
@@ -820,13 +902,145 @@ class GraphVersionEdgePayload(BaseModel):
     target: typing.Optional[EdgeSourceTargetPayload] = Field(default=None)
 
 
-class TopologyVersionData(Payload):
+class PtpDeviceDetails(Payload):
+    clock_type: typing.Optional[Boolean] = Field(default=False, alias='clockType')
+    domain: typing.Optional[Boolean] = Field(default=False)
+    ptp_profile: typing.Optional[Boolean] = Field(default=False, alias='ptpProfile')
+    clock_id: typing.Optional[Boolean] = Field(default=False, alias='clockId')
+    parent_clock_id: typing.Optional[Boolean] = Field(default=False, alias='parentClockId')
+    gm_clock_id: typing.Optional[Boolean] = Field(default=False, alias='gmClockId')
+    clock_class: typing.Optional[Boolean] = Field(default=False, alias='clockClass')
+    clock_accuracy: typing.Optional[Boolean] = Field(default=False, alias='clockAccuracy')
+    clock_variance: typing.Optional[Boolean] = Field(default=False, alias='clockVariance')
+    time_recovery_status: typing.Optional[Boolean] = Field(default=False, alias='timeRecoveryStatus')
+    global_priority: typing.Optional[Boolean] = Field(default=False, alias='globalPriority')
+    user_priority: typing.Optional[Boolean] = Field(default=False, alias='userPriority')
+
+
+class PtpDeviceDetailsPayload(BaseModel):
+    clock_type: typing.Optional[typing.Optional[String]] = Field(default=None, alias='clockType')
+    domain: typing.Optional[typing.Optional[Int]] = Field(default=None)
+    ptp_profile: typing.Optional[typing.Optional[String]] = Field(default=None, alias='ptpProfile')
+    clock_id: typing.Optional[typing.Optional[String]] = Field(default=None, alias='clockId')
+    parent_clock_id: typing.Optional[typing.Optional[String]] = Field(default=None, alias='parentClockId')
+    gm_clock_id: typing.Optional[typing.Optional[String]] = Field(default=None, alias='gmClockId')
+    clock_class: typing.Optional[typing.Optional[Int]] = Field(default=None, alias='clockClass')
+    clock_accuracy: typing.Optional[typing.Optional[String]] = Field(default=None, alias='clockAccuracy')
+    clock_variance: typing.Optional[typing.Optional[String]] = Field(default=None, alias='clockVariance')
+    time_recovery_status: typing.Optional[typing.Optional[String]] = Field(default=None, alias='timeRecoveryStatus')
+    global_priority: typing.Optional[typing.Optional[Int]] = Field(default=None, alias='globalPriority')
+    user_priority: typing.Optional[typing.Optional[Int]] = Field(default=None, alias='userPriority')
+
+
+class PtpGraphNode(Payload):
+    id: typing.Optional[Boolean] = Field(default=False)
+    interfaces: typing.Optional[PtpGraphNodeInterface] = Field(default=None)
+    coordinates: typing.Optional[GraphNodeCoordinates] = Field(default=None)
+    node_id: typing.Optional[Boolean] = Field(default=False, alias='nodeId')
+    name: typing.Optional[Boolean] = Field(default=False)
+    ptp_device_details: typing.Optional[PtpDeviceDetails] = Field(default=None, alias='ptpDeviceDetails')
+    status: typing.Optional[Boolean] = Field(default=False)
+    labels: typing.Optional[Boolean] = Field(default=False)
+
+
+class PtpGraphNodePayload(BaseModel):
+    id: typing.Optional[typing.Optional[ID]] = Field(default=None)
+    interfaces: typing.Optional[typing.Optional[list[PtpGraphNodeInterfacePayload]]] = Field(default=None)
+    coordinates: typing.Optional[GraphNodeCoordinatesPayload] = Field(default=None)
+    node_id: typing.Optional[typing.Optional[String]] = Field(default=None, alias='nodeId')
+    name: typing.Optional[typing.Optional[String]] = Field(default=None)
+    ptp_device_details: typing.Optional[PtpDeviceDetailsPayload] = Field(default=None, alias='ptpDeviceDetails')
+    status: typing.Optional[typing.Optional[GraphEdgeStatus]] = Field(default=None)
+    labels: typing.Optional[typing.Optional[list[typing.Optional[String]]]] = Field(default=None)
+
+
+class SynceDeviceDetails(Payload):
+    selected_for_use: typing.Optional[Boolean] = Field(default=False, alias='selectedForUse')
+
+
+class SynceDeviceDetailsPayload(BaseModel):
+    selected_for_use: typing.Optional[typing.Optional[String]] = Field(default=None, alias='selectedForUse')
+
+
+class SynceGraphNodeInterfaceDetails(Payload):
+    synce_enabled: typing.Optional[Boolean] = Field(default=False, alias='synceEnabled')
+    rx_quality_level: typing.Optional[Boolean] = Field(default=False, alias='rxQualityLevel')
+    qualified_for_use: typing.Optional[Boolean] = Field(default=False, alias='qualifiedForUse')
+    not_qualified_due_to: typing.Optional[Boolean] = Field(default=False, alias='notQualifiedDueTo')
+    not_selected_due_to: typing.Optional[Boolean] = Field(default=False, alias='notSelectedDueTo')
+
+
+class SynceGraphNodeInterfaceDetailsPayload(BaseModel):
+    synce_enabled: typing.Optional[typing.Optional[Boolean]] = Field(default=None, alias='synceEnabled')
+    rx_quality_level: typing.Optional[typing.Optional[String]] = Field(default=None, alias='rxQualityLevel')
+    qualified_for_use: typing.Optional[typing.Optional[String]] = Field(default=None, alias='qualifiedForUse')
+    not_qualified_due_to: typing.Optional[typing.Optional[String]] = Field(default=None, alias='notQualifiedDueTo')
+    not_selected_due_to: typing.Optional[typing.Optional[String]] = Field(default=None, alias='notSelectedDueTo')
+
+
+class SynceGraphNodeInterface(Payload):
+    id: typing.Optional[Boolean] = Field(default=False)
+    status: typing.Optional[Boolean] = Field(default=False)
+    name: typing.Optional[Boolean] = Field(default=False)
+    details: typing.Optional[SynceGraphNodeInterfaceDetails] = Field(default=None)
+
+
+class SynceGraphNodeInterfacePayload(BaseModel):
+    id: typing.Optional[typing.Optional[String]] = Field(default=None)
+    status: typing.Optional[typing.Optional[GraphEdgeStatus]] = Field(default=None)
+    name: typing.Optional[typing.Optional[String]] = Field(default=None)
+    details: typing.Optional[SynceGraphNodeInterfaceDetailsPayload] = Field(default=None)
+
+
+class SynceGraphNode(Payload):
+    id: typing.Optional[Boolean] = Field(default=False)
+    node_id: typing.Optional[Boolean] = Field(default=False, alias='nodeId')
+    name: typing.Optional[Boolean] = Field(default=False)
+    synce_device_details: typing.Optional[SynceDeviceDetails] = Field(default=None, alias='synceDeviceDetails')
+    status: typing.Optional[Boolean] = Field(default=False)
+    labels: typing.Optional[Boolean] = Field(default=False)
+    interfaces: typing.Optional[SynceGraphNodeInterface] = Field(default=None)
+    coordinates: typing.Optional[GraphNodeCoordinates] = Field(default=None)
+
+
+class SynceGraphNodePayload(BaseModel):
+    id: typing.Optional[typing.Optional[ID]] = Field(default=None)
+    node_id: typing.Optional[typing.Optional[String]] = Field(default=None, alias='nodeId')
+    name: typing.Optional[typing.Optional[String]] = Field(default=None)
+    synce_device_details: typing.Optional[SynceDeviceDetailsPayload] = Field(default=None, alias='synceDeviceDetails')
+    status: typing.Optional[typing.Optional[GraphEdgeStatus]] = Field(default=None)
+    labels: typing.Optional[typing.Optional[list[typing.Optional[String]]]] = Field(default=None)
+    interfaces: typing.Optional[typing.Optional[list[SynceGraphNodeInterfacePayload]]] = Field(default=None)
+    coordinates: typing.Optional[GraphNodeCoordinatesPayload] = Field(default=None)
+
+
+class PhyTopologyVersionData(Payload):
     nodes: typing.Optional[GraphVersionNode] = Field(default=None)
     edges: typing.Optional[GraphVersionEdge] = Field(default=None)
 
 
-class TopologyVersionDataPayload(BaseModel):
+class PhyTopologyVersionDataPayload(BaseModel):
     nodes: typing.Optional[typing.Optional[list[GraphVersionNodePayload]]] = Field(default=None)
+    edges: typing.Optional[typing.Optional[list[GraphVersionEdgePayload]]] = Field(default=None)
+
+
+class PtpTopologyVersionData(Payload):
+    nodes: typing.Optional[PtpGraphNode] = Field(default=None)
+    edges: typing.Optional[GraphVersionEdge] = Field(default=None)
+
+
+class PtpTopologyVersionDataPayload(BaseModel):
+    nodes: typing.Optional[typing.Optional[list[PtpGraphNodePayload]]] = Field(default=None)
+    edges: typing.Optional[typing.Optional[list[GraphVersionEdgePayload]]] = Field(default=None)
+
+
+class SynceTopologyVersionData(Payload):
+    nodes: typing.Optional[SynceGraphNode] = Field(default=None)
+    edges: typing.Optional[GraphVersionEdge] = Field(default=None)
+
+
+class SynceTopologyVersionDataPayload(BaseModel):
+    nodes: typing.Optional[typing.Optional[list[SynceGraphNodePayload]]] = Field(default=None)
     edges: typing.Optional[typing.Optional[list[GraphVersionEdgePayload]]] = Field(default=None)
 
 
@@ -836,6 +1050,30 @@ class TopologyCommonNodes(Payload):
 
 class TopologyCommonNodesPayload(BaseModel):
     common_nodes: typing.Optional[typing.Optional[list[typing.Optional[String]]]] = Field(default=None, alias='commonNodes')
+
+
+class PtpDiffSynceNode(Payload):
+    id: typing.Optional[Boolean] = Field(default=False)
+
+
+class PtpDiffSynceNodePayload(BaseModel):
+    id: typing.Optional[typing.Optional[String]] = Field(default=None)
+
+
+class PtpDiffSynceEdges(Payload):
+    node: typing.Optional[PtpDiffSynceNode] = Field(default=None)
+
+
+class PtpDiffSynceEdgesPayload(BaseModel):
+    node: typing.Optional[PtpDiffSynceNodePayload] = Field(default=None)
+
+
+class PtpDiffSynce(Payload):
+    edges: typing.Optional[PtpDiffSynceEdges] = Field(default=None)
+
+
+class PtpDiffSyncePayload(BaseModel):
+    edges: typing.Optional[typing.Optional[list[PtpDiffSynceEdgesPayload]]] = Field(default=None)
 
 
 class UpdateGraphNodeCoordinatesPayload(Payload):
@@ -870,6 +1108,7 @@ class NetNetworkPayload(BaseModel):
 
 class NetNode(Payload):
     id: typing.Optional[Boolean] = Field(default=False)
+    node_id: typing.Optional[Boolean] = Field(default=False, alias='nodeId')
     name: typing.Optional[Boolean] = Field(default=False)
     interfaces: typing.Optional[NetInterface] = Field(default=None)
     networks: typing.Optional[NetNetwork] = Field(default=None)
@@ -878,6 +1117,7 @@ class NetNode(Payload):
 
 class NetNodePayload(BaseModel):
     id: typing.Optional[typing.Optional[ID]] = Field(default=None)
+    node_id: typing.Optional[typing.Optional[String]] = Field(default=None, alias='nodeId')
     name: typing.Optional[typing.Optional[String]] = Field(default=None)
     interfaces: typing.Optional[typing.Optional[list[NetInterfacePayload]]] = Field(default=None)
     networks: typing.Optional[typing.Optional[list[NetNetworkPayload]]] = Field(default=None)
@@ -892,6 +1132,46 @@ class NetTopology(Payload):
 class NetTopologyPayload(BaseModel):
     edges: typing.Optional[typing.Optional[list[GraphEdgePayload]]] = Field(default=None)
     nodes: typing.Optional[typing.Optional[list[NetNodePayload]]] = Field(default=None)
+
+
+class NetRoutingPathNodeInfo(Payload):
+    weight: typing.Optional[Boolean] = Field(default=False)
+    name: typing.Optional[Boolean] = Field(default=False)
+
+
+class NetRoutingPathNodeInfoPayload(BaseModel):
+    weight: typing.Optional[typing.Optional[Int]] = Field(default=None)
+    name: typing.Optional[typing.Optional[String]] = Field(default=None)
+
+
+class NetRoutingPathNode(Payload):
+    weight: typing.Optional[Boolean] = Field(default=False)
+    nodes: typing.Optional[NetRoutingPathNodeInfo] = Field(default=None)
+
+
+class NetRoutingPathNodePayload(BaseModel):
+    weight: typing.Optional[typing.Optional[Int]] = Field(default=None)
+    nodes: typing.Optional[typing.Optional[list[NetRoutingPathNodeInfoPayload]]] = Field(default=None)
+
+
+class PtpTopology(Payload):
+    edges: typing.Optional[GraphEdge] = Field(default=None)
+    nodes: typing.Optional[PtpGraphNode] = Field(default=None)
+
+
+class PtpTopologyPayload(BaseModel):
+    edges: typing.Optional[typing.Optional[list[GraphEdgePayload]]] = Field(default=None)
+    nodes: typing.Optional[typing.Optional[list[PtpGraphNodePayload]]] = Field(default=None)
+
+
+class SynceTopology(Payload):
+    edges: typing.Optional[GraphEdge] = Field(default=None)
+    nodes: typing.Optional[SynceGraphNode] = Field(default=None)
+
+
+class SynceTopologyPayload(BaseModel):
+    edges: typing.Optional[typing.Optional[list[GraphEdgePayload]]] = Field(default=None)
+    nodes: typing.Optional[typing.Optional[list[SynceGraphNodePayload]]] = Field(default=None)
 
 
 class GraphVersionNode(Payload):
@@ -939,6 +1219,7 @@ class ZonesQuery(Query):
     after: typing.Optional[String] = Field(default=None, json_schema_extra={'type': 'String'})
     last: typing.Optional[Int] = Field(default=None, json_schema_extra={'type': 'Int'})
     before: typing.Optional[String] = Field(default=None, json_schema_extra={'type': 'String'})
+    filter: typing.Optional[FilterZonesInput] = Field(default=None, json_schema_extra={'type': 'FilterZonesInput'})
     payload: ZonesConnection
 
 
@@ -962,6 +1243,7 @@ class LabelsQuery(Query):
     after: typing.Optional[String] = Field(default=None, json_schema_extra={'type': 'String'})
     last: typing.Optional[Int] = Field(default=None, json_schema_extra={'type': 'Int'})
     before: typing.Optional[String] = Field(default=None, json_schema_extra={'type': 'String'})
+    filter: typing.Optional[FilterLabelsInput] = Field(default=None, json_schema_extra={'type': 'FilterLabelsInput'})
     payload: LabelConnection
 
 
@@ -1002,6 +1284,10 @@ class TopologyQuery(Query):
     payload: Topology
 
 
+class PtpDiffSynceQuery(Query):
+    _name: str = PrivateAttr('ptpDiffSynce')
+
+
 class TopologyVersionsQuery(Query):
     _name: str = PrivateAttr('topologyVersions')
 
@@ -1012,14 +1298,53 @@ class TopologyCommonNodesQuery(Query):
     payload: TopologyCommonNodes
 
 
-class TopologyVersionDataQuery(Query):
-    _name: str = PrivateAttr('topologyVersionData')
+class PhyTopologyVersionDataQuery(Query):
+    _name: str = PrivateAttr('phyTopologyVersionData')
     version: String = Field(json_schema_extra={'type': 'String!'})
-    payload: TopologyVersionData
+    payload: PhyTopologyVersionData
+
+
+class PtpTopologyVersionDataQuery(Query):
+    _name: str = PrivateAttr('ptpTopologyVersionData')
+    version: String = Field(json_schema_extra={'type': 'String!'})
+    payload: PtpTopologyVersionData
+
+
+class SynceTopologyVersionDataQuery(Query):
+    _name: str = PrivateAttr('synceTopologyVersionData')
+    version: String = Field(json_schema_extra={'type': 'String!'})
+    payload: SynceTopologyVersionData
 
 
 class NetTopologyQuery(Query):
     _name: str = PrivateAttr('netTopology')
+
+
+class ShortestPathQuery(Query):
+    _name: str = PrivateAttr('shortestPath')
+    from: String = Field(json_schema_extra={'type': 'String!'})
+    to: String = Field(json_schema_extra={'type': 'String!'})
+    payload: NetRoutingPathNode
+
+
+class PtpPathToGrandMasterQuery(Query):
+    _name: str = PrivateAttr('ptpPathToGrandMaster')
+    device_from: String = Field(alias='deviceFrom', json_schema_extra={'type': 'String!'})
+    payload: Boolean
+
+
+class PtpTopologyQuery(Query):
+    _name: str = PrivateAttr('ptpTopology')
+
+
+class SynceTopologyQuery(Query):
+    _name: str = PrivateAttr('synceTopology')
+
+
+class SyncePathToGrandMasterQuery(Query):
+    _name: str = PrivateAttr('syncePathToGrandMaster')
+    device_from: String = Field(alias='deviceFrom', json_schema_extra={'type': 'String!'})
+    payload: Boolean
 
 
 class NodeQueryResponse(BaseModel):
@@ -1117,13 +1442,58 @@ class TopologyCommonNodesData(BaseModel):
     topology_common_nodes: typing.Optional[TopologyCommonNodesPayload] = Field(alias='topologyCommonNodes')
 
 
-class TopologyVersionDataQueryResponse(BaseModel):
-    data: typing.Optional[TopologyVersionDataData] = Field(default=None)
+class PhyTopologyVersionDataQueryResponse(BaseModel):
+    data: typing.Optional[PhyTopologyVersionDataData] = Field(default=None)
     errors: typing.Optional[typing.Any] = Field(default=None)
 
 
-class TopologyVersionDataData(BaseModel):
-    topology_version_data: TopologyVersionDataPayload = Field(alias='topologyVersionData')
+class PhyTopologyVersionDataData(BaseModel):
+    phy_topology_version_data: PhyTopologyVersionDataPayload = Field(alias='phyTopologyVersionData')
+
+
+class PtpTopologyVersionDataQueryResponse(BaseModel):
+    data: typing.Optional[PtpTopologyVersionDataData] = Field(default=None)
+    errors: typing.Optional[typing.Any] = Field(default=None)
+
+
+class PtpTopologyVersionDataData(BaseModel):
+    ptp_topology_version_data: PtpTopologyVersionDataPayload = Field(alias='ptpTopologyVersionData')
+
+
+class SynceTopologyVersionDataQueryResponse(BaseModel):
+    data: typing.Optional[SynceTopologyVersionDataData] = Field(default=None)
+    errors: typing.Optional[typing.Any] = Field(default=None)
+
+
+class SynceTopologyVersionDataData(BaseModel):
+    synce_topology_version_data: SynceTopologyVersionDataPayload = Field(alias='synceTopologyVersionData')
+
+
+class ShortestPathQueryResponse(BaseModel):
+    data: typing.Optional[ShortestPathData] = Field(default=None)
+    errors: typing.Optional[typing.Any] = Field(default=None)
+
+
+class ShortestPathData(BaseModel):
+    shortest_path: typing.Optional[list[NetRoutingPathNodePayload]] = Field(alias='shortestPath')
+
+
+class PtpPathToGrandMasterQueryResponse(BaseModel):
+    data: typing.Optional[PtpPathToGrandMasterData] = Field(default=None)
+    errors: typing.Optional[typing.Any] = Field(default=None)
+
+
+class PtpPathToGrandMasterData(BaseModel):
+    ptp_path_to_grand_master: typing.Optional[list[typing.Optional[String]]] = Field(alias='ptpPathToGrandMaster')
+
+
+class SyncePathToGrandMasterQueryResponse(BaseModel):
+    data: typing.Optional[SyncePathToGrandMasterData] = Field(default=None)
+    errors: typing.Optional[typing.Any] = Field(default=None)
+
+
+class SyncePathToGrandMasterData(BaseModel):
+    synce_path_to_grand_master: typing.Optional[list[typing.Optional[String]]] = Field(alias='syncePathToGrandMaster')
 
 
 class AddDeviceMutation(Mutation):
@@ -1161,6 +1531,18 @@ class ImportCSVMutation(Mutation):
     _name: str = PrivateAttr('importCSV')
     input: CSVImportInput = Field(json_schema_extra={'type': 'CSVImportInput!'})
     payload: CSVImport
+
+
+class BulkInstallDevicesMutation(Mutation):
+    _name: str = PrivateAttr('bulkInstallDevices')
+    input: BulkInstallDevicesInput = Field(json_schema_extra={'type': 'BulkInstallDevicesInput!'})
+    payload: BulkInstallDevicePayload
+
+
+class BulkUninstallDevicesMutation(Mutation):
+    _name: str = PrivateAttr('bulkUninstallDevices')
+    input: BulkUninstallDevicesInput = Field(json_schema_extra={'type': 'BulkUninstallDevicesInput!'})
+    payload: BulkUninstallDevicePayload
 
 
 class AddZoneMutation(Mutation):
@@ -1276,7 +1658,7 @@ class RevertChangesMutation(Mutation):
 
 class UpdateGraphNodeCoordinatesMutation(Mutation):
     _name: str = PrivateAttr('updateGraphNodeCoordinates')
-    input: typing.Optional[list[GraphNodeCoordinatesInput]] = Field(default=None, json_schema_extra={'type': '[GraphNodeCoordinatesInput!]!'})
+    input: UpdateGraphNodeCoordinatesInput = Field(json_schema_extra={'type': 'UpdateGraphNodeCoordinatesInput!'})
     payload: UpdateGraphNodeCoordinatesPayload
 
 
@@ -1332,6 +1714,24 @@ class ImportCSVMutationResponse(BaseModel):
 
 class ImportCSVData(BaseModel):
     import_csv: typing.Optional[CSVImportPayload] = Field(alias='importCSV')
+
+
+class BulkInstallDevicesMutationResponse(BaseModel):
+    data: typing.Optional[BulkInstallDevicesData] = Field(default=None)
+    errors: typing.Optional[typing.Any] = Field(default=None)
+
+
+class BulkInstallDevicesData(BaseModel):
+    bulk_install_devices: BulkInstallDevicePayloadPayload = Field(alias='bulkInstallDevices')
+
+
+class BulkUninstallDevicesMutationResponse(BaseModel):
+    data: typing.Optional[BulkUninstallDevicesData] = Field(default=None)
+    errors: typing.Optional[typing.Any] = Field(default=None)
+
+
+class BulkUninstallDevicesData(BaseModel):
+    bulk_uninstall_devices: BulkUninstallDevicePayloadPayload = Field(alias='bulkUninstallDevices')
 
 
 class AddZoneMutationResponse(BaseModel):
@@ -1520,20 +1920,27 @@ DeviceOrderByInput.model_rebuild()
 AddDeviceInput.model_rebuild()
 UpdateDeviceInput.model_rebuild()
 CSVImportInput.model_rebuild()
+BulkInstallDevicesInput.model_rebuild()
+BulkUninstallDevicesInput.model_rebuild()
+FilterZonesInput.model_rebuild()
 AddZoneInput.model_rebuild()
 UpdateDataStoreInput.model_rebuild()
 CommitConfigInput.model_rebuild()
 AddSnapshotInput.model_rebuild()
 DeleteSnapshotInput.model_rebuild()
 ApplySnapshotInput.model_rebuild()
+FilterLabelsInput.model_rebuild()
 AddLocationInput.model_rebuild()
 AddBlueprintInput.model_rebuild()
 UpdateBlueprintInput.model_rebuild()
 FilterTopologyInput.model_rebuild()
 GraphNodeCoordinatesInput.model_rebuild()
+UpdateGraphNodeCoordinatesInput.model_rebuild()
 CreateLabelInput.model_rebuild()
 PageInfo.model_rebuild()
 PageInfoPayload.model_rebuild()
+IsOkResponse.model_rebuild()
+IsOkResponsePayload.model_rebuild()
 Device.model_rebuild()
 DevicePayload.model_rebuild()
 DeviceEdge.model_rebuild()
@@ -1554,6 +1961,10 @@ UninstallDevicePayload.model_rebuild()
 UninstallDevicePayloadPayload.model_rebuild()
 CSVImport.model_rebuild()
 CSVImportPayload.model_rebuild()
+BulkInstallDevicePayload.model_rebuild()
+BulkInstallDevicePayloadPayload.model_rebuild()
+BulkUninstallDevicePayload.model_rebuild()
+BulkUninstallDevicePayloadPayload.model_rebuild()
 Zone.model_rebuild()
 ZonePayload.model_rebuild()
 ZoneEdge.model_rebuild()
@@ -1638,8 +2049,12 @@ CloseTransactionPayload.model_rebuild()
 CloseTransactionPayloadPayload.model_rebuild()
 RevertChangesPayload.model_rebuild()
 RevertChangesPayloadPayload.model_rebuild()
+PtpGraphNodeInterfaceDetails.model_rebuild()
+PtpGraphNodeInterfaceDetailsPayload.model_rebuild()
 GraphNodeInterface.model_rebuild()
 GraphNodeInterfacePayload.model_rebuild()
+PtpGraphNodeInterface.model_rebuild()
+PtpGraphNodeInterfacePayload.model_rebuild()
 GraphNodeCoordinates.model_rebuild()
 GraphNodeCoordinatesPayload.model_rebuild()
 GraphNode.model_rebuild()
@@ -1652,10 +2067,32 @@ Topology.model_rebuild()
 TopologyPayload.model_rebuild()
 GraphVersionEdge.model_rebuild()
 GraphVersionEdgePayload.model_rebuild()
-TopologyVersionData.model_rebuild()
-TopologyVersionDataPayload.model_rebuild()
+PtpDeviceDetails.model_rebuild()
+PtpDeviceDetailsPayload.model_rebuild()
+PtpGraphNode.model_rebuild()
+PtpGraphNodePayload.model_rebuild()
+SynceDeviceDetails.model_rebuild()
+SynceDeviceDetailsPayload.model_rebuild()
+SynceGraphNodeInterfaceDetails.model_rebuild()
+SynceGraphNodeInterfaceDetailsPayload.model_rebuild()
+SynceGraphNodeInterface.model_rebuild()
+SynceGraphNodeInterfacePayload.model_rebuild()
+SynceGraphNode.model_rebuild()
+SynceGraphNodePayload.model_rebuild()
+PhyTopologyVersionData.model_rebuild()
+PhyTopologyVersionDataPayload.model_rebuild()
+PtpTopologyVersionData.model_rebuild()
+PtpTopologyVersionDataPayload.model_rebuild()
+SynceTopologyVersionData.model_rebuild()
+SynceTopologyVersionDataPayload.model_rebuild()
 TopologyCommonNodes.model_rebuild()
 TopologyCommonNodesPayload.model_rebuild()
+PtpDiffSynceNode.model_rebuild()
+PtpDiffSynceNodePayload.model_rebuild()
+PtpDiffSynceEdges.model_rebuild()
+PtpDiffSynceEdgesPayload.model_rebuild()
+PtpDiffSynce.model_rebuild()
+PtpDiffSyncePayload.model_rebuild()
 UpdateGraphNodeCoordinatesPayload.model_rebuild()
 UpdateGraphNodeCoordinatesPayloadPayload.model_rebuild()
 NetInterface.model_rebuild()
@@ -1666,6 +2103,14 @@ NetNode.model_rebuild()
 NetNodePayload.model_rebuild()
 NetTopology.model_rebuild()
 NetTopologyPayload.model_rebuild()
+NetRoutingPathNodeInfo.model_rebuild()
+NetRoutingPathNodeInfoPayload.model_rebuild()
+NetRoutingPathNode.model_rebuild()
+NetRoutingPathNodePayload.model_rebuild()
+PtpTopology.model_rebuild()
+PtpTopologyPayload.model_rebuild()
+SynceTopology.model_rebuild()
+SynceTopologyPayload.model_rebuild()
 GraphVersionNode.model_rebuild()
 GraphVersionNodePayload.model_rebuild()
 NodeQuery.model_rebuild()
@@ -1680,10 +2125,18 @@ LocationsQuery.model_rebuild()
 BlueprintsQuery.model_rebuild()
 TransactionsQuery.model_rebuild()
 TopologyQuery.model_rebuild()
+PtpDiffSynceQuery.model_rebuild()
 TopologyVersionsQuery.model_rebuild()
 TopologyCommonNodesQuery.model_rebuild()
-TopologyVersionDataQuery.model_rebuild()
+PhyTopologyVersionDataQuery.model_rebuild()
+PtpTopologyVersionDataQuery.model_rebuild()
+SynceTopologyVersionDataQuery.model_rebuild()
 NetTopologyQuery.model_rebuild()
+ShortestPathQuery.model_rebuild()
+PtpPathToGrandMasterQuery.model_rebuild()
+PtpTopologyQuery.model_rebuild()
+SynceTopologyQuery.model_rebuild()
+SyncePathToGrandMasterQuery.model_rebuild()
 NodeQueryResponse.model_rebuild()
 DevicesQueryResponse.model_rebuild()
 DevicesData.model_rebuild()
@@ -1705,14 +2158,26 @@ TopologyQueryResponse.model_rebuild()
 TopologyData.model_rebuild()
 TopologyCommonNodesQueryResponse.model_rebuild()
 TopologyCommonNodesData.model_rebuild()
-TopologyVersionDataQueryResponse.model_rebuild()
-TopologyVersionDataData.model_rebuild()
+PhyTopologyVersionDataQueryResponse.model_rebuild()
+PhyTopologyVersionDataData.model_rebuild()
+PtpTopologyVersionDataQueryResponse.model_rebuild()
+PtpTopologyVersionDataData.model_rebuild()
+SynceTopologyVersionDataQueryResponse.model_rebuild()
+SynceTopologyVersionDataData.model_rebuild()
+ShortestPathQueryResponse.model_rebuild()
+ShortestPathData.model_rebuild()
+PtpPathToGrandMasterQueryResponse.model_rebuild()
+PtpPathToGrandMasterData.model_rebuild()
+SyncePathToGrandMasterQueryResponse.model_rebuild()
+SyncePathToGrandMasterData.model_rebuild()
 AddDeviceMutation.model_rebuild()
 UpdateDeviceMutation.model_rebuild()
 DeleteDeviceMutation.model_rebuild()
 InstallDeviceMutation.model_rebuild()
 UninstallDeviceMutation.model_rebuild()
 ImportCSVMutation.model_rebuild()
+BulkInstallDevicesMutation.model_rebuild()
+BulkUninstallDevicesMutation.model_rebuild()
 AddZoneMutation.model_rebuild()
 UpdateDataStoreMutation.model_rebuild()
 CommitConfigMutation.model_rebuild()
@@ -1743,6 +2208,10 @@ UninstallDeviceMutationResponse.model_rebuild()
 UninstallDeviceData.model_rebuild()
 ImportCSVMutationResponse.model_rebuild()
 ImportCSVData.model_rebuild()
+BulkInstallDevicesMutationResponse.model_rebuild()
+BulkInstallDevicesData.model_rebuild()
+BulkUninstallDevicesMutationResponse.model_rebuild()
+BulkUninstallDevicesData.model_rebuild()
 AddZoneMutationResponse.model_rebuild()
 AddZoneData.model_rebuild()
 UpdateDataStoreMutationResponse.model_rebuild()
