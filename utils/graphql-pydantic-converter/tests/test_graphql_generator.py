@@ -34,6 +34,8 @@ from .render_models import SchedulesQuery
 from .render_models import SearchPoolsByTagsQuery
 from .render_models import TagAnd
 from .render_models import TagOr
+from .render_models import DeleteScheduleMutation
+from .render_models import DeleteScheduleQuery
 
 
 class TestTaskGenerator:
@@ -92,6 +94,34 @@ class TestTaskGenerator:
                 properties=True,
                 alternative_id=True
             )
+        ).render(form='inline')
+        assert reference == mutation.query
+
+        reference = 'mutation deleteSchedule($name: String!) { deleteSchedule(name: $name)  }'
+        mutation = DeleteScheduleMutation(
+            payload=True,
+            name="ScheduledWF"
+        ).render()
+        assert reference == mutation.query
+
+        reference = 'mutation { deleteSchedule ( name: "ScheduledWF")  }'
+        mutation = DeleteScheduleMutation(
+            payload=True,
+            name="ScheduledWF"
+        ).render(form='inline')
+        assert reference == mutation.query
+
+        reference = 'query deleteScheduleQuery($name: String!) { deleteScheduleQuery(name: $name)  }'
+        mutation = DeleteScheduleQuery(
+            payload=True,
+            name="ScheduledWF"
+        ).render()
+        assert reference == mutation.query
+
+        reference = '{ deleteScheduleQuery ( name: "ScheduledWF" )  }'
+        mutation = DeleteScheduleQuery(
+            payload=True,
+            name="ScheduledWF"
         ).render(form='inline')
         assert reference == mutation.query
 
@@ -498,3 +528,4 @@ class TestTaskGenerator:
 
         assert reference_mutation == mutation_str.query
         assert reference_variable == mutation_str.variable
+
