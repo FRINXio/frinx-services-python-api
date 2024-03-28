@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://frinx.io/performance_notification.json",
+  "title": "Performance monitoring notification",
+  "description": "Schema for performance monitoring notifications",
+  "type": "object",
+  "properties": {
+    "node_id": {
+      "description": "The name of the node.",
+      "type": "string"
+    },
+    "identifier": {
+      "description": "Identifier/path to data.",
+      "type": "string"
+    },
+    "event_time": {
+      "description": "The timestamp when notification arrived.",
+      "type": "string"
+    },
+    "body": {
+      "description": "The data.",
+      "type": "string"
+    }
+  }
+}
