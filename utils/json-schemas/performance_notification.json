@@ -5,13 +5,13 @@
   "description": "Schema for performance monitoring notifications",
   "type": "object",
   "required": [
-    "node_id",
+    "nodeId",
     "identifier",
-    "event_time",
+    "eventTime",
     "body"
   ],
   "properties": {
-    "node_id": {
+    "nodeId": {
       "description": "The name of the node.",
       "type": "string"
     },
@@ -19,7 +19,7 @@
       "description": "The Identifier/path to data.",
       "type": "string"
     },
-    "event_time": {
+    "eventTime": {
       "description": "The timestamp when notification arrived.",
       "type": "string",
       "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{5}-\\d{2}:\\d{2}$"

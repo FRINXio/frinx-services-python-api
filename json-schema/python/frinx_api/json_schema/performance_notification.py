@@ -17,7 +17,7 @@ class PerformanceMonitoringNotification(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    node_id: str
+    nodeId: str
     """
     The name of the node.
     """
@@ -25,7 +25,7 @@ class PerformanceMonitoringNotification(BaseModel):
     """
     The Identifier/path to data.
     """
-    event_time: str = Field(
+    eventTime: str = Field(
         ...,
         pattern='^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{5}-\\d{2}:\\d{2}$',
     )
