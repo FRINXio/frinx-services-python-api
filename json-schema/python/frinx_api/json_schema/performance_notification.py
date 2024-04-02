@@ -2,10 +2,11 @@
 
 from __future__ import annotations
 
-from typing import Optional
+from typing import Any
 
 from pydantic import BaseModel
 from pydantic import ConfigDict
+from pydantic import Field
 
 
 class PerformanceMonitoringNotification(BaseModel):
@@ -16,19 +17,22 @@ class PerformanceMonitoringNotification(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    node_id: Optional[str] = None
+    node_id: str
     """
     The name of the node.
     """
-    identifier: Optional[str] = None
+    identifier: str
     """
-    Identifier/path to data.
+    The Identifier/path to data.
     """
-    event_time: Optional[str] = None
+    event_time: str = Field(
+        ...,
+        pattern='^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{5}-\\d{2}:\\d{2}$',
+    )
     """
     The timestamp when notification arrived.
     """
-    body: Optional[str] = None
+    body: dict[str, Any]
     """
     The data.
     """
