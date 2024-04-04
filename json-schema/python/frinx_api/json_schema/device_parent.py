@@ -10,6 +10,8 @@ from pydantic import BaseModel
 from pydantic import ConfigDict
 from pydantic import Field
 
+from . import device_geo_location
+
 
 class DeviceSize(Enum):
     """
@@ -99,3 +101,4 @@ class DeviceParentSchema(BaseModel):
     """
     Array of label IDs assigned to the device.
     """
+    geo_location: Optional[device_geo_location.DeviceGeoLocation] = None

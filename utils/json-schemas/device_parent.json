@@ -80,6 +80,9 @@
         "description": "Specific label ID.",
         "type": "string"
       }
+    },
+    "geo_location": {
+      "$ref": "device_geo_location.json"
     }
   }
 }

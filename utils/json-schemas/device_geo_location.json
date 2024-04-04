@@ -1,0 +1,36 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://frinx.io/device_geo_location.json",
+  "title": "Device geo-location",
+  "description": "Device geo-location schema",
+  "type": "object",
+  "required": [
+    "type",
+    "coordinates"
+  ],
+  "properties": {
+    "type": {
+      "description": "Type of geometry.",
+      "type": "string",
+      "enum": [
+        "Point"
+      ]
+    },
+    "coordinates": {
+      "description": "Device location coordinates providing latitude and longitude.",
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "number"
+      }
+    },
+    "bbox": {
+      "description": "Defining the area around the device, with four elements indicating its boundaries.",
+      "type": "array",
+      "minItems": 4,
+      "items": {
+        "type": "number"
+      }
+    }
+  }
+}
