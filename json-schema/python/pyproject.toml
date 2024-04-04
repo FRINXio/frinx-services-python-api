@@ -17,7 +17,7 @@ packages = [{ include = "frinx_api" }]
 name = "frinx-json-schemas"
 description = "JSON schemas to pydantic basemodel converter"
 authors = ["Jakub Bogusciak <jakub.bogusciak@elisapolystar.com>"]
-version = "0.0.1"
+version = "0.1.0"
 readme = ["README.md", "CHANGELOG.md", "RELEASE.md"]
 keywords = ["json-schema"]
 license = "Apache 2.0"
@@ -34,7 +34,7 @@ reportGeneralTypeIssues = "none"
 line-length = 120
 extend-select = ['Q', 'RUF100', 'C90', 'UP', 'I', 'E', 'F', 'N', 'PL']
 fixable = ["A", "B", "C", "D", "E", "F", "G", "I", "N", "Q", "S", "T", "W", "ANN", "ARG", "BLE", "COM", "DJ", "DTZ", "EM", "ERA", "EXE", "FBT", "ICN", "INP", "ISC", "NPY", "PD", "PGH", "PIE", "PL", "PT", "PTH", "PYI", "RET", "RSE", "RUF", "SIM", "SLF", "TCH", "TID", "TRY", "UP", "YTT"]
-ignore = ["E501"]
+ignore = ["E501", "N815"]
 
 target-version = "py310"
 
