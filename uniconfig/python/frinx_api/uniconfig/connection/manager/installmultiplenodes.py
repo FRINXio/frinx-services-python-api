@@ -9,7 +9,9 @@ from pydantic import BaseModel
 from pydantic import ConfigDict
 from pydantic import Field
 
+from ... import subscriptions
 from ...cli import topology
+from ...gnmi import topology as topology_2
 from ...netconf.node import topology as topology_1
 from ...uniconfig import config
 
@@ -157,34 +159,6 @@ class NetconfNodeTopologyOdlHelloMessageCapabilities(BaseModel):
     """
 
 
-class SubscriptionsStreamItem(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    stop_time: Optional[str] = Field(None, alias='stop-time')
-    """
-    RFC5277: An optional parameter, <stopTime>, used with the optional replay feature to indicate the newest
-    notifications of interest. If <stopTime> is not present, the notifications will continue until the
-    subscription is terminated. Must be used with and be later than <startTime>. Values of <stopTime>
-    in the future are valid.
-    """
-    start_time: Optional[str] = Field(None, alias='start-time')
-    """
-    RFC5277: A parameter, <startTime>, used to trigger the replay feature and indicate that the replay
-    should start at the time specified. If <startTime> is not present, this is not a replay subscription.
-    It is not valid to specify start times that are later than the current time. If the <startTime> specified
-    is earlier than the log can support, the replay will begin with the earliest available notification.
-    """
-    stream_name: str = Field(..., alias='stream-name')
-    """
-    Identifier of the notification stream.
-    """
-    paths: Optional[list[str]] = None
-    """
-    Paths to which subscribe on data change events
-    """
-
-
 class NetconfNodeTopologyNonModuleCapabilities(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
@@ -290,7 +264,160 @@ class LoginPassword(BaseModel):
     username: Optional[str] = None
 
 
-class UniconfigConfigCrypto(BaseModel):
+class GnmiTopologyFlags(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    enabled_notifications: Optional[bool] = Field(None, alias='enabled-notifications')
+    """
+    If it is set to 'true' and GNMI device supports notifications, GNMI mountpoint will
+    expose GNMI notification and subscription services.
+    """
+
+
+class GnmiTopologyOtherParameters(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    dry_run_journal_size: Optional[int] = Field(
+        None, alias='dry-run-journal-size', ge=0, le=65535
+    )
+    """
+    Size of the DRY RUN gnmi mountpoint journal. DRY RUN journal captures gnmi operations that
+    would be executed when reading/writing some configuration. However the operations are not actually
+    sent to the device
+    """
+
+
+class Credentials(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    password: Optional[str] = None
+    """
+    specify the target password as part of the user credentials.
+    """
+    username: Optional[str] = None
+    """
+    specify the target username as part of the user credentials.
+    """
+
+
+class GnmiTopologyDependencyPath(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    before: Optional[str] = None
+    """
+    Specific path that should be handled before the 'after' leaf.
+    Exact matches as well as subtrees of this path will be ordered
+    """
+    after: Optional[str] = None
+    """
+    Specific path that should be handled after the 'before' leaf.
+    Exact matches as well as subtrees of this path will be ordered
+    """
+
+
+class GnmiTopologySessionTimers(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    request_timeout: Optional[int] = Field(
+        None, alias='request-timeout', ge=0, le=65535
+    )
+    """
+    Timeout for each gnmi request. Request times out if not completed in X seconds.
+    """
+    request_max_size: Optional[int] = Field(
+        None, alias='request-max-size', ge=0, le=33554432
+    )
+    """
+    The maximum size of a request in bytes. The maximum size of this leaf is
+    32 mebibytes (33554432).
+    """
+    internal_transaction_timeout: Optional[int] = Field(
+        None, alias='internal-transaction-timeout', ge=0, le=65535
+    )
+    """
+    Timeout for internal data broker transactions (Not uniconfig transaction).
+    Transaction times out if not completed in X seconds.
+    """
+
+
+class GnmiParameters(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    use_model_name_prefix: Optional[bool] = Field(None, alias='use-model-name-prefix')
+    """
+    Some devices require a module prefix in first element name
+    of gNMI request path (e.g interfaces -> openconfig-interfaces:interfaces).
+    When flag use-model-name-prefix is set to true for device, YIID will be
+    transformed into gNMI path where elements have their module name.
+    E.g. element interfaces from module openconfig-interfaces will be
+    transformed as openconfig-interfaces:interfaces
+    """
+    path_target: Optional[str] = Field(None, alias='path-target')
+    """
+    The path-target field is used to specify the context of
+    a particular stream of data. The data stream can be intended
+    for individual target datastores. Only set in prefix for a path.
+    This field MUST only ever be present on prefix paths in
+    the corresponding request and response messages.
+    This field is optional for clients. REF:gNMI Specification Section 2.2.2.1
+    """
+
+
+class ForceCapabilityItem(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    name: Optional[str] = None
+    """
+    Name of the yang model
+    """
+    version: Optional[str] = None
+    """
+    Version of the yang model
+    """
+
+
+class GnmiTopologyExtensionsParameters(BaseModel):
+    """
+    Defines a set of extensions parameters which can be optionally
+    included with the request and response messages of gNMI RPCs.
+    Allows registration of extensions defined outside of this package.
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    force_cached_capabilities: Optional[list[Optional[str]]] = Field(
+        None, alias='force-cached-capabilities', max_length=1, min_length=1
+    )
+    """
+    Use all YANG models from cache directory
+    """
+    gnmi_parameters: Optional[GnmiParameters] = Field(
+        None,
+        alias='gnmi-parameters',
+        title='gnmi.topology.gnmiconnectionparameters.extensionsparameters.GnmiParameters',
+    )
+    force_capability: Optional[list[ForceCapabilityItem]] = Field(
+        None, alias='force-capability'
+    )
+    """
+    List of capabilities that restrict the
+    use of the models. The client restricts the set of data
+    models to be used when interacting with the target.
+    The target must not utilize data tree elements that
+    are defined in schema modules outside the specified list
+    of capabilities.
+    """
+
+
+class UniconfigConfigDeviceCrypto(BaseModel):
     """
     Settings related to encryption of arbitrary leaves/leaf-list using public key that
     is read from device on specified path.
@@ -370,15 +497,6 @@ class Cli(BaseModel):
     Maximum number of connection attempts used during installation of device.
     Value 0 disables the limit
     """
-    uniconfig_config_crypto: Optional[UniconfigConfigCrypto] = Field(
-        None,
-        alias='uniconfig-config:crypto',
-        title='uniconfig.config.uniconfigconfignodefields.Crypto',
-    )
-    """
-    Settings related to encryption of arbitrary leaves/leaf-list using public key that
-    is read from device on specified path.
-    """
     cli_topology_max_resend_command_attempt: Optional[int] = Field(
         None, alias='cli-topology:max-resend-command-attempt', ge=0, le=4294967295
     )
@@ -437,12 +555,12 @@ class Cli(BaseModel):
     mount extension.
     """
     cli_topology_host: Optional[str] = Field(None, alias='cli-topology:host')
-    cli_topology_default_error_patterns: Optional[
-        CliTopologyDefaultErrorPatterns
-    ] = Field(
-        None,
-        alias='cli-topology:default-error-patterns',
-        title='cli.translate.registry.errorpatterns.DefaultErrorPatterns',
+    cli_topology_default_error_patterns: Optional[CliTopologyDefaultErrorPatterns] = (
+        Field(
+            None,
+            alias='cli-topology:default-error-patterns',
+            title='cli.translate.registry.errorpatterns.DefaultErrorPatterns',
+        )
     )
     """
     Device specific list of error patterns. This list is the primary source
@@ -489,6 +607,15 @@ class Cli(BaseModel):
     cli_topology_journal_level: Optional[topology.JournalLevel] = Field(
         None, alias='cli-topology:journal-level'
     )
+    uniconfig_config_device_crypto: Optional[UniconfigConfigDeviceCrypto] = Field(
+        None,
+        alias='uniconfig-config:device-crypto',
+        title='uniconfig.config.uniconfigconfignodefields.DeviceCrypto',
+    )
+    """
+    Settings related to encryption of arbitrary leaves/leaf-list using public key that
+    is read from device on specified path.
+    """
     uniconfig_config_sequence_read_active: Optional[bool] = Field(
         None, alias='uniconfig-config:sequence-read-active'
     )
@@ -522,6 +649,35 @@ class Cli(BaseModel):
         None, alias='cli-topology:parsing-engine'
     )
     username: Optional[str] = None
+
+
+class SubscriptionsStreamItem(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    mode: Optional[subscriptions.ModeEnum] = None
+    stop_time: Optional[str] = Field(None, alias='stop-time')
+    """
+    RFC5277: An optional parameter, <stopTime>, used with the optional replay feature to indicate the newest
+    notifications of interest. If <stopTime> is not present, the notifications will continue until the
+    subscription is terminated. Must be used with and be later than <startTime>. Values of <stopTime>
+    in the future are valid.
+    """
+    start_time: Optional[str] = Field(None, alias='start-time')
+    """
+    RFC5277: A parameter, <startTime>, used to trigger the replay feature and indicate that the replay
+    should start at the time specified. If <startTime> is not present, this is not a replay subscription.
+    It is not valid to specify start times that are later than the current time. If the <startTime> specified
+    is earlier than the log can support, the replay will begin with the earliest available notification.
+    """
+    stream_name: str = Field(..., alias='stream-name')
+    """
+    Identifier of the notification stream.
+    """
+    paths: Optional[list[str]] = None
+    """
+    Paths to which subscribe on data change events
+    """
 
 
 class OtherParameters(BaseModel):
@@ -637,12 +793,12 @@ class Netconf(BaseModel):
     netconf_node_topology_port: Optional[int] = Field(
         None, alias='netconf-node-topology:port', ge=0, le=65535
     )
-    netconf_node_topology_yang_library: Optional[
-        NetconfNodeTopologyYangLibrary
-    ] = Field(
-        None,
-        alias='netconf-node-topology:yang-library',
-        title='netconf.node.topology.netconfschemastorage.YangLibrary',
+    netconf_node_topology_yang_library: Optional[NetconfNodeTopologyYangLibrary] = (
+        Field(
+            None,
+            alias='netconf-node-topology:yang-library',
+            title='netconf.node.topology.netconfschemastorage.YangLibrary',
+        )
     )
     netconf_node_topology_odl_hello_message_capabilities: Optional[
         NetconfNodeTopologyOdlHelloMessageCapabilities
@@ -687,15 +843,6 @@ class Netconf(BaseModel):
     After each reconnection attempt, the delay between reconnection attempts is
     multiplied by this factor. By default, it is set to 1.5. This means that the next
     delay between attempts will be 3000 ms, then it will be 4500 ms, etc.
-    """
-    uniconfig_config_crypto: Optional[UniconfigConfigCrypto] = Field(
-        None,
-        alias='uniconfig-config:crypto',
-        title='uniconfig.config.uniconfigconfignodefields.Crypto',
-    )
-    """
-    Settings related to encryption of arbitrary leaves/leaf-list using public key that
-    is read from device on specified path.
     """
     other_parameters: Optional[OtherParameters] = Field(
         None,
@@ -778,6 +925,15 @@ class Netconf(BaseModel):
     """
     Reads which are invoked for sync-from-network and initial config read.
     """
+    uniconfig_config_device_crypto: Optional[UniconfigConfigDeviceCrypto] = Field(
+        None,
+        alias='uniconfig-config:device-crypto',
+        title='uniconfig.config.uniconfigconfignodefields.DeviceCrypto',
+    )
+    """
+    Settings related to encryption of arbitrary leaves/leaf-list using public key that
+    is read from device on specified path.
+    """
     uniconfig_config_sequence_read_active: Optional[bool] = Field(
         None, alias='uniconfig-config:sequence-read-active'
     )
@@ -828,6 +984,34 @@ class Netconf(BaseModel):
     username: Optional[str] = None
 
 
+class GnmiTopologyConnectionParameters(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    device_type: Optional[str] = Field(None, alias='device-type')
+    """
+    Specific type of gNMI device
+    """
+    host: Optional[str] = None
+    """
+    IP address or hostname of the target
+    """
+    credentials: Optional[Credentials] = Field(
+        None, title='gnmi.topology.credentials.Credentials'
+    )
+    port: Optional[int] = Field(None, ge=0, le=65535)
+    """
+    The port number on which to contact the target
+    """
+    keystore_id: Optional[str] = Field(None, alias='keystore-id')
+    """
+    Identifier to keystore. Keystore is defined in gnmi-certificate-storage model.
+    """
+    connection_type: Optional[topology_2.ConnectionTypeEnumeration] = Field(
+        None, alias='connection-type'
+    )
+
+
 class Gnmi(BaseModel):
     """
     gNMI node settings.
@@ -848,8 +1032,35 @@ class Gnmi(BaseModel):
     """
     Replace paths that point to config that should be handled as a one replace request
     """
+    gnmi_topology_flags: Optional[GnmiTopologyFlags] = Field(
+        None, alias='gnmi-topology:flags', title='gnmi.topology.flagsgrouping.Flags'
+    )
+    gnmi_topology_all_type_paths: Optional[list[str]] = Field(
+        None, alias='gnmi-topology:all-type-paths'
+    )
+    """
+    Paths that should be read with the ALL data type
+    """
     uniconfig_config_admin_state: Optional[config.AdminState] = Field(
         None, alias='uniconfig-config:admin-state'
+    )
+    gnmi_topology_update_paths: Optional[list[str]] = Field(
+        None, alias='gnmi-topology:update-paths'
+    )
+    gnmi_topology_other_parameters: Optional[GnmiTopologyOtherParameters] = Field(
+        None,
+        alias='gnmi-topology:other-parameters',
+        title='gnmi.topology.otherparametersgrouping.OtherParameters',
+    )
+    gnmi_topology_connection_parameters: Optional[GnmiTopologyConnectionParameters] = (
+        Field(
+            None,
+            alias='gnmi-topology:connection-parameters',
+            title='gnmi.topology.gnmiconnectionparameters.ConnectionParameters',
+        )
+    )
+    gnmi_topology_dependency_paths: Optional[list[GnmiTopologyDependencyPath]] = Field(
+        None, alias='gnmi-topology:dependency-paths'
     )
     uniconfig_config_store_without_mount: Optional[bool] = Field(
         None, alias='uniconfig-config:store-without-mount'
@@ -875,11 +1086,42 @@ class Gnmi(BaseModel):
     """
     Reads which are invoked for sync-from-network and initial config read.
     """
+    gnmi_topology_session_timers: Optional[GnmiTopologySessionTimers] = Field(
+        None,
+        alias='gnmi-topology:session-timers',
+        title='gnmi.topology.sessiontimersgrouping.SessionTimers',
+    )
+    gnmi_topology_node_state: Optional[dict[str, Any]] = Field(
+        None,
+        alias='gnmi-topology:node-state',
+        title='gnmi.topology.gnminodestate.NodeState',
+    )
+    uniconfig_config_device_crypto: Optional[UniconfigConfigDeviceCrypto] = Field(
+        None,
+        alias='uniconfig-config:device-crypto',
+        title='uniconfig.config.uniconfigconfignodefields.DeviceCrypto',
+    )
+    """
+    Settings related to encryption of arbitrary leaves/leaf-list using public key that
+    is read from device on specified path.
+    """
     uniconfig_config_sequence_read_active: Optional[bool] = Field(
         None, alias='uniconfig-config:sequence-read-active'
     )
     """
     Forces reading of data sequentially when mounting device.
+    """
+    gnmi_topology_extensions_parameters: Optional[GnmiTopologyExtensionsParameters] = (
+        Field(
+            None,
+            alias='gnmi-topology:extensions-parameters',
+            title='gnmi.topology.gnmiconnectionparameters.ExtensionsParameters',
+        )
+    )
+    """
+    Defines a set of extensions parameters which can be optionally
+    included with the request and response messages of gNMI RPCs.
+    Allows registration of extensions defined outside of this package.
     """
     uniconfig_config_store_failed_installation: Optional[bool] = Field(
         None, alias='uniconfig-config:store-failed-installation'
@@ -887,21 +1129,21 @@ class Gnmi(BaseModel):
     """
     In case UniConfig fails to install the device, it will still populate the database.
     """
+    gnmi_topology_schema_cache_directory: Optional[str] = Field(
+        None, alias='gnmi-topology:schema-cache-directory'
+    )
+    """
+    The destination schema repository for yang files relative to the cache directory.
+    """
     subscriptions_stream: Optional[list[SubscriptionsStreamItem]] = Field(
         None, alias='subscriptions:stream'
     )
     """
     List of available streams to which subscription can be created.
     """
-    uniconfig_config_crypto: Optional[UniconfigConfigCrypto] = Field(
-        None,
-        alias='uniconfig-config:crypto',
-        title='uniconfig.config.uniconfigconfignodefields.Crypto',
+    gnmi_topology_remove_module_names_paths: Optional[list[str]] = Field(
+        None, alias='gnmi-topology:remove-module-names-paths'
     )
-    """
-    Settings related to encryption of arbitrary leaves/leaf-list using public key that
-    is read from device on specified path.
-    """
     uniconfig_config_uniconfig_native_enabled: Optional[bool] = Field(
         None, alias='uniconfig-config:uniconfig-native-enabled'
     )

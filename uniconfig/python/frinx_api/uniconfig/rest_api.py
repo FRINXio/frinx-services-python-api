@@ -106,6 +106,7 @@ from . import OperationsUnmountNodePostRequest
 from . import OperationsUpdatePropertiesPostRequest
 from . import OperationsUpdatePropertiesPostResponse
 from . import OperationsUpgradeTemplatePostRequest
+from . import OperationsUploadYangModelPostRequest
 from . import OperationsValidatePostRequest
 
 
@@ -295,6 +296,13 @@ class SetMessageTypes(UniconfigRest):
     uri = '/operations/set-message-types'
     method = 'POST'
     request = OperationsSetMessageTypesPostRequest
+    response = None
+
+
+class UploadYangModel(UniconfigRest):
+    uri = '/operations/upload-yang-model'
+    method = 'POST'
+    request = OperationsUploadYangModelPostRequest
     response = None
 
 

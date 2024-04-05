@@ -6,18 +6,21 @@ from typing import Optional
 
 from pydantic import BaseModel
 from pydantic import ConfigDict
-from pydantic import Field
 
 
 class Input(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    node_id: str = Field(..., alias='node-id')
+    name: Optional[str] = None
     """
-    Node identifier of CLI/NETCONF/GNMI node.
+    Name of the yang model
     """
-    stream_name: Optional[str] = Field(None, alias='stream-name')
+    body: Optional[str] = None
     """
-    Name of a stream.
+    Body of the yang model
+    """
+    version: Optional[str] = None
+    """
+    Version of the yang model
     """

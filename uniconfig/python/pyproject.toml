@@ -9,7 +9,7 @@ pydantic = "^2"
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.0.263"
 pyright = "^1.1.317"
-datamodel-code-generator = {extras = ["http"], version = "^0.21.3"}
+datamodel-code-generator = {extras = ["http"], version = "^0.25.5"}
 mypy = "1.3.0"
 pyyaml = "^6.0.1"
 types-pyyaml = "^6.0.12.12"

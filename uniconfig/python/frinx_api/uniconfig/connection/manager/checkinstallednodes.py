@@ -32,11 +32,11 @@ class NodeResultItem(BaseModel):
         populate_by_name=True,
     )
     node_id: Optional[str] = Field(None, alias='node-id')
+    topology_id: Optional[str] = Field(None, alias='topology-id')
     uniconfig_layer: Optional[bool] = Field(None, alias='uniconfig-layer')
     """
     Indicates whether node is installed in UniConfig layer.
     """
-    topology_id: Optional[str] = Field(None, alias='topology-id')
 
 
 class NodeResults(BaseModel):

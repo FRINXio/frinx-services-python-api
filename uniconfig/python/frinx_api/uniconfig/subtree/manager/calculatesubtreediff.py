@@ -12,22 +12,6 @@ from . import SourceDatastore
 from . import TargetDatastore
 
 
-class UpdatedDatum(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    path_actual: Optional[str] = Field(None, alias='path-actual')
-    """
-    Instance-identifier of updated data node.
-    """
-    path_intended: Optional[str] = Field(None, alias='path-intended')
-    """
-    Instance-identifier of updated data node.
-    """
-    data_intended: Optional[str] = Field(None, alias='data-intended')
-    data_actual: Optional[str] = Field(None, alias='data-actual')
-
-
 class DeletedDatum(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
@@ -50,14 +34,26 @@ class CreatedDatum(BaseModel):
     """
 
 
+class UpdatedDatum(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    path_actual: Optional[str] = Field(None, alias='path-actual')
+    """
+    Instance-identifier of updated data node.
+    """
+    path_intended: Optional[str] = Field(None, alias='path-intended')
+    """
+    Instance-identifier of updated data node.
+    """
+    data_intended: Optional[str] = Field(None, alias='data-intended')
+    data_actual: Optional[str] = Field(None, alias='data-actual')
+
+
 class Output(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    updated_data: Optional[list[UpdatedDatum]] = Field(None, alias='updated-data')
-    """
-    Updated intended configuration against actual.
-    """
     deleted_data: Optional[list[DeletedDatum]] = Field(None, alias='deleted-data')
     """
     Removed intended configuration against actual.
@@ -65,6 +61,10 @@ class Output(BaseModel):
     created_data: Optional[list[CreatedDatum]] = Field(None, alias='created-data')
     """
     Created intended configuration against actual.
+    """
+    updated_data: Optional[list[UpdatedDatum]] = Field(None, alias='updated-data')
+    """
+    Updated intended configuration against actual.
     """
 
 
