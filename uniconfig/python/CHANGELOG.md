@@ -10,7 +10,7 @@
 
 # 1.1.0
 - Compatibility with UniConfig 6.0.2.
-- Added gNMI installation paramaters.
+- Added gNMI installation parameters.
 - Added SNMP installation parameters.
 - Fixed generation of arrays with null type.
 - Bumped version of datamodel-code-generator to 0.25.5.
