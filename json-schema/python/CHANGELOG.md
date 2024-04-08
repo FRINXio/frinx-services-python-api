@@ -8,3 +8,5 @@
 - Updated generated pydantic classes with bunmped version
   of datamodel-code-generator (0.25.5).
 
+# 0.2.0
+- Added JSON schema and generated pydantic class for device GeoLocation.
