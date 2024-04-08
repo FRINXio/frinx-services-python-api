@@ -18,11 +18,11 @@ class Input(BaseModel):
     )
     source_datastore: Optional[Datastore] = Field(None, alias='source-datastore')
     target_datastore: Optional[Datastore] = Field(None, alias='target-datastore')
-    operation: Optional[Operation] = None
     target_paths: Optional[list[str]] = Field(None, alias='target-paths')
     """
     Target paths under which data from source paths is put/merged.
     """
+    operation: Optional[Operation] = None
     source_path: Optional[str] = Field(None, alias='source-path')
     """
     Source path to data which is put/merged under target nodes.
