@@ -33,7 +33,7 @@ class ServiceState(Enum):
 
 class DeviceParentSchema(BaseModel):
     """
-    Parent schema for registration and update
+    Parent schema for registration and update (All fields are optional)
     """
 
     model_config = ConfigDict(
