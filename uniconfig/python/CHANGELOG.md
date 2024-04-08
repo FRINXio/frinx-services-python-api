@@ -9,8 +9,9 @@
 - FM 6.0.0.
 
 # 1.1.0
-- Compatibility with UniConfig 6.0.2.
-- Added gNMI installation parameters.
-- Added SNMP installation parameters.
-- Fixed generation of arrays with null type.
+- Compatibility with UniConfig 6.0.X.
+- Added missing gNMI installation parameters.
+- Added missing SNMP installation parameters.
+- Fixed generation of arrays with null type
+  (added --strict-nullable attribute).
 - Bumped version of datamodel-code-generator to 0.25.5.
