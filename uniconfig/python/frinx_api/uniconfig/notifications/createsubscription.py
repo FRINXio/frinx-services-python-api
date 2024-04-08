@@ -21,7 +21,7 @@ class Input(BaseModel):
     all events not precluded by other parameters will
     be sent.
     """
-    stopTime: Optional[str] = None
+    stopTime: Optional[str] = None  # noqa: N815
     """
     An optional parameter used with the optional replay
     feature to indicate the newest notifications of
@@ -29,7 +29,7 @@ class Input(BaseModel):
     will continue until the subscription is terminated.
     Must be used with startTime.
     """
-    startTime: Optional[str] = None
+    startTime: Optional[str] = None  # noqa: N815
     """
     A parameter used to trigger the replay feature and
     indicates that the replay should start at the time
