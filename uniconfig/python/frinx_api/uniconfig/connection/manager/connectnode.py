@@ -23,7 +23,11 @@ class Input(BaseModel):
     """
     node_id: str = Field(..., alias='node-id')
     """
-    Node identifier of CLI/NETCONF/GNMI/SUBSCRIPTION node.
+    Node identifier of CLI/NETCONF/GNMI node.
+    """
+    stream_name: Optional[str] = Field(None, alias='stream-name')
+    """
+    Name of a stream.
     """
     max_connection_attempts: Optional[int] = Field(
         None, alias='max-connection-attempts', ge=0, le=4294967295

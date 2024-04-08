@@ -4,3 +4,14 @@
 # 0.1.1
 - Float/Int mismatch fix
 - Uniconfig 5.1.16
+
+# 1.0.0
+- FM 6.0.0.
+
+# 1.1.0
+- Compatibility with UniConfig 6.0.X.
+- Added missing gNMI installation parameters.
+- Added missing SNMP installation parameters.
+- Fixed generation of arrays with null type
+  (added --strict-nullable attribute).
+- Bumped version of datamodel-code-generator to 0.25.5.

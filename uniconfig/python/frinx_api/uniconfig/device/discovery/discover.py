@@ -7,7 +7,6 @@ from typing import Optional
 from pydantic import BaseModel
 from pydantic import ConfigDict
 from pydantic import Field
-from pydantic import RootModel
 
 
 class TcpPortItem(BaseModel):
@@ -67,69 +66,41 @@ class Input(BaseModel):
     udp_port: Optional[list[UdpPortItem]] = Field(None, alias='udp-port')
 
 
-class UnavailableTcpPort(RootModel[int]):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    root: int = Field(..., ge=0, le=65535)
-
-
-class AvailableTcpPort(RootModel[int]):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    root: int = Field(..., ge=0, le=65535)
-
-
-class UnavailableUdpPort(RootModel[int]):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    root: int = Field(..., ge=0, le=65535)
-
-
-class AvailableUdpPort(RootModel[int]):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    root: int = Field(..., ge=0, le=65535)
-
-
 class DeviceItem(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    host: Optional[str] = None
-    """
-    Host address either in IP (IPv4 or IPv6) format or in domain-name format
-    """
-    unavailable_tcp_ports: Optional[list[UnavailableTcpPort]] = Field(
-        None, alias='unavailable-tcp-ports'
-    )
-    """
-    TCP ports that are unreachable
-    """
     is_host_reachable: Optional[bool] = Field(None, alias='is-host-reachable')
     """
     If the host is reachable or not using ICMP protocol
     """
-    available_tcp_ports: Optional[list[AvailableTcpPort]] = Field(
-        None, alias='available-tcp-ports'
+    available_udp_ports: Optional[list[int]] = Field(
+        None, alias='available-udp-ports', ge=0, le=65535
+    )
+    """
+    All the available UDP ports
+    """
+    host: Optional[str] = None
+    """
+    Host address either in IP (IPv4 or IPv6) format or in domain-name format
+    """
+    unavailable_tcp_ports: Optional[list[int]] = Field(
+        None, alias='unavailable-tcp-ports', ge=0, le=65535
+    )
+    """
+    TCP ports that are unreachable
+    """
+    available_tcp_ports: Optional[list[int]] = Field(
+        None, alias='available-tcp-ports', ge=0, le=65535
     )
     """
     All the available TCP ports
     """
-    unavailable_udp_ports: Optional[list[UnavailableUdpPort]] = Field(
-        None, alias='unavailable-udp-ports'
+    unavailable_udp_ports: Optional[list[int]] = Field(
+        None, alias='unavailable-udp-ports', ge=0, le=65535
     )
     """
     UDP ports that are unreachable
-    """
-    available_udp_ports: Optional[list[AvailableUdpPort]] = Field(
-        None, alias='available-udp-ports'
-    )
-    """
-    All the available UDP ports
     """
 
 

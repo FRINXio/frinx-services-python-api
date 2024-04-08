@@ -33,6 +33,7 @@ from .data.change.events import showsubscriptiondata
 from .device.discovery import discover
 from .dryrun.manager import dryruncommit
 from .gnmi.logging import setmessagetypes
+from .gnmi.yang.storage import uploadyangmodel
 from .journal import clearjournal
 from .journal import readjournal
 from .logging import disabledefaultdevicelogging
@@ -318,6 +319,13 @@ class OperationsDryrunCommitPostResponse(BaseModel):
         populate_by_name=True,
     )
     output: Optional[dryruncommit.Output] = None
+
+
+class OperationsUploadYangModelPostRequest(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    input: Optional[uploadyangmodel.Input] = None
 
 
 class OperationsReadJournalPostResponse(BaseModel):

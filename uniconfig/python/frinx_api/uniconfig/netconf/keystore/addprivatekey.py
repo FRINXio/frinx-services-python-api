@@ -13,11 +13,11 @@ class PrivateKeyItem(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
+    name: Optional[str] = None
     data: Optional[str] = None
     """
     Base64 encoded private key.
     """
-    name: Optional[str] = None
     certificate_chain: Optional[list[str]] = Field(None, alias='certificate-chain')
     """
     A certificate chain for this public key. Each certificate is an X.509 v3 certificate

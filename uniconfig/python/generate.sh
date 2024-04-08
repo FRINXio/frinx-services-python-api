@@ -17,6 +17,7 @@ poetry run datamodel-codegen \
   --use-field-description \
   --use-schema-description \
   --use-default \
+  --strict-nullable \
   --field-constraints \
   --collapse-root-models \
   --use-standard-collections \

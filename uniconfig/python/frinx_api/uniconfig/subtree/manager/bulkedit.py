@@ -15,14 +15,14 @@ class EditItem(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    data: str
-    """
-    JSON-formatted subtree representing applied subtree configuration.
-    """
     path: Optional[str] = None
     """
     Path to modified subtree. Path must be complaint to RFC-8040 and relative
     to parent top-level node 'configuration' container.
+    """
+    data: str
+    """
+    JSON-formatted subtree representing applied subtree configuration.
     """
     operation: types.DataTreeOperation
 
@@ -35,11 +35,11 @@ class Input(BaseModel):
     """
     List of nodes representing target nodes for list of modifications.
     """
-    edit: Optional[list[EditItem]] = None
-    """
-    List of intended modifications.
-    """
     topology_id: str = Field(..., alias='topology-id')
     """
     Identifier of the topology which contains target nodes.
+    """
+    edit: Optional[list[EditItem]] = None
+    """
+    List of intended modifications.
     """
