@@ -19,7 +19,7 @@ packages = [{ include = "frinx_api" }]
 name = "frinx-uniconfig-api"
 description = "Python SDK for Frinx Machine Workflow Manager"
 authors = ["Jozef Volak <jozef.volak@elisapolystar.com>"]
-version = "1.0.0"
+version = "1.1.0"
 readme = ["README.md", "CHANGELOG.md", "RELEASE.md"]
 keywords = ["frinx-machine", "uniconfig", "conductor"]
 license = "Apache 2.0"
