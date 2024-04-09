@@ -38,7 +38,7 @@ cat ./patches/rest_api_patch.txt >> ${REST_API_PATH}
 
 # apply all git patches
 set -e
-for patch in "./patches"/*.patch
+for patch in $(ls "./patches"/*.patch | sort -n)
 do
   echo "Applying patch: $patch"
   # Check if the patch can be applied

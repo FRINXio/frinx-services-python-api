@@ -19,6 +19,7 @@ jobs:
           ignore_words_list: .codespellignore
           check_filenames: true
           check_hidden: false
+          exclude_file: uniconfig/python/patches/*.patch
 
   changes:
     runs-on: ubuntu-latest
