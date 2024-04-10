@@ -1,0 +1,22 @@
+diff --git a/uniconfig/python/frinx_api/uniconfig/device/discovery/discover.py b/uniconfig/python/frinx_api/uniconfig/device/discovery/discover.py
+index a634140..c725a85 100644
+--- a/uniconfig/python/frinx_api/uniconfig/device/discovery/discover.py
++++ b/uniconfig/python/frinx_api/uniconfig/device/discovery/discover.py
+@@ -18,7 +18,7 @@ class TcpPortItem(BaseModel):
+     start_port: Optional[int] = Field(None, alias='start-port', ge=0, le=65535)
+ 
+ 
+-class Addres(BaseModel):
++class Address(BaseModel):
+     model_config = ConfigDict(
+         populate_by_name=True,
+     )
+@@ -62,7 +62,7 @@ class Input(BaseModel):
+     Check whether the host is reachable or not using ICMP protocol
+     """
+     tcp_port: Optional[list[TcpPortItem]] = Field(None, alias='tcp-port')
+-    address: Optional[list[Addres]] = None
++    address: Optional[list[Address]] = None
+     udp_port: Optional[list[UdpPortItem]] = Field(None, alias='udp-port')
+ 
+ 

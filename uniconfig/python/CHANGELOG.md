@@ -15,3 +15,10 @@
 - Fixed generation of arrays with null type
   (added --strict-nullable attribute).
 - Bumped version of datamodel-code-generator to 0.25.5.
+
+# 1.1.1
+- Introduction of custom git patches for generated UniConfig models.
+- Added UniConfig patches:
+  1. ignore createsubscription ruff errors
+  2. fix discover address spell error
+  3. fix generated port constraints in discover model

@@ -33,8 +33,20 @@ poetry run datamodel-codegen \
 # generate rest_api file to map URL, Method and models from datamodel-codegen
 poetry run python3 ./generate_rest_api.py --input /swagger/uniconfig.yaml --output ${REST_API_PATH}
 
-# apply patches
+# apply REST API patches
 cat ./patches/rest_api_patch.txt >> ${REST_API_PATH}
+
+# apply all git patches
+set -e
+for patch in $(ls "./patches"/*.patch | sort -n)
+do
+  echo "Applying patch: $patch"
+  # Check if the patch can be applied
+  git apply --check "$patch"
+  # Apply the patch
+  git apply "$patch"
+done
+set +e
 
 ## use default formatting
 poetry run ruff --fix . || true
