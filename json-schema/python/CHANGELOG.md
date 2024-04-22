@@ -10,3 +10,6 @@
 
 # 0.2.0
 - Added JSON schema and generated pydantic class for device GeoLocation.
+
+# 0.2.1
+- Added Kafka header 'type' constant into header_constants module.
