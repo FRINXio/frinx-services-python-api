@@ -2,20 +2,11 @@
 
 from __future__ import annotations
 
-from enum import Enum
 from typing import Optional
 
 from pydantic import BaseModel
 from pydantic import ConfigDict
 from pydantic import Field
-
-
-class Type(Enum):
-    """
-    Type of geometry.
-    """
-
-    Point = 'Point'
 
 
 class DeviceGeoLocation(BaseModel):
@@ -26,7 +17,7 @@ class DeviceGeoLocation(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    type: Type
+    type: Optional[str] = 'Point'
     """
     Type of geometry.
     """

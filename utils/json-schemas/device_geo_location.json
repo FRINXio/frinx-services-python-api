@@ -12,9 +12,8 @@
     "type": {
       "description": "Type of geometry.",
       "type": "string",
-      "enum": [
-        "Point"
-      ]
+      "string": "Point",
+      "default": "Point"
     },
     "coordinates": {
       "description": "Device location coordinates providing latitude and longitude.",
