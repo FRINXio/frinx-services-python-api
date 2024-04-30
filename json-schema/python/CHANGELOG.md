@@ -15,4 +15,4 @@
 - Added Kafka header 'type' constant into header_constants module.
 
 # 0.2.2
-- Change geolocation type of geometry from enum to string.
+- Make Enum as subclass for JSON serialising.

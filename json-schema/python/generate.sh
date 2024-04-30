@@ -16,6 +16,7 @@ poetry run datamodel-codegen \
   --use-schema-description \
   --use-default \
   --field-constraints \
+  --use-subclass-enum \
   --collapse-root-models \
   --use-standard-collections \
   --allow-population-by-field-name \
