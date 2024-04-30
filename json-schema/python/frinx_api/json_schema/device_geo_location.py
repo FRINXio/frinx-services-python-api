@@ -10,7 +10,7 @@ from pydantic import ConfigDict
 from pydantic import Field
 
 
-class Type(Enum):
+class Type(str, Enum):
     """
     Type of geometry.
     """

@@ -13,7 +13,7 @@ from pydantic import Field
 from . import device_geo_location
 
 
-class DeviceSize(Enum):
+class DeviceSize(str, Enum):
     """
     The size of the device.
     """
@@ -23,7 +23,7 @@ class DeviceSize(Enum):
     LARGE = 'LARGE'
 
 
-class ServiceState(Enum):
+class ServiceState(str, Enum):
     """
     The state the device is in.
     """

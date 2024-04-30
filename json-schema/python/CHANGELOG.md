@@ -13,3 +13,6 @@
 
 # 0.2.1
 - Added Kafka header 'type' constant into header_constants module.
+
+# 0.2.2
+- Make Enum as subclass for JSON serialising.
