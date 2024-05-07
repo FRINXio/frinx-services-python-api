@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://frinx.io/performance_message.json",
+  "title": "Performance message",
+  "description": "Schema for processed and unified performance monitoring notifications",
+  "type": "object",
+  "required": [
+    "deviceName",
+    "eventTime",
+    "metrics"
+  ],
+  "properties": {
+    "deviceName": {
+      "description": "The name of the device.",
+      "type": "string"
+    },
+    "eventTime": {
+      "description": "The timestamp when notification arrived.",
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{5}-\\d{2}:\\d{2}$"
+    },
+    "metrics": {
+      "description": "The measured metrics.",
+      "type": "any"
+    }
+  }
+}
