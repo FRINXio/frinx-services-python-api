@@ -17,7 +17,7 @@ packages = [{ include = "frinx_api" }]
 name = "frinx-json-schemas"
 description = "JSON schemas to pydantic basemodel converter"
 authors = ["Jakub Bogusciak <jakub.bogusciak@elisapolystar.com>"]
-version = "0.2.2"
+version = "0.3.0"
 readme = ["README.md", "CHANGELOG.md", "RELEASE.md"]
 keywords = ["json-schema"]
 license = "Apache 2.0"

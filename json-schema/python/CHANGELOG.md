@@ -16,3 +16,8 @@
 
 # 0.2.2
 - Make Enum as subclass for JSON serialising.
+
+# 0.3.0
+- Added JSON schema and generated pydantic class for unified performance-message notifications.
+- Added cpu-usage and memory-usage header constants for performance-message notifications.
+
