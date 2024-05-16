@@ -494,7 +494,7 @@ class SnmpTopologyNoAuthNoPriv(BaseModel):
         None, alias='snmp-topology:community-string'
     )
     """
-    Sets the community octet sting. This is a convenience
+    Sets the community octet string. This is a convenience
     method to set the security name for community based
     SNMP (v1 and v2c).
     """
