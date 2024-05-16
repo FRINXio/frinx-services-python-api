@@ -5,94 +5,84 @@ from __future__ import annotations
 from enum import Enum
 from typing import Optional
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel
+from pydantic import ConfigDict
 
-from .cli.unit.generic import (
-    configcoverage,
-    execute,
-    executeandexpect,
-    executeandread,
-    executeandreaduntil,
-)
-from .connection.manager import (
-    changeadminstate,
-    checkinstallednodes,
-    checknodesconnection,
-    connectnode,
-    disconnectnode,
-    dryrunmountnode,
-    dryrununmountnode,
-    getinstallednodes,
-    installmultiplenodes,
-    installnode,
-    mountnode,
-    uninstallmultiplenodes,
-    uninstallnode,
-    unmountnode,
-)
-from .crypto import changeencryptionkeys, changeencryptionstatus
-from .data.change.events import (
-    createdatachangesubscription,
-    deletedatachangesubscription,
-    showsubscriptiondata,
-)
+from .cli.unit.generic import configcoverage
+from .cli.unit.generic import execute
+from .cli.unit.generic import executeandexpect
+from .cli.unit.generic import executeandread
+from .cli.unit.generic import executeandreaduntil
+from .connection.manager import changeadminstate
+from .connection.manager import checkinstallednodes
+from .connection.manager import checknodesconnection
+from .connection.manager import connectnode
+from .connection.manager import disconnectnode
+from .connection.manager import dryrunmountnode
+from .connection.manager import dryrununmountnode
+from .connection.manager import getinstallednodes
+from .connection.manager import installmultiplenodes
+from .connection.manager import installnode
+from .connection.manager import mountnode
+from .connection.manager import uninstallmultiplenodes
+from .connection.manager import uninstallnode
+from .connection.manager import unmountnode
+from .crypto import changeencryptionkeys
+from .crypto import changeencryptionstatus
+from .data.change.events import createdatachangesubscription
+from .data.change.events import deletedatachangesubscription
+from .data.change.events import showsubscriptiondata
 from .device.discovery import discover
 from .dryrun.manager import dryruncommit
 from .gnmi.logging import setmessagetypes
 from .gnmi.yang.storage import uploadyangmodel
-from .journal import clearjournal, readjournal
-from .logging import (
-    disabledefaultdevicelogging,
-    disabledevicelogging,
-    disablelogging,
-    enabledefaultdevicelogging,
-    enabledevicelogging,
-    enablelogging,
-    setglobalhiddentypes,
-)
-from .netconf.keystore import (
-    addkeystoreentry,
-    addprivatekey,
-    addtrustedcertificate,
-    removekeystoreentry,
-    removeprivatekey,
-    removetrustedcertificate,
-)
+from .journal import clearjournal
+from .journal import readjournal
+from .logging import disabledefaultdevicelogging
+from .logging import disabledevicelogging
+from .logging import disablelogging
+from .logging import enabledefaultdevicelogging
+from .logging import enabledevicelogging
+from .logging import enablelogging
+from .logging import setglobalhiddentypes
+from .netconf.keystore import addkeystoreentry
+from .netconf.keystore import addprivatekey
+from .netconf.keystore import addtrustedcertificate
+from .netconf.keystore import removekeystoreentry
+from .netconf.keystore import removeprivatekey
+from .netconf.keystore import removetrustedcertificate
 from .notifications import createsubscription
-from .restconf.logging import sethiddenhttpheaders, sethiddenhttpmethods
+from .restconf.logging import sethiddenhttpheaders
+from .restconf.logging import sethiddenhttpmethods
 from .schema.resources import registerrepository
-from .snapshot.manager import createsnapshot, deletesnapshot, replaceconfigwithsnapshot
-from .subtree.manager import (
-    bulkedit,
-    calculatesubtreediff,
-    calculatesubtreegitlikediff,
-    copymanytoone,
-    copyonetomany,
-    copyonetoone,
-)
-from .template.manager import (
-    applytemplate,
-    createmultipletemplates,
-    gettemplateinfo,
-    gettemplatenodes,
-    upgradetemplate,
-)
+from .snapshot.manager import createsnapshot
+from .snapshot.manager import deletesnapshot
+from .snapshot.manager import replaceconfigwithsnapshot
+from .subtree.manager import bulkedit
+from .subtree.manager import calculatesubtreediff
+from .subtree.manager import calculatesubtreegitlikediff
+from .subtree.manager import copymanytoone
+from .subtree.manager import copyonetomany
+from .subtree.manager import copyonetoone
+from .template.manager import applytemplate
+from .template.manager import createmultipletemplates
+from .template.manager import gettemplateinfo
+from .template.manager import gettemplatenodes
+from .template.manager import upgradetemplate
 from .transaction.log import revertchanges
-from .uniconfig.manager import (
-    calculatediff,
-    calculategitlikediff,
-    checkedcommit,
-    commit,
-    compareconfig,
-    health,
-    isinsync,
-    readproperties,
-    replaceconfigwithoperational,
-    syncfromnetwork,
-    synctonetwork,
-    updateproperties,
-    validate,
-)
+from .uniconfig.manager import calculatediff
+from .uniconfig.manager import calculategitlikediff
+from .uniconfig.manager import checkedcommit
+from .uniconfig.manager import commit
+from .uniconfig.manager import compareconfig
+from .uniconfig.manager import health
+from .uniconfig.manager import isinsync
+from .uniconfig.manager import readproperties
+from .uniconfig.manager import replaceconfigwithoperational
+from .uniconfig.manager import syncfromnetwork
+from .uniconfig.manager import synctonetwork
+from .uniconfig.manager import updateproperties
+from .uniconfig.manager import validate
 from .uniconfig.query import queryconfig
 
 

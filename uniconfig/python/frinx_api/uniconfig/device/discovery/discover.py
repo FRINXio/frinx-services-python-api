@@ -4,7 +4,10 @@ from __future__ import annotations
 
 from typing import Optional
 
-from pydantic import BaseModel, ConfigDict, Field, RootModel
+from pydantic import BaseModel
+from pydantic import ConfigDict
+from pydantic import Field
+from pydantic import RootModel
 
 
 class Address(BaseModel):
@@ -48,6 +51,7 @@ class UdpPortItem(BaseModel):
     port: Optional[int] = Field(None, ge=0, le=65535)
     start_port: Optional[int] = Field(None, alias='start-port', ge=0, le=65535)
 
+
 class AvailableUdpPort(RootModel[int]):
     model_config = ConfigDict(
         populate_by_name=True,
@@ -75,6 +79,7 @@ class UnavailableUdpPort(RootModel[int]):
     )
     root: int = Field(..., ge=0, le=65535)
 
+
 class Input(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
@@ -99,7 +104,8 @@ class DeviceItem(BaseModel):
     Host address either in IP (IPv4 or IPv6) format or in domain-name format
     """
     unavailable_tcp_ports: Optional[list[UnavailableTcpPort]] = Field(
-        None, alias='unavailable-tcp-ports')
+        None, alias='unavailable-tcp-ports'
+    )
     """
     TCP ports that are unreachable
     """
@@ -108,17 +114,20 @@ class DeviceItem(BaseModel):
     If the host is reachable or not using ICMP protocol
     """
     available_tcp_ports: Optional[list[AvailableTcpPort]] = Field(
-        None, alias='available-tcp-ports')
+        None, alias='available-tcp-ports'
+    )
     """
     All the available TCP ports
     """
     unavailable_udp_ports: Optional[list[UnavailableUdpPort]] = Field(
-        None, alias='unavailable-udp-ports')
+        None, alias='unavailable-udp-ports'
+    )
     """
     UDP ports that are unreachable
     """
     available_udp_ports: Optional[list[AvailableUdpPort]] = Field(
-        None, alias='available-udp-ports')
+        None, alias='available-udp-ports'
+    )
     """
     All the available UDP ports
     """

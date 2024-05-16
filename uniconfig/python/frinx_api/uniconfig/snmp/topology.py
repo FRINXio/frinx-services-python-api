@@ -27,7 +27,7 @@ class PrivacyProtocolEnumeration(Enum):
     """
 
     DES = 'DES'
-    field_3DES = '3DES'
+    field_3DES = '3DES'  # noqa: N815
     AES_128 = 'AES-128'
     AES_192 = 'AES-192'
     AES_256 = 'AES-256'

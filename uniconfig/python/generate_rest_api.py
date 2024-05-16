@@ -50,8 +50,12 @@ class _Cls(UniconfigRest):
     response = _response
 
 
-def parse_swagger_scheme(scheme: dict[str, Any], req_res_refs: Iterable[str], imports: Optional[list[Any]] = None,
-                         definitions: Optional[list[Any]] = None) -> tuple[list[str], list[str]]:
+def parse_swagger_scheme(
+    scheme: dict[str, Any],
+    req_res_refs: Iterable[str],
+    imports: Optional[list[Any]] = None,
+    definitions: Optional[list[Any]] = None,
+) -> tuple[list[str], list[str]]:
     if definitions is None:
         definitions = []
 
@@ -69,14 +73,20 @@ def parse_swagger_scheme(scheme: dict[str, Any], req_res_refs: Iterable[str], im
         modified_string = url
         for match in matches:
             modified_match = match.replace('-', '_')
-            modified_string = modified_string.replace(f'{{{match}}}', f'{{{modified_match}}}')
+            modified_string = modified_string.replace(
+                f'{{{match}}}', f'{{{modified_match}}}'
+            )
         return modified_string
 
-    def _get_cls(_endpoint: str, _method: str, *, request: bool = False, response: bool = False) -> str:
-        base = _up_format(
-            endpoint,
-            ['/', '-', ':', '={']
-        ).replace('{', '').replace('}', '') + method.capitalize()
+    def _get_cls(
+        _endpoint: str, _method: str, *, request: bool = False, response: bool = False
+    ) -> str:
+        base = (
+            _up_format(endpoint, ['/', '-', ':', '={'])
+            .replace('{', '')
+            .replace('}', '')
+            + method.capitalize()
+        )
         return str(base + {request: 'Request', response: 'Response'}.get(True))
 
     def _get_service_name(_endpoint: str) -> str:
@@ -99,7 +109,9 @@ def parse_swagger_scheme(scheme: dict[str, Any], req_res_refs: Iterable[str], im
 
         for method in methods:
             if len(methods) > 1:
-                template_input['Cls'] = _get_service_name(endpoint) + method.capitalize()
+                template_input['Cls'] = (
+                    _get_service_name(endpoint) + method.capitalize()
+                )
             else:
                 template_input['Cls'] = _get_service_name(endpoint)
 
@@ -127,7 +139,9 @@ def parse_swagger_scheme(scheme: dict[str, Any], req_res_refs: Iterable[str], im
     return imports, definitions
 
 
-def generate_file(path: str, imports: Iterable[str], definitions: Iterable[str]) -> None:
+def generate_file(
+    path: str, imports: Iterable[str], definitions: Iterable[str]
+) -> None:
     file = ENTER.join(imports)
     file += 3 * ENTER + (2 * ENTER).join(definitions)
     try:
@@ -145,13 +159,13 @@ def get_cli_args() -> Namespace:
         '--input',
         type=str,
         help='Path to OpenAPI-3 scheme in yaml format.',
-        required=True
+        required=True,
     )
     parser.add_argument(
         '--output',
         type=str,
         help=f'(Optional), path for output file. Default is {DEFAULT_OUTPUT_FILE}',
-        required=False
+        required=False,
     )
     return parser.parse_args()
 
@@ -179,8 +193,8 @@ def main() -> None:
                 'from typing import Any',
                 NAN,  # empty line between imports
             ],
-            definitions=[inspect.getsource(UniconfigRest)]
-        )
+            definitions=[inspect.getsource(UniconfigRest)],
+        ),
     )
 
 
