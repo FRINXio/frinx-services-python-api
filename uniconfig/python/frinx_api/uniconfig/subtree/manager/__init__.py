@@ -6,20 +6,48 @@ from enum import Enum
 
 
 class Datastore(Enum):
+    """
+    Source datastore.
+    * CONFIGURATION - Configuration datastore.
+    * OPERATIONAL - Operational datastore.
+
+    """
+
     CONFIGURATION = 'CONFIGURATION'
     OPERATIONAL = 'OPERATIONAL'
 
 
 class Operation(Enum):
+    """
+    Type of operation: merge, replace.
+    * merge - Merge operation.
+    * replace - Replace operation.
+
+    """
+
     merge = 'merge'
     replace = 'replace'
 
 
 class SourceDatastore(Enum):
+    """
+    Source data-store type.
+    * CONFIGURATION - Configuration datastore.
+    * OPERATIONAL - Operational datastore.
+
+    """
+
     CONFIGURATION = 'CONFIGURATION'
     OPERATIONAL = 'OPERATIONAL'
 
 
 class TargetDatastore(Enum):
+    """
+    Target data-store type.
+    * CONFIGURATION - Configuration datastore.
+    * OPERATIONAL - Operational datastore.
+
+    """
+
     CONFIGURATION = 'CONFIGURATION'
     OPERATIONAL = 'OPERATIONAL'

@@ -6,12 +6,38 @@ from enum import Enum
 
 
 class AdminState(Enum):
+    """
+
+    * locked - When a device is administratively locked, it is not possible
+    to modify its configuration, and no changes are ever pushed
+    to the device
+    * unlocked - Device is assumed to be operational. All changes are attempted
+    to be sent southbound. This is the default when a new device is created.
+    * southbound_locked - It is possible to configure the device, but no changes are sent
+    to the device. Useful admin mode when pre provisioning devices.
+
+    """
+
     locked = 'locked'
     unlocked = 'unlocked'
     southbound_locked = 'southbound_locked'
 
 
 class ConnectionType(Enum):
+    """
+    Type of the mountpoint that is awaited:
+    a. cli - CLI mountpoint,
+    b. netconf - NETCONF mountpoint,
+    c. uniconfig-preferred-connection - Unified mounpoint (type of the southbound protocol
+       is read from database).
+    d. gnmi - gNMI mountpoint,
+    e. snmp - snmp mountpoin,
+    f. netconf-dryrun-connection - DRYRUN mountpoint
+    g. cli-dryrun-connection - DRYRUN mountpoint
+    f. gnmi-dryrun-connection - DRYRUN mountpoint
+
+    """
+
     cli = 'cli'
     netconf = 'netconf'
     uniconfig_preferred_connection = 'uniconfig-preferred-connection'
@@ -23,6 +49,16 @@ class ConnectionType(Enum):
 
 
 class MountType(Enum):
+    """
+    Type of the nodes that have been installed:
+    a. cli - nodes that are installed using CLI protocol,
+    b. netconf - nodes that are installed using NETCONF protocol,
+    c. gnmi - nodes that are installed using GNMI protocol,
+    d. uniconfig-preferred-connection - nodes that are installed in the UniConfig layer
+       (output may contain nodes mounted on CLI, NETCONF or GNMI protocol).
+
+    """
+
     cli = 'cli'
     netconf = 'netconf'
     uniconfig_preferred_connection = 'uniconfig-preferred-connection'

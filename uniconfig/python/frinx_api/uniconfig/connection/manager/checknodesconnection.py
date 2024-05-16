@@ -18,10 +18,11 @@ class Input(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    check_timestamp: Optional[bool] = Field(None, alias='check-timestamp')
+    connection_timeout: Optional[int] = Field(
+        None, alias='connection-timeout', ge=0, le=65535
+    )
     """
-    Perform timestamp comparison(last known to Uniconfig vs current timestamp on device)
-    before loading all configuration from a device.
+    Timeout for each health-check session to be established individually. Default 5 seconds.
     """
     target_nodes: Optional[TargetNodes] = Field(
         None,

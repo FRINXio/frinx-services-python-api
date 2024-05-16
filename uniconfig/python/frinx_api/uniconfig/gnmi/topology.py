@@ -6,5 +6,7 @@ from enum import Enum
 
 
 class ConnectionTypeEnumeration(Enum):
+    """ """
+
     PLAINTEXT = 'PLAINTEXT'
     INSECURE = 'INSECURE'

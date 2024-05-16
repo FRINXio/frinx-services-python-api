@@ -6,6 +6,11 @@ from enum import Enum
 
 
 class ModeEnum(Enum):
+    """
+    Subscription mode for gnmi streaming
+
+    """
+
     SAMPLE = 'SAMPLE'
     ON_CHANGE = 'ON_CHANGE'
     TARGET_DEFINED = 'TARGET_DEFINED'

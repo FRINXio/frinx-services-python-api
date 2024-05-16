@@ -4,19 +4,7 @@ from __future__ import annotations
 
 from typing import Optional
 
-from pydantic import BaseModel
-from pydantic import ConfigDict
-from pydantic import Field
-from pydantic import RootModel
-
-
-class TcpPortItem(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    end_port: Optional[int] = Field(None, alias='end-port', ge=0, le=65535)
-    port: Optional[int] = Field(None, ge=0, le=65535)
-    start_port: Optional[int] = Field(None, alias='start-port', ge=0, le=65535)
+from pydantic import BaseModel, ConfigDict, Field, RootModel
 
 
 class Address(BaseModel):
@@ -43,7 +31,7 @@ class Address(BaseModel):
     """
 
 
-class UdpPortItem(BaseModel):
+class TcpPortItem(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -52,20 +40,13 @@ class UdpPortItem(BaseModel):
     start_port: Optional[int] = Field(None, alias='start-port', ge=0, le=65535)
 
 
-class Input(BaseModel):
+class UdpPortItem(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    verify_host_reachability: Optional[bool] = Field(
-        None, alias='verify-host-reachability'
-    )
-    """
-    Check whether the host is reachable or not using ICMP protocol
-    """
-    tcp_port: Optional[list[TcpPortItem]] = Field(None, alias='tcp-port')
-    address: Optional[list[Address]] = None
-    udp_port: Optional[list[UdpPortItem]] = Field(None, alias='udp-port')
-
+    end_port: Optional[int] = Field(None, alias='end-port', ge=0, le=65535)
+    port: Optional[int] = Field(None, ge=0, le=65535)
+    start_port: Optional[int] = Field(None, alias='start-port', ge=0, le=65535)
 
 class AvailableUdpPort(RootModel[int]):
     model_config = ConfigDict(
@@ -94,42 +75,52 @@ class UnavailableUdpPort(RootModel[int]):
     )
     root: int = Field(..., ge=0, le=65535)
 
+class Input(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    verify_host_reachability: Optional[bool] = Field(
+        None, alias='verify-host-reachability'
+    )
+    """
+    Check whether the host is reachable or not using ICMP protocol
+    """
+    address: Optional[list[Address]] = None
+    tcp_port: Optional[list[TcpPortItem]] = Field(None, alias='tcp-port')
+    udp_port: Optional[list[UdpPortItem]] = Field(None, alias='udp-port')
+
 
 class DeviceItem(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    is_host_reachable: Optional[bool] = Field(None, alias='is-host-reachable')
-    """
-    If the host is reachable or not using ICMP protocol
-    """
-    available_udp_ports: Optional[list[AvailableUdpPort]] = Field(
-        None, alias='available-udp-ports'
-    )
-    """
-    All the available UDP ports
-    """
     host: Optional[str] = None
     """
     Host address either in IP (IPv4 or IPv6) format or in domain-name format
     """
     unavailable_tcp_ports: Optional[list[UnavailableTcpPort]] = Field(
-        None, alias='unavailable-tcp-ports'
-    )
+        None, alias='unavailable-tcp-ports')
     """
     TCP ports that are unreachable
     """
+    is_host_reachable: Optional[bool] = Field(None, alias='is-host-reachable')
+    """
+    If the host is reachable or not using ICMP protocol
+    """
     available_tcp_ports: Optional[list[AvailableTcpPort]] = Field(
-        None, alias='available-tcp-ports'
-    )
+        None, alias='available-tcp-ports')
     """
     All the available TCP ports
     """
     unavailable_udp_ports: Optional[list[UnavailableUdpPort]] = Field(
-        None, alias='unavailable-udp-ports'
-    )
+        None, alias='unavailable-udp-ports')
     """
     UDP ports that are unreachable
+    """
+    available_udp_ports: Optional[list[AvailableUdpPort]] = Field(
+        None, alias='available-udp-ports')
+    """
+    All the available UDP ports
     """
 
 
