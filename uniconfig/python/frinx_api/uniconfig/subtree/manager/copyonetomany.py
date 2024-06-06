@@ -4,12 +4,9 @@ from __future__ import annotations
 
 from typing import Optional
 
-from pydantic import BaseModel
-from pydantic import ConfigDict
-from pydantic import Field
+from pydantic import BaseModel, ConfigDict, Field
 
-from . import Datastore
-from . import Operation
+from . import Datastore, Operation
 
 
 class Input(BaseModel):
@@ -18,11 +15,11 @@ class Input(BaseModel):
     )
     source_datastore: Optional[Datastore] = Field(None, alias='source-datastore')
     target_datastore: Optional[Datastore] = Field(None, alias='target-datastore')
+    operation: Optional[Operation] = None
     target_paths: Optional[list[str]] = Field(None, alias='target-paths')
     """
     Target paths under which data from source paths is put/merged.
     """
-    operation: Optional[Operation] = None
     source_path: Optional[str] = Field(None, alias='source-path')
     """
     Source path to data which is put/merged under target nodes.

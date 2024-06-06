@@ -6,6 +6,14 @@ from enum import Enum
 
 
 class DataTreeOperation(Enum):
+    """
+    The datastore operation requested for the associated 'edit' entry.
+    * merge - The supplied value is merged with the target data node.
+    * replace - The supplied value is used to replace the target data node.
+    * remove - Delete the target node if it currently exists.
+
+    """
+
     merge = 'merge'
     replace = 'replace'
     remove = 'remove'

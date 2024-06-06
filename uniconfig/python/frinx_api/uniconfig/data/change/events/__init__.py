@@ -6,6 +6,17 @@ from enum import Enum
 
 
 class DataChangeScope(Enum):
+    """
+    Scope of detected data-tree change events under specified path.
+    * BASE - Represents only a direct change of the node, such as replacement of a node,
+    addition or deletion.
+    * ONE - Represent a change (addition, replacement, or deletion) of the node or one
+    of its direct children.
+    * SUBTREE - Represents a change of the node or any of or any of its child nodes, direct and nested.
+    This scope is superset of ONE and BASE.
+
+    """
+
     BASE = 'BASE'
     ONE = 'ONE'
     SUBTREE = 'SUBTREE'

@@ -2,36 +2,11 @@
 
 from __future__ import annotations
 
-from typing import Optional
+from typing import Any, Optional
 
-from pydantic import BaseModel
-from pydantic import ConfigDict
-from pydantic import Field
+from pydantic import BaseModel, ConfigDict, Field
 
-from . import SourceDatastore
-from . import TargetDatastore
-
-
-class DeletedDatum(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    data: Optional[str] = None
-    path: Optional[str] = None
-    """
-    Instance-identifier of deleted data node.
-    """
-
-
-class CreatedDatum(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    data: Optional[str] = None
-    path: Optional[str] = None
-    """
-    Instance-identifier of created data node.
-    """
+from . import SourceDatastore, TargetDatastore
 
 
 class UpdatedDatum(BaseModel):
@@ -46,14 +21,40 @@ class UpdatedDatum(BaseModel):
     """
     Instance-identifier of updated data node.
     """
-    data_intended: Optional[str] = Field(None, alias='data-intended')
-    data_actual: Optional[str] = Field(None, alias='data-actual')
+    data_intended: Optional[dict[str, Any]] = Field(None, alias='data-intended')
+    data_actual: Optional[dict[str, Any]] = Field(None, alias='data-actual')
+
+
+class DeletedDatum(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    data: Optional[dict[str, Any]] = None
+    path: Optional[str] = None
+    """
+    Instance-identifier of deleted data node.
+    """
+
+
+class CreatedDatum(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    data: Optional[dict[str, Any]] = None
+    path: Optional[str] = None
+    """
+    Instance-identifier of created data node.
+    """
 
 
 class Output(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
+    updated_data: Optional[list[UpdatedDatum]] = Field(None, alias='updated-data')
+    """
+    Updated intended configuration against actual.
+    """
     deleted_data: Optional[list[DeletedDatum]] = Field(None, alias='deleted-data')
     """
     Removed intended configuration against actual.
@@ -61,10 +62,6 @@ class Output(BaseModel):
     created_data: Optional[list[CreatedDatum]] = Field(None, alias='created-data')
     """
     Created intended configuration against actual.
-    """
-    updated_data: Optional[list[UpdatedDatum]] = Field(None, alias='updated-data')
-    """
-    Updated intended configuration against actual.
     """
 
 

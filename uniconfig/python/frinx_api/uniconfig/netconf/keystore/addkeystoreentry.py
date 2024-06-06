@@ -4,15 +4,14 @@ from __future__ import annotations
 
 from typing import Optional
 
-from pydantic import BaseModel
-from pydantic import ConfigDict
-from pydantic import Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class KeyCredentialItem(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
+    key_id: Optional[str] = Field(None, alias='key-id')
     passphrase: Optional[str] = None
     """
     If the provided key is encrypted by a passphrase this needs to be included. Leave empty
@@ -20,7 +19,6 @@ class KeyCredentialItem(BaseModel):
     DO NOT write this directly into the datastore, use the provided rpc's as these will
     encrypt the passhprase before the entry is written into the datastore.
     """
-    key_id: Optional[str] = Field(None, alias='key-id')
     private_key: Optional[str] = Field(None, alias='private-key')
     """
     Base64 encoded private key that should be used for authentication with a netconf device.

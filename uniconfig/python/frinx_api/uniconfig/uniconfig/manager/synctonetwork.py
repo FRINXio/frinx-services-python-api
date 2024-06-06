@@ -4,9 +4,7 @@ from __future__ import annotations
 
 from typing import Optional
 
-from pydantic import BaseModel
-from pydantic import ConfigDict
-from pydantic import Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class TargetNodes(BaseModel):
@@ -25,14 +23,6 @@ class Input(BaseModel):
     Perform timestamp comparison(last known to Uniconfig vs current timestamp on device)
     before loading all configuration from a device.
     """
-    skip_unreachable_nodes: Optional[bool] = Field(None, alias='skip-unreachable-nodes')
-    """
-    Option to skip nodes, that are unreachable at the time of commit. Other nodes will be committed
-    """
-    do_validate: Optional[bool] = Field(None, alias='do-validate')
-    """
-    Option to enable/disable validation at commit. Default value is true - validate
-    """
     do_confirmed_commit: Optional[bool] = Field(None, alias='do-confirmed-commit')
     """
     Option to enable/disable confirmed-commit at commit. Default value is true - confirmed-commit
@@ -50,3 +40,11 @@ class Input(BaseModel):
         alias='target-nodes',
         title='uniconfig.manager.targetuniconfignodesfields.TargetNodes',
     )
+    skip_unreachable_nodes: Optional[bool] = Field(None, alias='skip-unreachable-nodes')
+    """
+    Option to skip nodes, that are unreachable at the time of commit. Other nodes will be committed
+    """
+    do_validate: Optional[bool] = Field(None, alias='do-validate')
+    """
+    Option to enable/disable validation at commit. Default value is true - validate
+    """
