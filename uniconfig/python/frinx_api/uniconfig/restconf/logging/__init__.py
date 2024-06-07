@@ -6,6 +6,12 @@ from enum import Enum
 
 
 class HttpMethod(Enum):
+    """
+    HTTP requests (and associated HTTP responses) are not logged if request's HTTP method is set
+    to one of the methods in this list.
+
+    """
+
     GET = 'GET'
     HEAD = 'HEAD'
     POST = 'POST'

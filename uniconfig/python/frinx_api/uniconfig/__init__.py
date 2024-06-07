@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from enum import Enum
 from typing import Optional
 
 from pydantic import BaseModel
@@ -14,6 +15,7 @@ from .cli.unit.generic import executeandread
 from .cli.unit.generic import executeandreaduntil
 from .connection.manager import changeadminstate
 from .connection.manager import checkinstallednodes
+from .connection.manager import checknodesconnection
 from .connection.manager import connectnode
 from .connection.manager import disconnectnode
 from .connection.manager import dryrunmountnode
@@ -82,6 +84,12 @@ from .uniconfig.manager import synctonetwork
 from .uniconfig.manager import updateproperties
 from .uniconfig.manager import validate
 from .uniconfig.query import queryconfig
+
+
+class Content(Enum):
+    nonconfig = 'nonconfig'
+    config = 'config'
+    all = 'all'
 
 
 class OperationsReadJournalPostRequest(BaseModel):
@@ -249,6 +257,13 @@ class OperationsDisconnectNodePostRequest(BaseModel):
         populate_by_name=True,
     )
     input: Optional[disconnectnode.Input] = None
+
+
+class OperationsCheckNodesConnectionPostRequest(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    input: Optional[checknodesconnection.Input] = None
 
 
 class OperationsChangeEncryptionStatusPostRequest(BaseModel):

@@ -6,5 +6,11 @@ from enum import Enum
 
 
 class GnmiMessageType(Enum):
+    """
+    List of gNMI message types, based on which the broker will log the message content.
+    Names of the gNMI message types are not case-sensitive.
+
+    """
+
     GET = 'GET'
     SET = 'SET'

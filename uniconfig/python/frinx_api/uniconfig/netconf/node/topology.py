@@ -6,6 +6,13 @@ from enum import Enum
 
 
 class EditConfigTestOption(Enum):
+    """
+    Specification of the test-option parameter in the netconf edit-config message.
+    Possible values are 'set', 'test-then-set' or 'test-only'. If the edit-config-test-option is not
+    explicitly specified in the mount request, then the default value will be used ('test-then-set').
+
+    """
+
     set = 'set'
     test_only = 'test-only'
     test_then_set = 'test-then-set'

@@ -27,6 +27,17 @@ class Input(BaseModel):
     )
 
 
+class DeletedDatum(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    data: Optional[str] = None
+    path: Optional[str] = None
+    """
+    Instance-identifier of deleted data node.
+    """
+
+
 class CreatedDatum(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
@@ -50,17 +61,6 @@ class UpdatedDatum(BaseModel):
     data_actual: Optional[str] = Field(None, alias='data-actual')
 
 
-class DeletedDatum(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    data: Optional[str] = None
-    path: Optional[str] = None
-    """
-    Instance-identifier of deleted data node.
-    """
-
-
 class ReorderedList(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
@@ -69,14 +69,18 @@ class ReorderedList(BaseModel):
     """
     Instance-identifier of reordered list.
     """
-    intended_list_keys: Optional[str] = Field(None, alias='intended-list-keys')
     actual_list_keys: Optional[str] = Field(None, alias='actual-list-keys')
+    intended_list_keys: Optional[str] = Field(None, alias='intended-list-keys')
 
 
 class NodeResultItem(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
+    deleted_data: Optional[list[DeletedDatum]] = Field(None, alias='deleted-data')
+    """
+    Removed intended configuration against actual.
+    """
     node_id: Optional[str] = Field(None, alias='node-id')
     created_data: Optional[list[CreatedDatum]] = Field(None, alias='created-data')
     """
@@ -86,10 +90,6 @@ class NodeResultItem(BaseModel):
     updated_data: Optional[list[UpdatedDatum]] = Field(None, alias='updated-data')
     """
     Updated intended configuration against actual.
-    """
-    deleted_data: Optional[list[DeletedDatum]] = Field(None, alias='deleted-data')
-    """
-    Removed intended configuration against actual.
     """
     reordered_lists: Optional[list[ReorderedList]] = Field(
         None, alias='reordered-lists'

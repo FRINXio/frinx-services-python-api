@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 from typing import Optional
+from typing import Union
 
 from pydantic import BaseModel
 from pydantic import ConfigDict
@@ -13,7 +14,69 @@ from ... import subscriptions
 from ...cli import topology
 from ...gnmi import topology as topology_2
 from ...netconf.node import topology as topology_1
+from ...snmp import topology as topology_3
 from ...uniconfig import config
+
+
+class Credentials(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    cli_topology_username: Optional[str] = Field(None, alias='cli-topology:username')
+    cli_topology_password: Optional[str] = Field(None, alias='cli-topology:password')
+
+
+class KeepaliveStrategy(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    cli_topology_keepalive_delay: Optional[int] = Field(
+        None, alias='cli-topology:keepalive-delay', ge=0, le=65535
+    )
+    cli_topology_keepalive_timeout: Optional[int] = Field(
+        None, alias='cli-topology:keepalive-timeout', ge=0, le=65535
+    )
+    cli_topology_keepalive_initial_delay: Optional[int] = Field(
+        None, alias='cli-topology:keepalive-initial-delay', ge=0, le=65535
+    )
+
+
+class KeepaliveStrategyModel(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    cli_topology_command_timeout: Optional[int] = Field(
+        None, alias='cli-topology:command-timeout', ge=0, le=65535
+    )
+    """
+    Maximal time (in seconds) for command execution, if a command cannot be executed on
+    a device in this time, the execution is considered a failure
+    """
+    cli_topology_connection_establish_timeout: Optional[int] = Field(
+        None, alias='cli-topology:connection-establish-timeout', ge=0, le=65535
+    )
+    """
+    Maximal time (in seconds) for connection establishment, if a connection attempt does
+    not succeed in this time, the attempt is considered a failure
+    """
+    cli_topology_connection_lazy_timeout: Optional[int] = Field(
+        None, alias='cli-topology:connection-lazy-timeout', ge=0, le=65535
+    )
+    """
+    Maximal time (in seconds) for connection to keep alive, if no activity was detected
+    in the session and the timeout has been reached, connection will be stopped
+    """
+
+
+class PrivilegedModeCredentials(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    cli_topology_secret: Optional[str] = Field(None, alias='cli-topology:secret')
+    """
+    Privileged EXEC mode password for Cisco IOS devices. If not set credentials
+    password will be used
+    """
 
 
 class CliTopologyDefaultErrorPatterns(BaseModel):
@@ -25,51 +88,11 @@ class CliTopologyDefaultErrorPatterns(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    error_pattern: Optional[list[str]] = Field(None, alias='error-pattern')
+    cli_topology_error_pattern: Optional[list[str]] = Field(
+        None, alias='cli-topology:error-pattern'
+    )
     """
     Device specific error patterns.
-    """
-
-
-class Blacklist(BaseModel):
-    """
-    Reads which are not invoked for sync-from-network and initial config read.
-    """
-
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    path: Optional[list[str]] = None
-    """
-    Only root schema nodes are supported. The path needs to be in URI format from RFC 8040.
-    e.g. ietf-interfaces:interfaces where ietf-interfaces is YANG module name and interfaces is root
-    container.
-    """
-    extension: Optional[list[str]] = None
-    """
-    List of extensions that mark top level containers/lists.
-    Example value: ["common:hidden true"]
-    """
-
-
-class Whitelist(BaseModel):
-    """
-    Reads which are invoked for sync-from-network and initial config read.
-    """
-
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    path: Optional[list[str]] = None
-    """
-    Only root schema nodes are supported. The path needs to be in URI format from RFC 8040.
-    e.g. ietf-interfaces:interfaces where ietf-interfaces is YANG module name and interfaces is root
-    container.
-    """
-    extension: Optional[list[str]] = None
-    """
-    List of extensions that mark top level containers/lists.
-    Example value: ["common:hidden true"]
     """
 
 
@@ -82,80 +105,89 @@ class CliTopologyDefaultCommitErrorPatterns(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    commit_error_pattern: Optional[list[str]] = Field(
-        None, alias='commit-error-pattern'
+    cli_topology_commit_error_pattern: Optional[list[str]] = Field(
+        None, alias='cli-topology:commit-error-pattern'
     )
     """
     Device specific commit error patterns.
     """
 
 
-class NetconfNodeTopologyYangModuleCapabilities(BaseModel):
+class UniconfigConfigBlacklist(BaseModel):
+    """
+    Reads which are not invoked for sync-from-network and initial config read.
+    """
+
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    capability: Optional[list[str]] = None
+    uniconfig_config_extension: Optional[list[str]] = Field(
+        None, alias='uniconfig-config:extension'
+    )
     """
-    Set a list of capabilities to override capabilities provided in device's hello message.
-    Can be used for devices that do not report any yang modules in their hello message
+    List of extensions that mark top level containers/lists.
+    Example value: ["common:hidden true"]
     """
-    override: Optional[bool] = None
+    uniconfig_config_path: Optional[list[str]] = Field(
+        None, alias='uniconfig-config:path'
+    )
     """
-    Whether to override or merge this list of capabilities with capabilities from device
+    Only root schema nodes are supported. The path needs to be in URI format from RFC 8040.
+    e.g. ietf-interfaces:interfaces where ietf-interfaces is YANG module name and interfaces is root
+    container.
     """
 
 
-class Flags(BaseModel):
+class Nodes(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    streaming_session: Optional[bool] = Field(None, alias='streaming-session')
-    """
-    NETCONF session is created and optimized for receiving of NETCONF notifications
-    from remote server.
-    """
-    enabled_notifications: Optional[bool] = Field(None, alias='enabled-notifications')
-    """
-    If it is set to 'true' and NETCONF device supports notifications, NETCONF mountpoint will
-    expose NETCONF notification and subscription services.
-    """
-    reconnect_on_changed_schema: Optional[bool] = Field(
-        None, alias='reconnect-on-changed-schema'
+    uniconfig_config_blacklist: Optional[UniconfigConfigBlacklist] = Field(
+        None,
+        alias='uniconfig-config:blacklist',
+        title='uniconfig.config.uniconfigconfignodefields.nodes.bl.Blacklist',
     )
     """
-    If it is set to 'true', NETCONF notifications are supported by device, and NETCONF
-    notifications are enabled ('enabled-notifications' flag), the connector would auto
-    disconnect/reconnect when schemas are changed in the remote device. The connector subscribes
-    (right after connect) to base netconf notifications and listens
-    for netconf-capability-change notification
-    """
-    enabled_strict_parsing: Optional[bool] = Field(None, alias='enabled-strict-parsing')
-    """
-    If this parameter is set to 'false', then parser should ignore unknown elements and not throw
-    exception during parsing.
+    Reads which are not invoked for sync-from-network and initial config read.
     """
 
 
-class NetconfNodeTopologyYangLibrary(BaseModel):
+class UniconfigConfigWhitelist(BaseModel):
+    """
+    Reads which are invoked for sync-from-network and initial config read.
+    """
+
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    password: Optional[str] = None
-    yang_library_url: Optional[str] = Field(None, alias='yang-library-url')
+    uniconfig_config_extension: Optional[list[str]] = Field(
+        None, alias='uniconfig-config:extension'
+    )
     """
-    Yang library to be plugged as additional source provider into the shared schema repository
+    List of extensions that mark top level containers/lists.
+    Example value: ["common:hidden true"]
     """
-    username: Optional[str] = None
+    uniconfig_config_path: Optional[list[str]] = Field(
+        None, alias='uniconfig-config:path'
+    )
+    """
+    Only root schema nodes are supported. The path needs to be in URI format from RFC 8040.
+    e.g. ietf-interfaces:interfaces where ietf-interfaces is YANG module name and interfaces is root
+    container.
+    """
 
 
-class NetconfNodeTopologyOdlHelloMessageCapabilities(BaseModel):
+class NodesModel(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    capability: Optional[list[str]] = None
+    uniconfig_config_whitelist: Optional[UniconfigConfigWhitelist] = Field(
+        None,
+        alias='uniconfig-config:whitelist',
+        title='uniconfig.config.uniconfigconfignodefields.nodes.wl.Whitelist',
+    )
     """
-    Certain devices are non-accepting of ODL's hello message.  This allows specification of
-    a custom ODL hello message based on a list of supported capabilities.
+    Reads which are invoked for sync-from-network and initial config read.
     """
 
 
@@ -163,40 +195,150 @@ class NetconfNodeTopologyNonModuleCapabilities(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    capability: Optional[list[str]] = None
+    netconf_node_topology_override: Optional[bool] = Field(
+        None, alias='netconf-node-topology:override'
+    )
+    """
+    Whether to override or merge this list of non-module based capabilities with non-module
+    based capabilities from device
+    """
+    netconf_node_topology_capability: Optional[list[str]] = Field(
+        None, alias='netconf-node-topology:capability'
+    )
     """
     Set a list of non-module based capabilities to override or merge non-module capabilities
     provided in device's hello message. Can be used for devices that do not report or
     incorrectly report non-module based capabilities in their hello message
     """
-    override: Optional[bool] = None
-    """
-    Whether to override or merge this list of non-module based capabilities with non-module
-    based capabilities from device
-    """
 
 
-class KeyBased(BaseModel):
+class NetconfNodeTopologyYangModuleCapabilities(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    key_id: Optional[str] = Field(None, alias='key-id')
-    username: Optional[str] = None
+    netconf_node_topology_override: Optional[bool] = Field(
+        None, alias='netconf-node-topology:override'
+    )
+    """
+    Whether to override or merge this list of capabilities with capabilities from device
+    """
+    netconf_node_topology_capability: Optional[list[str]] = Field(
+        None, alias='netconf-node-topology:capability'
+    )
+    """
+    Set a list of capabilities to override capabilities provided in device's hello message.
+    Can be used for devices that do not report any yang modules in their hello message
+    """
 
 
-class SessionTimers(BaseModel):
+class NetconfNodeTopologyKeyBased(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    keepalive_delay: Optional[int] = Field(
-        None, alias='keepalive-delay', ge=0, le=4294967295
+    netconf_node_topology_key_id: Optional[str] = Field(
+        None, alias='netconf-node-topology:key-id'
+    )
+    netconf_node_topology_username: Optional[str] = Field(
+        None, alias='netconf-node-topology:username'
+    )
+
+
+class CredentialsModel(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    netconf_node_topology_key_based: Optional[NetconfNodeTopologyKeyBased] = Field(
+        None,
+        alias='netconf-node-topology:key-based',
+        title='netconf.node.topology.netconfnodecredentials.credentials.keyauth.KeyBased',
+    )
+
+
+class CredentialsModel1(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    netconf_node_topology_username: Optional[str] = Field(
+        None, alias='netconf-node-topology:username'
+    )
+    netconf_node_topology_password: Optional[str] = Field(
+        None, alias='netconf-node-topology:password'
+    )
+
+
+class NetconfNodeTopologyLoginPassword(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    netconf_node_topology_password: Optional[str] = Field(
+        None, alias='netconf-node-topology:password'
+    )
+    netconf_node_topology_username: Optional[str] = Field(
+        None, alias='netconf-node-topology:username'
+    )
+
+
+class CredentialsModel2(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    netconf_node_topology_login_password: Optional[NetconfNodeTopologyLoginPassword] = (
+        Field(
+            None,
+            alias='netconf-node-topology:login-password',
+            title='netconf.node.topology.netconfnodecredentials.credentials.loginpw.LoginPassword',
+        )
+    )
+
+
+class NetconfNodeTopologyLoginPasswordUnencrypted(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    netconf_node_topology_password: Optional[str] = Field(
+        None, alias='netconf-node-topology:password'
+    )
+    netconf_node_topology_username: Optional[str] = Field(
+        None, alias='netconf-node-topology:username'
+    )
+
+
+class CredentialsModel3(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    netconf_node_topology_login_password_unencrypted: Optional[
+        NetconfNodeTopologyLoginPasswordUnencrypted
+    ] = Field(
+        None,
+        alias='netconf-node-topology:login-password-unencrypted',
+        title='netconf.node.topology.netconfnodecredentials.credentials.loginpwunencrypted.LoginPasswordUnencrypted',
+    )
+
+
+class NetconfNodeTopologySessionTimers(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    netconf_node_topology_keepalive_delay: Optional[int] = Field(
+        None, alias='netconf-node-topology:keepalive-delay', ge=0, le=4294967295
     )
     """
     Netconf connector sends keepalive RPCs while the session is idle, this delay specifies the delay between keepalive RPC in seconds
     If a value <1 is provided, no keepalives will be sent
     """
-    max_reconnection_attempts: Optional[int] = Field(
-        None, alias='max-reconnection-attempts', ge=0, le=4294967295
+    netconf_node_topology_between_attempts_timeout: Optional[int] = Field(
+        None, alias='netconf-node-topology:between-attempts-timeout', ge=0, le=65535
+    )
+    """
+    Initial timeout in seconds to wait between connection attempts.
+    Will be multiplied by reconenction-attempts-multiplier with every additional attempt
+    """
+    netconf_node_topology_max_reconnection_attempts: Optional[int] = Field(
+        None,
+        alias='netconf-node-topology:max-reconnection-attempts',
+        ge=0,
+        le=4294967295,
     )
     """
     Maximum number of reconnect retries. Non positive value or null is interpreted as infinity.
@@ -204,9 +346,24 @@ class SessionTimers(BaseModel):
     and for any subsequent disconnect-connect cycles, max-reconnect-attempts will be used.
     This enables users using different amount of reconnects for initial attempts vs subsequent reconnects.
     """
-    reconnenction_attempts_multiplier: Optional[float] = Field(
+    netconf_node_topology_initial_connection_timeout: Optional[int] = Field(
         None,
-        alias='reconnenction-attempts-multiplier',
+        alias='netconf-node-topology:initial-connection-timeout',
+        ge=0,
+        le=4294967295,
+    )
+    """
+    Specifies timeout in seconds after which connection must be established.
+    """
+    netconf_node_topology_max_connection_attempts: Optional[int] = Field(
+        None, alias='netconf-node-topology:max-connection-attempts', ge=0, le=4294967295
+    )
+    """
+    Maximum number of connection retries. Non positive value or null is interpreted as infinity.
+    """
+    netconf_node_topology_reconnenction_attempts_multiplier: Optional[float] = Field(
+        None,
+        alias='netconf-node-topology:reconnenction-attempts-multiplier',
         ge=-9.223372036854776e17,
         le=9.223372036854776e17,
     )
@@ -215,60 +372,126 @@ class SessionTimers(BaseModel):
     multiplied by this factor. By default, it is set to 1.5. This means that the next
     delay between attempts will be 3000 ms, then it will be 4500 ms, etc.
     """
-    confirm_commit_timeout: Optional[int] = Field(
-        None, alias='confirm-commit-timeout', ge=0, le=4294967295
+    netconf_node_topology_confirm_commit_timeout: Optional[int] = Field(
+        None, alias='netconf-node-topology:confirm-commit-timeout', ge=0, le=4294967295
     )
     """
     Timeout period in seconds to issued commit after confirmed-commit
     """
-    request_transaction_timeout: Optional[int] = Field(
-        None, alias='request-transaction-timeout', ge=0, le=4294967295
+    netconf_node_topology_request_transaction_timeout: Optional[int] = Field(
+        None,
+        alias='netconf-node-topology:request-transaction-timeout',
+        ge=0,
+        le=4294967295,
     )
     """
     Timeout in seconds for blocking operations within transactions.
     """
-    max_connection_attempts: Optional[int] = Field(
-        None, alias='max-connection-attempts', ge=0, le=4294967295
-    )
-    """
-    Maximum number of connection retries. Non positive value or null is interpreted as infinity.
-    """
-    initial_connection_timeout: Optional[int] = Field(
-        None, alias='initial-connection-timeout', ge=0, le=4294967295
-    )
-    """
-    Specifies timeout in seconds after which connection must be established.
-    """
-    between_attempts_timeout: Optional[int] = Field(
-        None, alias='between-attempts-timeout', ge=0, le=65535
-    )
-    """
-    Initial timeout in seconds to wait between connection attempts.
-    Will be multiplied by reconenction-attempts-multiplier with every additional attempt
-    """
 
 
-class LoginPasswordUnencrypted(BaseModel):
+class NetconfNodeTopologyFlags(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    password: Optional[str] = None
-    username: Optional[str] = None
+    netconf_node_topology_streaming_session: Optional[bool] = Field(
+        None, alias='netconf-node-topology:streaming-session'
+    )
+    """
+    NETCONF session is created and optimized for receiving of NETCONF notifications
+    from remote server.
+    """
+    netconf_node_topology_enabled_strict_parsing: Optional[bool] = Field(
+        None, alias='netconf-node-topology:enabled-strict-parsing'
+    )
+    """
+    If this parameter is set to 'false', then parser should ignore unknown elements and not throw
+    exception during parsing.
+    """
+    netconf_node_topology_reconnect_on_changed_schema: Optional[bool] = Field(
+        None, alias='netconf-node-topology:reconnect-on-changed-schema'
+    )
+    """
+    If it is set to 'true', NETCONF notifications are supported by device, and NETCONF
+    notifications are enabled ('enabled-notifications' flag), the connector would auto
+    disconnect/reconnect when schemas are changed in the remote device. The connector subscribes
+    (right after connect) to base netconf notifications and listens
+    for netconf-capability-change notification
+    """
+    netconf_node_topology_enabled_notifications: Optional[bool] = Field(
+        None, alias='netconf-node-topology:enabled-notifications'
+    )
+    """
+    If it is set to 'true' and NETCONF device supports notifications, NETCONF mountpoint will
+    expose NETCONF notification and subscription services.
+    """
 
 
-class LoginPassword(BaseModel):
+class NetconfNodeTopologyYangLibrary(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    password: Optional[str] = None
-    username: Optional[str] = None
+    netconf_node_topology_password: Optional[str] = Field(
+        None, alias='netconf-node-topology:password'
+    )
+    netconf_node_topology_yang_library_url: Optional[str] = Field(
+        None, alias='netconf-node-topology:yang-library-url'
+    )
+    """
+    Yang library to be plugged as additional source provider into the shared schema repository
+    """
+    netconf_node_topology_username: Optional[str] = Field(
+        None, alias='netconf-node-topology:username'
+    )
+
+
+class NetconfNodeTopologyOdlHelloMessageCapabilities(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    netconf_node_topology_capability: Optional[list[str]] = Field(
+        None, alias='netconf-node-topology:capability'
+    )
+    """
+    Certain devices are non-accepting of ODL's hello message.  This allows specification of
+    a custom ODL hello message based on a list of supported capabilities.
+    """
+
+
+class NodesModel1(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    uniconfig_config_blacklist: Optional[UniconfigConfigBlacklist] = Field(
+        None,
+        alias='uniconfig-config:blacklist',
+        title='uniconfig.config.uniconfigconfignodefields.nodes.bl.Blacklist',
+    )
+    """
+    Reads which are not invoked for sync-from-network and initial config read.
+    """
+
+
+class NodesModel2(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    uniconfig_config_whitelist: Optional[UniconfigConfigWhitelist] = Field(
+        None,
+        alias='uniconfig-config:whitelist',
+        title='uniconfig.config.uniconfigconfignodefields.nodes.wl.Whitelist',
+    )
+    """
+    Reads which are invoked for sync-from-network and initial config read.
+    """
 
 
 class GnmiTopologyFlags(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    enabled_notifications: Optional[bool] = Field(None, alias='enabled-notifications')
+    gnmi_topology_enabled_notifications: Optional[bool] = Field(
+        None, alias='gnmi-topology:enabled-notifications'
+    )
     """
     If it is set to 'true' and GNMI device supports notifications, GNMI mountpoint will
     expose GNMI notification and subscription services.
@@ -279,8 +502,8 @@ class GnmiTopologyOtherParameters(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    dry_run_journal_size: Optional[int] = Field(
-        None, alias='dry-run-journal-size', ge=0, le=65535
+    gnmi_topology_dry_run_journal_size: Optional[int] = Field(
+        None, alias='gnmi-topology:dry-run-journal-size', ge=0, le=65535
     )
     """
     Size of the DRY RUN gnmi mountpoint journal. DRY RUN journal captures gnmi operations that
@@ -289,15 +512,27 @@ class GnmiTopologyOtherParameters(BaseModel):
     """
 
 
-class Credentials(BaseModel):
+class SecurityChoice(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    password: Optional[str] = None
+    gnmi_topology_keystore_id: Optional[str] = Field(
+        None, alias='gnmi-topology:keystore-id'
+    )
+    """
+    Identifier to keystore. Keystore is defined in gnmi-certificate-storage model.
+    """
+
+
+class GnmiTopologyCredentials(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    gnmi_topology_password: Optional[str] = Field(None, alias='gnmi-topology:password')
     """
     specify the target password as part of the user credentials.
     """
-    username: Optional[str] = None
+    gnmi_topology_username: Optional[str] = Field(None, alias='gnmi-topology:username')
     """
     specify the target username as part of the user credentials.
     """
@@ -307,14 +542,14 @@ class GnmiTopologyDependencyPath(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    before: Optional[str] = None
-    """
-    Specific path that should be handled before the 'after' leaf.
-    Exact matches as well as subtrees of this path will be ordered
-    """
-    after: Optional[str] = None
+    gnmi_topology_after: Optional[str] = Field(None, alias='gnmi-topology:after')
     """
     Specific path that should be handled after the 'before' leaf.
+    Exact matches as well as subtrees of this path will be ordered
+    """
+    gnmi_topology_before: Optional[str] = Field(None, alias='gnmi-topology:before')
+    """
+    Specific path that should be handled before the 'after' leaf.
     Exact matches as well as subtrees of this path will be ordered
     """
 
@@ -323,42 +558,35 @@ class GnmiTopologySessionTimers(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    request_timeout: Optional[int] = Field(
-        None, alias='request-timeout', ge=0, le=65535
-    )
-    """
-    Timeout for each gnmi request. Request times out if not completed in X seconds.
-    """
-    request_max_size: Optional[int] = Field(
-        None, alias='request-max-size', ge=0, le=33554432
+    gnmi_topology_request_max_size: Optional[int] = Field(
+        None, alias='gnmi-topology:request-max-size', ge=0, le=33554432
     )
     """
     The maximum size of a request in bytes. The maximum size of this leaf is
     32 mebibytes (33554432).
     """
-    internal_transaction_timeout: Optional[int] = Field(
-        None, alias='internal-transaction-timeout', ge=0, le=65535
+    gnmi_topology_internal_transaction_timeout: Optional[int] = Field(
+        None, alias='gnmi-topology:internal-transaction-timeout', ge=0, le=65535
     )
     """
     Timeout for internal data broker transactions (Not uniconfig transaction).
     Transaction times out if not completed in X seconds.
     """
+    gnmi_topology_request_timeout: Optional[int] = Field(
+        None, alias='gnmi-topology:request-timeout', ge=0, le=65535
+    )
+    """
+    Timeout for each gnmi request. Request times out if not completed in X seconds.
+    """
 
 
-class GnmiParameters(BaseModel):
+class GnmiTopologyGnmiParameters(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    use_model_name_prefix: Optional[bool] = Field(None, alias='use-model-name-prefix')
-    """
-    Some devices require a module prefix in first element name
-    of gNMI request path (e.g interfaces -> openconfig-interfaces:interfaces).
-    When flag use-model-name-prefix is set to true for device, YIID will be
-    transformed into gNMI path where elements have their module name.
-    E.g. element interfaces from module openconfig-interfaces will be
-    transformed as openconfig-interfaces:interfaces
-    """
-    path_target: Optional[str] = Field(None, alias='path-target')
+    gnmi_topology_path_target: Optional[str] = Field(
+        None, alias='gnmi-topology:path-target'
+    )
     """
     The path-target field is used to specify the context of
     a particular stream of data. The data stream can be intended
@@ -367,19 +595,68 @@ class GnmiParameters(BaseModel):
     the corresponding request and response messages.
     This field is optional for clients. REF:gNMI Specification Section 2.2.2.1
     """
+    gnmi_topology_use_model_name_prefix: Optional[bool] = Field(
+        None, alias='gnmi-topology:use-model-name-prefix'
+    )
+    """
+    Some devices require a module prefix in first element name
+    of gNMI request path (e.g interfaces -> openconfig-interfaces:interfaces).
+    When flag use-model-name-prefix is set to true for device, YIID will be
+    transformed into gNMI path where elements have their module name.
+    E.g. element interfaces from module openconfig-interfaces will be
+    transformed as openconfig-interfaces:interfaces
+    """
 
 
-class ForceCapabilityItem(BaseModel):
+class Force(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    name: Optional[str] = None
+    gnmi_force_capabilities_force_cached_capabilities: Optional[list[Optional[str]]] = (
+        Field(
+            None,
+            alias='gnmi-force-capabilities:force-cached-capabilities',
+            max_length=1,
+            min_length=1,
+        )
+    )
+    """
+    Use all YANG models from cache directory
+    """
+
+
+class GnmiForceCapabilitiesForceCapabilityItem(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    gnmi_force_capabilities_name: Optional[str] = Field(
+        None, alias='gnmi-force-capabilities:name'
+    )
     """
     Name of the yang model
     """
-    version: Optional[str] = None
+    gnmi_force_capabilities_version: Optional[str] = Field(
+        None, alias='gnmi-force-capabilities:version'
+    )
     """
     Version of the yang model
+    """
+
+
+class ForceModel(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    gnmi_force_capabilities_force_capability: Optional[
+        list[GnmiForceCapabilitiesForceCapabilityItem]
+    ] = Field(None, alias='gnmi-force-capabilities:force-capability')
+    """
+    List of capabilities that restrict the
+    use of the models. The client restricts the set of data
+    models to be used when interacting with the target.
+    The target must not utilize data tree elements that
+    are defined in schema modules outside the specified list
+    of capabilities.
     """
 
 
@@ -393,28 +670,65 @@ class GnmiTopologyExtensionsParameters(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    force_cached_capabilities: Optional[list[Optional[str]]] = Field(
-        None, alias='force-cached-capabilities', max_length=1, min_length=1
-    )
-    """
-    Use all YANG models from cache directory
-    """
-    gnmi_parameters: Optional[GnmiParameters] = Field(
+    gnmi_topology_gnmi_parameters: Optional[GnmiTopologyGnmiParameters] = Field(
         None,
-        alias='gnmi-parameters',
+        alias='gnmi-topology:gnmi-parameters',
         title='gnmi.topology.gnmiconnectionparameters.extensionsparameters.GnmiParameters',
     )
-    force_capability: Optional[list[ForceCapabilityItem]] = Field(
-        None, alias='force-capability'
+    force: Optional[Union[Force, ForceModel]] = None
+
+
+class NodesModel3(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    uniconfig_config_blacklist: Optional[UniconfigConfigBlacklist] = Field(
+        None,
+        alias='uniconfig-config:blacklist',
+        title='uniconfig.config.uniconfigconfignodefields.nodes.bl.Blacklist',
     )
     """
-    List of capabilities that restrict the
-    use of the models. The client restricts the set of data
-    models to be used when interacting with the target.
-    The target must not utilize data tree elements that
-    are defined in schema modules outside the specified list
-    of capabilities.
+    Reads which are not invoked for sync-from-network and initial config read.
     """
+
+
+class NodesModel4(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    uniconfig_config_whitelist: Optional[UniconfigConfigWhitelist] = Field(
+        None,
+        alias='uniconfig-config:whitelist',
+        title='uniconfig.config.uniconfigconfignodefields.nodes.wl.Whitelist',
+    )
+    """
+    Reads which are invoked for sync-from-network and initial config read.
+    """
+
+
+class SnmpTopologyNoAuthNoPriv(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    snmp_topology_community_string: Optional[str] = Field(
+        None, alias='snmp-topology:community-string'
+    )
+    """
+    Sets the community octet string. This is a convenience
+    method to set the security name for community based
+    SNMP (v1 and v2c).
+    """
+
+
+class SecurityModel(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    snmp_topology_no_auth_no_priv: Optional[SnmpTopologyNoAuthNoPriv] = Field(
+        None,
+        alias='snmp-topology:no-auth-no-priv',
+        title='snmp.topology.security.securitymodel.noauthnoprivcase.NoAuthNoPriv',
+    )
 
 
 class UniconfigConfigDeviceCrypto(BaseModel):
@@ -426,13 +740,15 @@ class UniconfigConfigDeviceCrypto(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    public_key_path: Optional[str] = Field(None, alias='public-key-path')
+    uniconfig_config_public_key_cipher_type: Optional[config.PublicKeyCipherType] = (
+        Field(None, alias='uniconfig-config:public-key-cipher-type')
+    )
+    uniconfig_config_public_key_path: Optional[str] = Field(
+        None, alias='uniconfig-config:public-key-path'
+    )
     """
     Path to leaf containing public key in Base64 binary format.
     """
-    public_key_cipher_type: Optional[config.PublicKeyCipherType] = Field(
-        None, alias='public-key-cipher-type'
-    )
 
 
 class Cli(BaseModel):
@@ -458,17 +774,16 @@ class Cli(BaseModel):
     """
     Replace paths that point to config that should be handled as a one replace request
     """
+    credentials: Optional[Credentials] = None
     cli_topology_resend_command_delay: Optional[int] = Field(
         None, alias='cli-topology:resend-command-delay', ge=0, le=65535
     )
     """
     Delay between re-send commands.
     """
-    secret: Optional[str] = None
-    """
-    Privileged EXEC mode password for Cisco IOS devices. If not set credentials
-    password will be used
-    """
+    keepalive_strategy: Optional[Union[KeepaliveStrategy, KeepaliveStrategyModel]] = (
+        Field(None, alias='keepalive-strategy')
+    )
     cli_topology_dry_run_journal_size: Optional[int] = Field(
         None, alias='cli-topology:dry-run-journal-size', ge=0, le=65535
     )
@@ -477,19 +792,12 @@ class Cli(BaseModel):
     executed when reading/writing some configuration. However the commands are not actually sent
     to the device
     """
-    keepalive_initial_delay: Optional[int] = Field(
-        None, alias='keepalive-initial-delay', ge=0, le=65535
-    )
     uniconfig_config_store_failed_installation: Optional[bool] = Field(
         None, alias='uniconfig-config:store-failed-installation'
     )
     """
     In case UniConfig fails to install the device, it will still populate the database.
     """
-    password: Optional[str] = None
-    keepalive_timeout: Optional[int] = Field(
-        None, alias='keepalive-timeout', ge=0, le=65535
-    )
     cli_topology_max_connection_attempts_install: Optional[int] = Field(
         None, alias='cli-topology:max-connection-attempts-install', ge=0, le=4294967295
     )
@@ -497,6 +805,9 @@ class Cli(BaseModel):
     Maximum number of connection attempts used during installation of device.
     Value 0 disables the limit
     """
+    privileged_mode_credentials: Optional[PrivilegedModeCredentials] = Field(
+        None, alias='privileged-mode-credentials'
+    )
     cli_topology_max_resend_command_attempt: Optional[int] = Field(
         None, alias='cli-topology:max-resend-command-attempt', ge=0, le=4294967295
     )
@@ -517,13 +828,6 @@ class Cli(BaseModel):
     uniconfig_config_install_uniconfig_node_enabled: Optional[bool] = Field(
         None, alias='uniconfig-config:install-uniconfig-node-enabled'
     )
-    connection_lazy_timeout: Optional[int] = Field(
-        None, alias='connection-lazy-timeout', ge=0, le=65535
-    )
-    """
-    Maximal time (in seconds) for connection to keep alive, if no activity was detected
-    in the session and the timeout has been reached, connection will be stopped
-    """
     cli_topology_device_version: Optional[str] = Field(
         None, alias='cli-topology:device-version'
     )
@@ -533,13 +837,6 @@ class Cli(BaseModel):
     """
     Maximum number of connection attempts before connection initialization is marked as failed.
     Value 0 disables this limit.
-    """
-    connection_establish_timeout: Optional[int] = Field(
-        None, alias='connection-establish-timeout', ge=0, le=65535
-    )
-    """
-    Maximal time (in seconds) for connection establishment, if a connection attempt does
-    not succeed in this time, the attempt is considered a failure
     """
     uniconfig_config_admin_state: Optional[config.AdminState] = Field(
         None, alias='uniconfig-config:admin-state'
@@ -575,23 +872,11 @@ class Cli(BaseModel):
     """
     In case we just want to store node metadata in the database without creating of mountpoint.
     """
-    blacklist: Optional[Blacklist] = Field(
-        None, title='uniconfig.config.uniconfigconfignodefields.nodes.bl.Blacklist'
-    )
-    """
-    Reads which are not invoked for sync-from-network and initial config read.
-    """
     uniconfig_config_validation_enabled: Optional[bool] = Field(
         None, alias='uniconfig-config:validation-enabled'
     )
     """
     Specifies whether to send validate RPC before commit RPC.
-    """
-    whitelist: Optional[Whitelist] = Field(
-        None, title='uniconfig.config.uniconfigconfignodefields.nodes.wl.Whitelist'
-    )
-    """
-    Reads which are invoked for sync-from-network and initial config read.
     """
     cli_topology_default_commit_error_patterns: Optional[
         CliTopologyDefaultCommitErrorPatterns
@@ -622,9 +907,6 @@ class Cli(BaseModel):
     """
     Forces reading of data sequentially when mounting device.
     """
-    keepalive_delay: Optional[int] = Field(
-        None, alias='keepalive-delay', ge=0, le=65535
-    )
     cli_topology_journal_size: Optional[int] = Field(
         None, alias='cli-topology:journal-size', ge=0, le=65535
     )
@@ -632,13 +914,7 @@ class Cli(BaseModel):
     Size of the cli mountpoint jounral. Journal keeps track of executed commands and makes
     them available for users/apps for debugging purposes. Value 0 disables journaling
     """
-    command_timeout: Optional[int] = Field(
-        None, alias='command-timeout', ge=0, le=65535
-    )
-    """
-    Maximal time (in seconds) for command execution, if a command cannot be executed on
-    a device in this time, the execution is considered a failure
-    """
+    nodes: Optional[Union[Nodes, NodesModel]] = None
     uniconfig_config_uniconfig_native_enabled: Optional[bool] = Field(
         None, alias='uniconfig-config:uniconfig-native-enabled'
     )
@@ -648,68 +924,232 @@ class Cli(BaseModel):
     cli_topology_parsing_engine: Optional[topology.ParsingEngine] = Field(
         None, alias='cli-topology:parsing-engine'
     )
-    username: Optional[str] = None
 
 
-class SubscriptionsStreamItem(BaseModel):
+class NetconfNodeTopologyOtherParameters(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    mode: Optional[subscriptions.ModeEnum] = None
-    stop_time: Optional[str] = Field(None, alias='stop-time')
-    """
-    RFC5277: An optional parameter, <stopTime>, used with the optional replay feature to indicate the newest
-    notifications of interest. If <stopTime> is not present, the notifications will continue until the
-    subscription is terminated. Must be used with and be later than <startTime>. Values of <stopTime>
-    in the future are valid.
-    """
-    start_time: Optional[str] = Field(None, alias='start-time')
-    """
-    RFC5277: A parameter, <startTime>, used to trigger the replay feature and indicate that the replay
-    should start at the time specified. If <startTime> is not present, this is not a replay subscription.
-    It is not valid to specify start times that are later than the current time. If the <startTime> specified
-    is earlier than the log can support, the replay will begin with the earliest available notification.
-    """
-    stream_name: str = Field(..., alias='stream-name')
-    """
-    Identifier of the notification stream.
-    """
-    paths: Optional[list[str]] = None
-    """
-    Paths to which subscribe on data change events
-    """
-
-
-class OtherParameters(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    concurrent_rpc_limit: Optional[int] = Field(
-        None, alias='concurrent-rpc-limit', ge=0, le=65535
-    )
-    """
-    Limit of concurrent messages that can be send before reply messages are received.
-    If value <1 is provided, no limit will be enforced
-    """
-    dry_run_journal_size: Optional[int] = Field(
-        None, alias='dry-run-journal-size', ge=0, le=65535
+    netconf_node_topology_edit_config_test_option: Optional[
+        topology_1.EditConfigTestOption
+    ] = Field(None, alias='netconf-node-topology:edit-config-test-option')
+    netconf_node_topology_dry_run_journal_size: Optional[int] = Field(
+        None, alias='netconf-node-topology:dry-run-journal-size', ge=0, le=65535
     )
     """
     Size of the DRY RUN netconf mountpoint journal. DRY RUN journal captures netconf RPCs that
     would be executed when reading/writing some configuration. However the RPCs are not actually
     sent to the device
     """
-    custom_connector_factory: Optional[str] = Field(
-        None, alias='custom-connector-factory'
+    netconf_node_topology_custom_connector_factory: Optional[str] = Field(
+        None, alias='netconf-node-topology:custom-connector-factory'
     )
     """
     Specification of the custom NETCONF connector factory. For example,
                if device doesn't support candidate data-store, this parameter
                should be set to 'netconf-customization-alu-ignore-candidate' string.
     """
-    edit_config_test_option: Optional[topology_1.EditConfigTestOption] = Field(
-        None, alias='edit-config-test-option'
+    netconf_node_topology_concurrent_rpc_limit: Optional[int] = Field(
+        None, alias='netconf-node-topology:concurrent-rpc-limit', ge=0, le=65535
     )
+    """
+    Limit of concurrent messages that can be send before reply messages are received.
+    If value <1 is provided, no limit will be enforced
+    """
+
+
+class NetconfParameters(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    netconf_node_topology_session_timers: Optional[NetconfNodeTopologySessionTimers] = (
+        Field(
+            None,
+            alias='netconf-node-topology:session-timers',
+            title='netconf.node.topology.netconfparametersgroups.SessionTimers',
+        )
+    )
+    netconf_node_topology_flags: Optional[NetconfNodeTopologyFlags] = Field(
+        None,
+        alias='netconf-node-topology:flags',
+        title='netconf.node.topology.netconfparametersgroups.Flags',
+    )
+    netconf_node_topology_other_parameters: Optional[
+        NetconfNodeTopologyOtherParameters
+    ] = Field(
+        None,
+        alias='netconf-node-topology:other-parameters',
+        title='netconf.node.topology.netconfparametersgroups.OtherParameters',
+    )
+
+
+class NetconfParametersModel(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    netconf_node_topology_connection_timeout_millis: Optional[int] = Field(
+        None,
+        alias='netconf-node-topology:connection-timeout-millis',
+        ge=0,
+        le=4294967295,
+    )
+    """
+    Specifies timeout in milliseconds after which connection must be established.
+    """
+    netconf_node_topology_default_request_timeout_millis: Optional[int] = Field(
+        None,
+        alias='netconf-node-topology:default-request-timeout-millis',
+        ge=0,
+        le=4294967295,
+    )
+    """
+    Timeout in milliseconds for blocking operations within transactions.
+    """
+    netconf_node_topology_between_attempts_timeout_millis: Optional[int] = Field(
+        None,
+        alias='netconf-node-topology:between-attempts-timeout-millis',
+        ge=0,
+        le=65535,
+    )
+    """
+    Initial timeout in milliseconds to wait between connection attempts. Will be multiplied by sleep-factor with every additional attempt
+    """
+    netconf_node_topology_sleep_factor: Optional[float] = Field(
+        None,
+        alias='netconf-node-topology:sleep-factor',
+        ge=-9.223372036854776e17,
+        le=9.223372036854776e17,
+    )
+    """
+    After each reconnection attempt, the delay between reconnection attempts is
+    multiplied by this factor. By default, it is set to 1.5. This means that the next
+    delay between attempts will be 3000 ms, then it will be 4500 ms, etc.
+    """
+    netconf_node_topology_confirm_timeout: Optional[int] = Field(
+        None, alias='netconf-node-topology:confirm-timeout', ge=0, le=4294967295
+    )
+    """
+    Timeout period in seconds to issued commit after confirmed-commit
+    """
+    netconf_node_topology_strict_parsing: Optional[bool] = Field(
+        None, alias='netconf-node-topology:strict-parsing'
+    )
+    """
+    If this parameter is set to 'false', then parser should ignore unknown elements and not throw
+    exception during parsing.
+    """
+    netconf_node_topology_customization_factory: Optional[str] = Field(
+        None, alias='netconf-node-topology:customization-factory'
+    )
+    """
+    Specification of the custom NETCONF connector factory. For example,
+    if device doesn't support candidate data-store, this parameter
+    should be set to 'netconf-customization-alu-ignore-candidate' string.
+    """
+    netconf_node_topology_concurrent_rpc_limit: Optional[int] = Field(
+        None, alias='netconf-node-topology:concurrent-rpc-limit', ge=0, le=65535
+    )
+    """
+    Limit of concurrent messages that can be send before reply messages are received.
+    If value <1 is provided, no limit will be enforced
+    """
+    netconf_node_topology_edit_config_test_option: Optional[
+        topology_1.EditConfigTestOption
+    ] = Field(None, alias='netconf-node-topology:edit-config-test-option')
+    netconf_node_topology_dry_run_journal_size: Optional[int] = Field(
+        None, alias='netconf-node-topology:dry-run-journal-size', ge=0, le=65535
+    )
+    """
+    Size of the DRY RUN netconf mountpoint journal. DRY RUN journal captures netconf RPCs that
+    would be executed when reading/writing some configuration. However the RPCs are not actually
+    sent to the device
+    """
+    netconf_node_topology_max_connection_attempts: Optional[int] = Field(
+        None, alias='netconf-node-topology:max-connection-attempts', ge=0, le=4294967295
+    )
+    """
+    Maximum number of connection retries. Non positive value or null is interpreted as infinity.
+    """
+    netconf_node_topology_max_reconnection_attempts: Optional[int] = Field(
+        None,
+        alias='netconf-node-topology:max-reconnection-attempts',
+        ge=0,
+        le=4294967295,
+    )
+    """
+    Maximum number of reconnect retries. Non positive value or null is interpreted as infinity.
+    This is an optional parameter. If set, max-connection-attempts will be used only once, for the first connection attempts
+    and for any subsequent disconnect-connect cycles, max-reconnect-attempts will be used.
+    This enables users using different amount of reconnects for initial attempts vs subsequent reconnects.
+    """
+    netconf_node_topology_keepalive_delay: Optional[int] = Field(
+        None, alias='netconf-node-topology:keepalive-delay', ge=0, le=4294967295
+    )
+    """
+    Netconf connector sends keepalive RPCs while the session is idle, this delay specifies the delay between keepalive RPC in seconds
+    If a value <1 is provided, no keepalives will be sent
+    """
+    netconf_node_topology_enabled_notifications: Optional[bool] = Field(
+        None, alias='netconf-node-topology:enabled-notifications'
+    )
+    """
+    If it is set to 'true' and NETCONF device supports notifications, NETCONF mountpoint will
+    expose NETCONF notification and subscription services.
+    """
+    netconf_node_topology_reconnect_on_changed_schema: Optional[bool] = Field(
+        None, alias='netconf-node-topology:reconnect-on-changed-schema'
+    )
+    """
+    If it is set to 'true', NETCONF notifications are supported by device, and NETCONF
+    notifications are enabled ('enabled-notifications' flag), the connector would auto
+    disconnect/reconnect when schemas are changed in the remote device. The connector subscribes
+    (right after connect) to base netconf notifications and listens
+    for netconf-capability-change notification
+    """
+    netconf_node_topology_streaming_session: Optional[bool] = Field(
+        None, alias='netconf-node-topology:streaming-session'
+    )
+    """
+    NETCONF session is created and optimized for receiving of NETCONF notifications
+    from remote server.
+    """
+
+
+class SubscriptionsStreamItem(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    subscriptions_mode: Optional[subscriptions.ModeEnum] = Field(
+        None, alias='subscriptions:mode'
+    )
+    subscriptions_paths: Optional[list[str]] = Field(None, alias='subscriptions:paths')
+    """
+    Paths to which subscribe on data change events
+    """
+    subscriptions_stop_time: Optional[str] = Field(
+        None, alias='subscriptions:stop-time'
+    )
+    """
+    RFC5277: An optional parameter, <stopTime>, used with the optional replay feature to indicate the newest
+    notifications of interest. If <stopTime> is not present, the notifications will continue until the
+    subscription is terminated. Must be used with and be later than <startTime>. Values of <stopTime>
+    in the future are valid.
+    """
+    subscriptions_start_time: Optional[str] = Field(
+        None, alias='subscriptions:start-time'
+    )
+    """
+    RFC5277: A parameter, <startTime>, used to trigger the replay feature and indicate that the replay
+    should start at the time specified. If <startTime> is not present, this is not a replay subscription.
+    It is not valid to specify start times that are later than the current time. If the <startTime> specified
+    is earlier than the log can support, the replay will begin with the earliest available notification.
+    """
+    subscriptions_stream_name: Optional[str] = Field(
+        None, alias='subscriptions:stream-name'
+    )
+    """
+    Identifier of the notification stream.
+    """
 
 
 class Netconf(BaseModel):
@@ -720,12 +1160,15 @@ class Netconf(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    concurrent_rpc_limit: Optional[int] = Field(
-        None, alias='concurrent-rpc-limit', ge=0, le=65535
+    netconf_node_topology_pass_through: Optional[dict[str, Any]] = Field(
+        None,
+        alias='netconf-node-topology:pass-through',
+        title='netconf.node.topology.netconfnodeconnectionstatus.PassThrough',
     )
     """
-    Limit of concurrent messages that can be send before reply messages are received.
-    If value <1 is provided, no limit will be enforced
+    When the underlying node is connected, its NETCONF context
+    is available verbatim under this container through the
+    mount extension.
     """
     uniconfig_config_confirmed_commit_enabled: Optional[bool] = Field(
         None, alias='uniconfig-config:confirmed-commit-enabled'
@@ -739,142 +1182,6 @@ class Netconf(BaseModel):
     """
     Replace paths that point to config that should be handled as a one replace request
     """
-    max_reconnection_attempts: Optional[int] = Field(
-        None, alias='max-reconnection-attempts', ge=0, le=4294967295
-    )
-    """
-    Maximum number of reconnect retries. Non positive value or null is interpreted as infinity.
-    This is an optional parameter. If set, max-connection-attempts will be used only once, for the first connection attempts
-    and for any subsequent disconnect-connect cycles, max-reconnect-attempts will be used.
-    This enables users using different amount of reconnects for initial attempts vs subsequent reconnects.
-    """
-    netconf_node_topology_tcp_only: Optional[bool] = Field(
-        None, alias='netconf-node-topology:tcp-only'
-    )
-    streaming_session: Optional[bool] = Field(None, alias='streaming-session')
-    """
-    NETCONF session is created and optimized for receiving of NETCONF notifications
-    from remote server.
-    """
-    netconf_node_topology_yang_module_capabilities: Optional[
-        NetconfNodeTopologyYangModuleCapabilities
-    ] = Field(
-        None,
-        alias='netconf-node-topology:yang-module-capabilities',
-        title='netconf.node.topology.netconfnodeconnectionparameters.YangModuleCapabilities',
-    )
-    max_connection_attempts: Optional[int] = Field(
-        None, alias='max-connection-attempts', ge=0, le=4294967295
-    )
-    """
-    Maximum number of connection retries. Non positive value or null is interpreted as infinity.
-    """
-    reconnect_on_changed_schema: Optional[bool] = Field(
-        None, alias='reconnect-on-changed-schema'
-    )
-    """
-    If it is set to 'true', NETCONF notifications are supported by device, and NETCONF
-    notifications are enabled ('enabled-notifications' flag), the connector would auto
-    disconnect/reconnect when schemas are changed in the remote device. The connector subscribes
-    (right after connect) to base netconf notifications and listens
-    for netconf-capability-change notification
-    """
-    dry_run_journal_size: Optional[int] = Field(
-        None, alias='dry-run-journal-size', ge=0, le=65535
-    )
-    """
-    Size of the DRY RUN netconf mountpoint journal. DRY RUN journal captures netconf RPCs that
-    would be executed when reading/writing some configuration. However the RPCs are not actually
-    sent to the device
-    """
-    flags: Optional[Flags] = Field(
-        None, title='netconf.node.topology.netconfparametersgroups.Flags'
-    )
-    netconf_node_topology_port: Optional[int] = Field(
-        None, alias='netconf-node-topology:port', ge=0, le=65535
-    )
-    netconf_node_topology_yang_library: Optional[NetconfNodeTopologyYangLibrary] = (
-        Field(
-            None,
-            alias='netconf-node-topology:yang-library',
-            title='netconf.node.topology.netconfschemastorage.YangLibrary',
-        )
-    )
-    netconf_node_topology_odl_hello_message_capabilities: Optional[
-        NetconfNodeTopologyOdlHelloMessageCapabilities
-    ] = Field(
-        None,
-        alias='netconf-node-topology:odl-hello-message-capabilities',
-        title='netconf.node.topology.netconfnodeconnectionparameters.OdlHelloMessageCapabilities',
-    )
-    strict_parsing: Optional[bool] = Field(None, alias='strict-parsing')
-    """
-    If this parameter is set to 'false', then parser should ignore unknown elements and not throw
-    exception during parsing.
-    """
-    uniconfig_config_store_failed_installation: Optional[bool] = Field(
-        None, alias='uniconfig-config:store-failed-installation'
-    )
-    """
-    In case UniConfig fails to install the device, it will still populate the database.
-    """
-    password: Optional[str] = None
-    enabled_notifications: Optional[bool] = Field(None, alias='enabled-notifications')
-    """
-    If it is set to 'true' and NETCONF device supports notifications, NETCONF mountpoint will
-    expose NETCONF notification and subscription services.
-    """
-    confirm_timeout: Optional[int] = Field(
-        None, alias='confirm-timeout', ge=0, le=4294967295
-    )
-    """
-    Timeout period in seconds to issued commit after confirmed-commit
-    """
-    subscriptions_stream: Optional[list[SubscriptionsStreamItem]] = Field(
-        None, alias='subscriptions:stream'
-    )
-    """
-    List of available streams to which subscription can be created.
-    """
-    sleep_factor: Optional[float] = Field(
-        None, alias='sleep-factor', ge=-9.223372036854776e17, le=9.223372036854776e17
-    )
-    """
-    After each reconnection attempt, the delay between reconnection attempts is
-    multiplied by this factor. By default, it is set to 1.5. This means that the next
-    delay between attempts will be 3000 ms, then it will be 4500 ms, etc.
-    """
-    other_parameters: Optional[OtherParameters] = Field(
-        None,
-        alias='other-parameters',
-        title='netconf.node.topology.netconfparametersgroups.OtherParameters',
-    )
-    uniconfig_config_install_uniconfig_node_enabled: Optional[bool] = Field(
-        None, alias='uniconfig-config:install-uniconfig-node-enabled'
-    )
-    netconf_node_topology_schema_cache_directory: Optional[str] = Field(
-        None, alias='netconf-node-topology:schema-cache-directory'
-    )
-    """
-    The destination schema repository for yang files relative to the cache directory.  This may be specified per netconf mount
-    so that the loaded yang files are stored to a distinct directory to avoid potential conflict.
-    """
-    between_attempts_timeout_millis: Optional[int] = Field(
-        None, alias='between-attempts-timeout-millis', ge=0, le=65535
-    )
-    """
-    Initial timeout in milliseconds to wait between connection attempts. Will be multiplied by sleep-factor with every additional attempt
-    """
-    netconf_node_topology_pass_through: Optional[dict[str, Any]] = Field(
-        None,
-        alias='netconf-node-topology:pass-through',
-        title='netconf.node.topology.netconfnodeconnectionstatus.PassThrough',
-    )
-    """
-    When the underlying node is connected, its NETCONF context
-    is available verbatim under this container through the
-    mount extension.
-    """
     netconf_node_topology_non_module_capabilities: Optional[
         NetconfNodeTopologyNonModuleCapabilities
     ] = Field(
@@ -885,16 +1192,24 @@ class Netconf(BaseModel):
     netconf_node_topology_schemaless: Optional[bool] = Field(
         None, alias='netconf-node-topology:schemaless'
     )
-    edit_config_test_option: Optional[topology_1.EditConfigTestOption] = Field(
-        None, alias='edit-config-test-option'
+    netconf_node_topology_tcp_only: Optional[bool] = Field(
+        None, alias='netconf-node-topology:tcp-only'
+    )
+    netconf_node_topology_yang_module_capabilities: Optional[
+        NetconfNodeTopologyYangModuleCapabilities
+    ] = Field(
+        None,
+        alias='netconf-node-topology:yang-module-capabilities',
+        title='netconf.node.topology.netconfnodeconnectionparameters.YangModuleCapabilities',
     )
     uniconfig_config_admin_state: Optional[config.AdminState] = Field(
         None, alias='uniconfig-config:admin-state'
     )
-    key_based: Optional[KeyBased] = Field(
-        None,
-        alias='key-based',
-        title='netconf.node.topology.netconfnodecredentials.credentials.keyauth.KeyBased',
+    credentials: Optional[
+        Union[CredentialsModel, CredentialsModel1, CredentialsModel2, CredentialsModel3]
+    ] = None
+    netconf_parameters: Optional[Union[NetconfParameters, NetconfParametersModel]] = (
+        Field(None, alias='netconf-parameters')
     )
     uniconfig_config_store_without_mount: Optional[bool] = Field(
         None, alias='uniconfig-config:store-without-mount'
@@ -902,29 +1217,29 @@ class Netconf(BaseModel):
     """
     In case we just want to store node metadata in the database without creating of mountpoint.
     """
-    blacklist: Optional[Blacklist] = Field(
-        None, title='uniconfig.config.uniconfigconfignodefields.nodes.bl.Blacklist'
+    netconf_node_topology_port: Optional[int] = Field(
+        None, alias='netconf-node-topology:port', ge=0, le=65535
     )
-    """
-    Reads which are not invoked for sync-from-network and initial config read.
-    """
+    netconf_node_topology_yang_library: Optional[NetconfNodeTopologyYangLibrary] = (
+        Field(
+            None,
+            alias='netconf-node-topology:yang-library',
+            title='netconf.node.topology.netconfschemastorage.YangLibrary',
+        )
+    )
     uniconfig_config_validation_enabled: Optional[bool] = Field(
         None, alias='uniconfig-config:validation-enabled'
     )
     """
     Specifies whether to send validate RPC before commit RPC.
     """
-    session_timers: Optional[SessionTimers] = Field(
+    netconf_node_topology_odl_hello_message_capabilities: Optional[
+        NetconfNodeTopologyOdlHelloMessageCapabilities
+    ] = Field(
         None,
-        alias='session-timers',
-        title='netconf.node.topology.netconfparametersgroups.SessionTimers',
+        alias='netconf-node-topology:odl-hello-message-capabilities',
+        title='netconf.node.topology.netconfnodeconnectionparameters.OdlHelloMessageCapabilities',
     )
-    whitelist: Optional[Whitelist] = Field(
-        None, title='uniconfig.config.uniconfigconfignodefields.nodes.wl.Whitelist'
-    )
-    """
-    Reads which are invoked for sync-from-network and initial config read.
-    """
     uniconfig_config_device_crypto: Optional[UniconfigConfigDeviceCrypto] = Field(
         None,
         alias='uniconfig-config:device-crypto',
@@ -940,75 +1255,73 @@ class Netconf(BaseModel):
     """
     Forces reading of data sequentially when mounting device.
     """
-    keepalive_delay: Optional[int] = Field(
-        None, alias='keepalive-delay', ge=0, le=4294967295
+    uniconfig_config_store_failed_installation: Optional[bool] = Field(
+        None, alias='uniconfig-config:store-failed-installation'
     )
     """
-    Netconf connector sends keepalive RPCs while the session is idle, this delay specifies the delay between keepalive RPC in seconds
-    If a value <1 is provided, no keepalives will be sent
+    In case UniConfig fails to install the device, it will still populate the database.
     """
+    nodes: Optional[Union[NodesModel1, NodesModel2]] = None
     netconf_node_topology_host: Optional[str] = Field(
         None, alias='netconf-node-topology:host'
     )
-    default_request_timeout_millis: Optional[int] = Field(
-        None, alias='default-request-timeout-millis', ge=0, le=4294967295
+    subscriptions_stream: Optional[list[SubscriptionsStreamItem]] = Field(
+        None, alias='subscriptions:stream'
     )
     """
-    Timeout in milliseconds for blocking operations within transactions.
+    List of available streams to which subscription can be created.
     """
-    connection_timeout_millis: Optional[int] = Field(
-        None, alias='connection-timeout-millis', ge=0, le=4294967295
-    )
-    """
-    Specifies timeout in milliseconds after which connection must be established.
-    """
-    login_password_unencrypted: Optional[LoginPasswordUnencrypted] = Field(
-        None,
-        alias='login-password-unencrypted',
-        title='netconf.node.topology.netconfnodecredentials.credentials.loginpwunencrypted.LoginPasswordUnencrypted',
-    )
-    customization_factory: Optional[str] = Field(None, alias='customization-factory')
-    """
-    Specification of the custom NETCONF connector factory. For example,
-    if device doesn't support candidate data-store, this parameter
-    should be set to 'netconf-customization-alu-ignore-candidate' string.
-    """
-    login_password: Optional[LoginPassword] = Field(
-        None,
-        alias='login-password',
-        title='netconf.node.topology.netconfnodecredentials.credentials.loginpw.LoginPassword',
-    )
     uniconfig_config_uniconfig_native_enabled: Optional[bool] = Field(
         None, alias='uniconfig-config:uniconfig-native-enabled'
     )
-    username: Optional[str] = None
+    uniconfig_config_install_uniconfig_node_enabled: Optional[bool] = Field(
+        None, alias='uniconfig-config:install-uniconfig-node-enabled'
+    )
+    netconf_node_topology_schema_cache_directory: Optional[str] = Field(
+        None, alias='netconf-node-topology:schema-cache-directory'
+    )
+    """
+    The destination schema repository for yang files relative to the cache directory.  This may be specified per netconf mount
+    so that the loaded yang files are stored to a distinct directory to avoid potential conflict.
+    """
+
+
+class SecurityChoiceModel(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    gnmi_topology_connection_type: Optional[topology_2.ConnectionTypeEnumeration] = (
+        Field(None, alias='gnmi-topology:connection-type')
+    )
 
 
 class GnmiTopologyConnectionParameters(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    device_type: Optional[str] = Field(None, alias='device-type')
-    """
-    Specific type of gNMI device
-    """
-    host: Optional[str] = None
+    gnmi_topology_host: Optional[str] = Field(None, alias='gnmi-topology:host')
     """
     IP address or hostname of the target
     """
-    credentials: Optional[Credentials] = Field(
-        None, title='gnmi.topology.credentials.Credentials'
+    gnmi_topology_device_type: Optional[str] = Field(
+        None, alias='gnmi-topology:device-type'
     )
-    port: Optional[int] = Field(None, ge=0, le=65535)
+    """
+    Specific type of gNMI device
+    """
+    security_choice: Optional[Union[SecurityChoiceModel, SecurityChoice]] = Field(
+        None, alias='security-choice'
+    )
+    gnmi_topology_port: Optional[int] = Field(
+        None, alias='gnmi-topology:port', ge=0, le=65535
+    )
     """
     The port number on which to contact the target
     """
-    keystore_id: Optional[str] = Field(None, alias='keystore-id')
-    """
-    Identifier to keystore. Keystore is defined in gnmi-certificate-storage model.
-    """
-    connection_type: Optional[topology_2.ConnectionTypeEnumeration] = Field(
-        None, alias='connection-type'
+    gnmi_topology_credentials: Optional[GnmiTopologyCredentials] = Field(
+        None,
+        alias='gnmi-topology:credentials',
+        title='gnmi.topology.credentials.Credentials',
     )
 
 
@@ -1044,13 +1357,13 @@ class Gnmi(BaseModel):
     uniconfig_config_admin_state: Optional[config.AdminState] = Field(
         None, alias='uniconfig-config:admin-state'
     )
-    gnmi_topology_update_paths: Optional[list[str]] = Field(
-        None, alias='gnmi-topology:update-paths'
-    )
     gnmi_topology_other_parameters: Optional[GnmiTopologyOtherParameters] = Field(
         None,
         alias='gnmi-topology:other-parameters',
         title='gnmi.topology.otherparametersgrouping.OtherParameters',
+    )
+    gnmi_topology_update_paths: Optional[list[str]] = Field(
+        None, alias='gnmi-topology:update-paths'
     )
     gnmi_topology_connection_parameters: Optional[GnmiTopologyConnectionParameters] = (
         Field(
@@ -1068,23 +1381,11 @@ class Gnmi(BaseModel):
     """
     In case we just want to store node metadata in the database without creating of mountpoint.
     """
-    blacklist: Optional[Blacklist] = Field(
-        None, title='uniconfig.config.uniconfigconfignodefields.nodes.bl.Blacklist'
-    )
-    """
-    Reads which are not invoked for sync-from-network and initial config read.
-    """
     uniconfig_config_validation_enabled: Optional[bool] = Field(
         None, alias='uniconfig-config:validation-enabled'
     )
     """
     Specifies whether to send validate RPC before commit RPC.
-    """
-    whitelist: Optional[Whitelist] = Field(
-        None, title='uniconfig.config.uniconfigconfignodefields.nodes.wl.Whitelist'
-    )
-    """
-    Reads which are invoked for sync-from-network and initial config read.
     """
     gnmi_topology_session_timers: Optional[GnmiTopologySessionTimers] = Field(
         None,
@@ -1129,6 +1430,7 @@ class Gnmi(BaseModel):
     """
     In case UniConfig fails to install the device, it will still populate the database.
     """
+    nodes: Optional[Union[NodesModel3, NodesModel4]] = None
     gnmi_topology_schema_cache_directory: Optional[str] = Field(
         None, alias='gnmi-topology:schema-cache-directory'
     )
@@ -1150,6 +1452,130 @@ class Gnmi(BaseModel):
     uniconfig_config_install_uniconfig_node_enabled: Optional[bool] = Field(
         None, alias='uniconfig-config:install-uniconfig-node-enabled'
     )
+
+
+class SnmpTopologyAuthNoPriv(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    snmp_topology_security_name: Optional[str] = Field(
+        None, alias='snmp-topology:security-name'
+    )
+    """
+    The security name that is also specified on the device.
+    """
+    snmp_topology_authentication_password: Optional[str] = Field(
+        None, alias='snmp-topology:authentication-password'
+    )
+    """
+    Authentication password that is also specified on the device.
+    """
+    snmp_topology_authentication_protocol: Optional[
+        topology_3.AuthenticationProtocolEnumeration
+    ] = Field(None, alias='snmp-topology:authentication-protocol')
+
+
+class SecurityModelModel(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    snmp_topology_auth_no_priv: Optional[SnmpTopologyAuthNoPriv] = Field(
+        None,
+        alias='snmp-topology:auth-no-priv',
+        title='snmp.topology.security.securitymodel.authnoprivcase.AuthNoPriv',
+    )
+
+
+class SnmpTopologyAuthPriv(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    snmp_topology_authentication_password: Optional[str] = Field(
+        None, alias='snmp-topology:authentication-password'
+    )
+    """
+    Authentication password that is also specified on the device.
+    """
+    snmp_topology_security_name: Optional[str] = Field(
+        None, alias='snmp-topology:security-name'
+    )
+    """
+    The security name that is also specified on the device.
+    """
+    snmp_topology_privacy_protocol: Optional[topology_3.PrivacyProtocolEnumeration] = (
+        Field(None, alias='snmp-topology:privacy-protocol')
+    )
+    snmp_topology_privacy_password: Optional[str] = Field(
+        None, alias='snmp-topology:privacy-password'
+    )
+    """
+    Privacy password that is also specified on the device.
+    """
+    snmp_topology_authentication_protocol: Optional[
+        topology_3.AuthenticationProtocolEnumeration
+    ] = Field(None, alias='snmp-topology:authentication-protocol')
+
+
+class SecurityModelModel1(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    snmp_topology_auth_priv: Optional[SnmpTopologyAuthPriv] = Field(
+        None,
+        alias='snmp-topology:auth-priv',
+        title='snmp.topology.security.securitymodel.authprivcase.AuthPriv',
+    )
+
+
+class Snmp(BaseModel):
+    """
+    SNMP node settings.
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    snmp_topology_connection_retries: Optional[int] = Field(
+        None, alias='snmp-topology:connection-retries', ge=0, le=65535
+    )
+    """
+    The number of retries. Note: If the number of
+    retries is set to 0, then the request will be sent
+    out exactly once.
+    """
+    snmp_topology_port: Optional[int] = Field(
+        None, alias='snmp-topology:port', ge=0, le=65535
+    )
+    """
+    The host of the target.
+    """
+    security_model: Optional[
+        Union[SecurityModelModel, SecurityModelModel1, SecurityModel]
+    ] = Field(None, alias='security-model')
+    snmp_topology_request_timeout: Optional[int] = Field(
+        None, alias='snmp-topology:request-timeout', ge=0, le=4294967295
+    )
+    """
+    Timeout in milliseconds before a confirmed request
+    is resent or timed out.
+    """
+    snmp_topology_snmp_version: Optional[topology_3.SnmpVersionEnumeration] = Field(
+        None, alias='snmp-topology:snmp-version'
+    )
+    snmp_topology_transport_type: Optional[topology_3.TransportTypeEnumeration] = Field(
+        None, alias='snmp-topology:transport-type'
+    )
+    snmp_topology_host: Optional[str] = Field(None, alias='snmp-topology:host')
+    """
+    The port of the target.
+    """
+    snmp_topology_mib_repository: Optional[str] = Field(
+        None, alias='snmp-topology:mib-repository'
+    )
+    """
+    The destination repository for mib files relative
+    to the mibs directory.
+    """
 
 
 class Node(BaseModel):
@@ -1178,8 +1604,8 @@ class Node(BaseModel):
     """
     gNMI node settings.
     """
-    snmp: Optional[dict[str, Any]] = Field(
-        None, title='connection.manager.installmultiplenodesinputfields.nodes.Snmp'
+    snmp: Optional[Snmp] = Field(
+        None, title='connection.manager.installmultiplenodes.input.nodes.Snmp'
     )
     """
     SNMP node settings.

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from typing import Optional
+from typing import Union
 
 from pydantic import BaseModel
 from pydantic import ConfigDict
@@ -28,7 +29,19 @@ class ComplexOutputItem(BaseModel):
     covered: Optional[bool] = None
 
 
-class Output(BaseModel):
+class Result(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    complex_output: Optional[list[ComplexOutputItem]] = Field(
+        None, alias='complex-output'
+    )
+    """
+    Simple output contains commands marked with '+' if it is covered or '-' if not.
+    """
+
+
+class ResultModel(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -36,9 +49,10 @@ class Output(BaseModel):
     """
     Simple output contains commands marked with '+' if it is covered or '-' if not.
     """
-    complex_output: Optional[list[ComplexOutputItem]] = Field(
-        None, alias='complex-output'
+
+
+class Output(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
     )
-    """
-    Simple output contains commands marked with '+' if it is covered or '-' if not.
-    """
+    result: Optional[Union[Result, ResultModel]] = None

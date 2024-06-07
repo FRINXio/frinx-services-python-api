@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from typing import Any
 from typing import Optional
 
 from pydantic import BaseModel
@@ -15,15 +16,15 @@ class Template(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
+    template_configuration: dict[str, Any] = Field(..., alias='template-configuration')
+    """
+    Template configuration without wrapping 'configuration' element
+    (only content of template).
+    """
     yang_repository: Optional[str] = Field(None, alias='yang-repository')
     """
     Name of yang-repository used for parsing of template configuration.
     It contains identifier of the YANG schema repository.
-    """
-    template_configuration: str = Field(..., alias='template-configuration')
-    """
-    Template configuration without wrapping 'configuration' element
-    (only content of template).
     """
     template_name: str = Field(..., alias='template-name')
     """

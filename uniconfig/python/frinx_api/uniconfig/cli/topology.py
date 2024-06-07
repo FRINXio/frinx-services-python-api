@@ -6,16 +6,36 @@ from enum import Enum
 
 
 class JournalLevel(Enum):
+    """
+    Sets how much information should be stored in the journal. Command-only stores only the actual
+    commands executed on device. Extended records additional information such as: transaction
+    life-cycle, which handlers were invoked etc.
+
+    """
+
     command_only = 'command-only'
     extended = 'extended'
 
 
 class ParsingEngine(Enum):
+    """
+    Specification of the parsing engine that is used for parsing of the running-configuration
+    and lookup for target sections in the configuration using query commands.
+    * batch-parser - Running-configuration must be traversed from the beginning each time when the new
+    target section must be extracted from the configuration.
+    * tree-parser - Running-configuration is mapped into the tree structure before the first command
+    lookup. This tree can be reused in the same transaction for faster lookup process.
+    * one-line-parser - Parsing engine that uses grep function for parsing running-configuration.
+
+    """
+
     batch_parser = 'batch-parser'
     tree_parser = 'tree-parser'
     one_line_parser = 'one-line-parser'
 
 
 class TransportTypeEnumeration(Enum):
+    """ """
+
     ssh = 'ssh'
     telnet = 'telnet'

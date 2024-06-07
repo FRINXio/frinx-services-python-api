@@ -3,10 +3,51 @@
 from __future__ import annotations
 
 from typing import Optional
+from typing import Union
 
 from pydantic import BaseModel
 from pydantic import ConfigDict
 from pydantic import Field
+
+
+class Type(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    leaf_list_values: Optional[list[str]] = Field(None, alias='leaf-list-values')
+    """
+    List of values that can be applied to the leaf-list.
+    """
+
+
+class TypeModel(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    leaf_value: Optional[str] = Field(None, alias='leaf-value')
+    """
+    Value that can be applied to leaf.
+    """
+
+
+class Value(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    leaf_list_values: Optional[list[str]] = Field(None, alias='leaf-list-values')
+    """
+    List of values that can be applied to the leaf-list.
+    """
+
+
+class ValueModel(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    leaf_value: Optional[str] = Field(None, alias='leaf-value')
+    """
+    Value that can be applied to leaf.
+    """
 
 
 class TypedLeafValue(BaseModel):
@@ -18,29 +59,23 @@ class TypedLeafValue(BaseModel):
     Type qualifier for this value.
     Used in case the same variable is used under different types
     """
-    leaf_value: str = Field(..., alias='leaf-value')
-    """
-    Value that can be applied to leaf.
-    """
-    leaf_list_values: list[str] = Field(..., alias='leaf-list-values')
-    """
-    List of values that can be applied to the leaf-list.
-    """
+    value: Optional[Union[Value, ValueModel]] = None
+
+
+class TypeModel1(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    typed_leaf_values: Optional[list[TypedLeafValue]] = Field(
+        None, alias='typed-leaf-values'
+    )
 
 
 class VariableItem(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    leaf_list_values: list[str] = Field(..., alias='leaf-list-values')
-    """
-    List of values that can be applied to the leaf-list.
-    """
-    typed_leaf_values: list[TypedLeafValue] = Field(..., alias='typed-leaf-values')
-    leaf_value: str = Field(..., alias='leaf-value')
-    """
-    Value that can be applied to leaf.
-    """
+    type: Optional[Union[Type, TypeModel, TypeModel1]] = None
     variable_id: Optional[str] = Field(None, alias='variable-id')
     """
     Variable identifier.

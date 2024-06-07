@@ -1,0 +1,13 @@
+diff --git a/uniconfig/python/frinx_api/uniconfig/snmp/topology.py b/uniconfig/python/frinx_api/uniconfig/snmp/topology.py
+index 3ef959a..0c85286 100644
+--- a/uniconfig/python/frinx_api/uniconfig/snmp/topology.py
++++ b/uniconfig/python/frinx_api/uniconfig/snmp/topology.py
+@@ -27,7 +27,7 @@ class PrivacyProtocolEnumeration(Enum):
+     """
+ 
+     DES = 'DES'
+-    field_3DES = '3DES'
++    FIELD_3DES = '3DES'
+     AES_128 = 'AES-128'
+     AES_192 = 'AES-192'
+     AES_256 = 'AES-256'

@@ -23,6 +23,7 @@ from . import OperationsChangeEncryptionStatusPostResponse
 from . import OperationsCheckedCommitPostRequest
 from . import OperationsCheckInstalledNodesPostRequest
 from . import OperationsCheckInstalledNodesPostResponse
+from . import OperationsCheckNodesConnectionPostRequest
 from . import OperationsClearJournalPostRequest
 from . import OperationsClearJournalPostResponse
 from . import OperationsCloseTransactionPostRequest
@@ -115,6 +116,111 @@ class UniconfigRest:
     method: str
     request: Any | None
     response: Any | None
+
+
+class CliDefaultParametersGet(UniconfigRest):
+    uri = '/data/cli-default-parameters'
+    method = 'GET'
+    request = None
+    response = None
+
+
+class CliDefaultParametersPut(UniconfigRest):
+    uri = '/data/cli-default-parameters'
+    method = 'PUT'
+    request = None
+    response = None
+
+
+class CliDefaultParametersPost(UniconfigRest):
+    uri = '/data/cli-default-parameters'
+    method = 'POST'
+    request = None
+    response = None
+
+
+class CliDefaultParametersDelete(UniconfigRest):
+    uri = '/data/cli-default-parameters'
+    method = 'DELETE'
+    request = None
+    response = None
+
+
+class DeviceId(UniconfigRest):
+    uri = '/data/device-id'
+    method = 'GET'
+    request = None
+    response = None
+
+
+class AvailableCliDeviceTranslationsGet(UniconfigRest):
+    uri = '/data/available-cli-device-translations'
+    method = 'GET'
+    request = None
+    response = None
+
+
+class AvailableCliDeviceTranslationsPut(UniconfigRest):
+    uri = '/data/available-cli-device-translations'
+    method = 'PUT'
+    request = None
+    response = None
+
+
+class AvailableCliDeviceTranslationsPost(UniconfigRest):
+    uri = '/data/available-cli-device-translations'
+    method = 'POST'
+    request = None
+    response = None
+
+
+class AvailableCliDeviceTranslationsDelete(UniconfigRest):
+    uri = '/data/available-cli-device-translations'
+    method = 'DELETE'
+    request = None
+    response = None
+
+
+class AvailableCliDeviceTranslationGet(UniconfigRest):
+    uri = '/data/available-cli-device-translations/available-cli-device-translation'
+    method = 'GET'
+    request = None
+    response = None
+
+
+class AvailableCliDeviceTranslationPut(UniconfigRest):
+    uri = '/data/available-cli-device-translations/available-cli-device-translation'
+    method = 'PUT'
+    request = None
+    response = None
+
+
+class AvailableCliDeviceTranslationDelete(UniconfigRest):
+    uri = '/data/available-cli-device-translations/available-cli-device-translation'
+    method = 'DELETE'
+    request = None
+    response = None
+
+
+class AvailableCliDeviceTranslationDeviceTypeGet(UniconfigRest):
+    uri = '/data/available-cli-device-translations/available-cli-device-translation={device_type},{device_version}'
+    method = 'GET'
+    request = None
+    response = None
+
+
+class AvailableCliDeviceTranslationDeviceTypePut(UniconfigRest):
+    uri = '/data/available-cli-device-translations/available-cli-device-translation={device_type},{device_version}'
+    method = 'PUT'
+    request = None
+    response = None
+
+
+class AvailableCliDeviceTranslationDeviceTypeDelete(UniconfigRest):
+    uri = '/data/available-cli-device-translations/available-cli-device-translation={device_type},{device_version}'
+    method = 'DELETE'
+    request = None
+    response = None
 
 
 class ConfigCoverage(UniconfigRest):
@@ -222,6 +328,13 @@ class UnmountNode(UniconfigRest):
     response = None
 
 
+class CheckNodesConnection(UniconfigRest):
+    uri = '/operations/check-nodes-connection'
+    method = 'POST'
+    request = OperationsCheckNodesConnectionPostRequest
+    response = None
+
+
 class UninstallNode(UniconfigRest):
     uri = '/operations/uninstall-node'
     method = 'POST'
@@ -299,6 +412,118 @@ class SetMessageTypes(UniconfigRest):
     response = None
 
 
+class GnmiDefaultParametersGet(UniconfigRest):
+    uri = '/data/gnmi-default-parameters'
+    method = 'GET'
+    request = None
+    response = None
+
+
+class GnmiDefaultParametersPut(UniconfigRest):
+    uri = '/data/gnmi-default-parameters'
+    method = 'PUT'
+    request = None
+    response = None
+
+
+class GnmiDefaultParametersPost(UniconfigRest):
+    uri = '/data/gnmi-default-parameters'
+    method = 'POST'
+    request = None
+    response = None
+
+
+class GnmiDefaultParametersDelete(UniconfigRest):
+    uri = '/data/gnmi-default-parameters'
+    method = 'DELETE'
+    request = None
+    response = None
+
+
+class SessionTimersGet(UniconfigRest):
+    uri = '/data/gnmi-default-parameters/session-timers'
+    method = 'GET'
+    request = None
+    response = None
+
+
+class SessionTimersPut(UniconfigRest):
+    uri = '/data/gnmi-default-parameters/session-timers'
+    method = 'PUT'
+    request = None
+    response = None
+
+
+class SessionTimersPost(UniconfigRest):
+    uri = '/data/gnmi-default-parameters/session-timers'
+    method = 'POST'
+    request = None
+    response = None
+
+
+class SessionTimersDelete(UniconfigRest):
+    uri = '/data/gnmi-default-parameters/session-timers'
+    method = 'DELETE'
+    request = None
+    response = None
+
+
+class FlagsGet(UniconfigRest):
+    uri = '/data/gnmi-default-parameters/flags'
+    method = 'GET'
+    request = None
+    response = None
+
+
+class FlagsPut(UniconfigRest):
+    uri = '/data/gnmi-default-parameters/flags'
+    method = 'PUT'
+    request = None
+    response = None
+
+
+class FlagsPost(UniconfigRest):
+    uri = '/data/gnmi-default-parameters/flags'
+    method = 'POST'
+    request = None
+    response = None
+
+
+class FlagsDelete(UniconfigRest):
+    uri = '/data/gnmi-default-parameters/flags'
+    method = 'DELETE'
+    request = None
+    response = None
+
+
+class OtherParametersGet(UniconfigRest):
+    uri = '/data/gnmi-default-parameters/other-parameters'
+    method = 'GET'
+    request = None
+    response = None
+
+
+class OtherParametersPut(UniconfigRest):
+    uri = '/data/gnmi-default-parameters/other-parameters'
+    method = 'PUT'
+    request = None
+    response = None
+
+
+class OtherParametersPost(UniconfigRest):
+    uri = '/data/gnmi-default-parameters/other-parameters'
+    method = 'POST'
+    request = None
+    response = None
+
+
+class OtherParametersDelete(UniconfigRest):
+    uri = '/data/gnmi-default-parameters/other-parameters'
+    method = 'DELETE'
+    request = None
+    response = None
+
+
 class UploadYangModel(UniconfigRest):
     uri = '/operations/upload-yang-model'
     method = 'POST'
@@ -318,6 +543,34 @@ class ClearJournal(UniconfigRest):
     method = 'POST'
     request = OperationsClearJournalPostRequest
     response = OperationsClearJournalPostResponse
+
+
+class LoggingStatus(UniconfigRest):
+    uri = '/data/logging-status'
+    method = 'GET'
+    request = None
+    response = None
+
+
+class Global(UniconfigRest):
+    uri = '/data/logging-status/global'
+    method = 'GET'
+    request = None
+    response = None
+
+
+class Broker(UniconfigRest):
+    uri = '/data/logging-status/broker'
+    method = 'GET'
+    request = None
+    response = None
+
+
+class BrokerBrokerIdentifier(UniconfigRest):
+    uri = '/data/logging-status/broker={broker_identifier}'
+    method = 'GET'
+    request = None
+    response = None
 
 
 class EnableDefaultDeviceLogging(UniconfigRest):
@@ -408,6 +661,13 @@ class RemovePrivateKey(UniconfigRest):
     uri = '/operations/remove-private-key'
     method = 'POST'
     request = OperationsRemovePrivateKeyPostRequest
+    response = None
+
+
+class Notification(UniconfigRest):
+    uri = '/data/notification'
+    method = 'GET'
+    request = None
     response = None
 
 
@@ -530,6 +790,20 @@ class ReplaceConfigWithSnapshot(UniconfigRest):
     response = None
 
 
+class Subscription(UniconfigRest):
+    uri = '/data/subscription'
+    method = 'GET'
+    request = None
+    response = None
+
+
+class SubscriptionNodeId(UniconfigRest):
+    uri = '/data/subscription={node_id},{stream_name}'
+    method = 'GET'
+    request = None
+    response = None
+
+
 class CopyOneToOne(UniconfigRest):
     uri = '/operations/copy-one-to-one'
     method = 'POST'
@@ -604,6 +878,48 @@ class CreateMultipleTemplates(UniconfigRest):
     uri = '/operations/create-multiple-templates'
     method = 'POST'
     request = OperationsCreateMultipleTemplatesPostRequest
+    response = None
+
+
+class TransactionsData(UniconfigRest):
+    uri = '/data/transactions-data'
+    method = 'GET'
+    request = None
+    response = None
+
+
+class TransactionData(UniconfigRest):
+    uri = '/data/transactions-data/transaction-data'
+    method = 'GET'
+    request = None
+    response = None
+
+
+class TransactionDataTransactionId(UniconfigRest):
+    uri = '/data/transactions-data/transaction-data={transaction_id}'
+    method = 'GET'
+    request = None
+    response = None
+
+
+class TransactionsMetadata(UniconfigRest):
+    uri = '/data/transactions-metadata'
+    method = 'GET'
+    request = None
+    response = None
+
+
+class TransactionMetadata(UniconfigRest):
+    uri = '/data/transactions-metadata/transaction-metadata'
+    method = 'GET'
+    request = None
+    response = None
+
+
+class TransactionMetadataTransactionId(UniconfigRest):
+    uri = '/data/transactions-metadata/transaction-metadata={transaction_id}'
+    method = 'GET'
+    request = None
     response = None
 
 
@@ -724,6 +1040,27 @@ class QueryConfig(UniconfigRest):
     method = 'POST'
     request = OperationsQueryConfigPostRequest
     response = OperationsQueryConfigPostResponse
+
+
+class AvailableUnitopoDeviceTranslations(UniconfigRest):
+    uri = '/data/available-unitopo-device-translations'
+    method = 'GET'
+    request = None
+    response = None
+
+
+class Unit(UniconfigRest):
+    uri = '/data/available-unitopo-device-translations/unit'
+    method = 'GET'
+    request = None
+    response = None
+
+
+class UnitId(UniconfigRest):
+    uri = '/data/available-unitopo-device-translations/unit={id}'
+    method = 'GET'
+    request = None
+    response = None
 
 
 class ReadStructuredData(UniconfigRest):
