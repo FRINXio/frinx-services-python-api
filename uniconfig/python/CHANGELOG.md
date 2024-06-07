@@ -23,5 +23,5 @@
   2. fix discover address spell error
   3. fix generated port constraints in discover model
 
-# 1.1.2
+# 1.2.0
 - Update models based on new OpenAPI fixed in UniConfig 6.1.x
