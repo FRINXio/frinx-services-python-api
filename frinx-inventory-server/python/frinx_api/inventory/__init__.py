@@ -1515,7 +1515,7 @@ class NetTopologyVersionDataQuery(Query):
 
 class ShortestPathQuery(Query):
     _name: str = PrivateAttr('shortestPath')
-    from: String = Field(json_schema_extra={'type': 'String!'})
+    from_: String = Field(alias='from', json_schema_extra={'type': 'String!'})
     to: String = Field(json_schema_extra={'type': 'String!'})
     payload: NetRoutingPathNode
 
