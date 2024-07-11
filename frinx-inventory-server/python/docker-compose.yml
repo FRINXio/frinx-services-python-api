@@ -23,6 +23,10 @@ services:
       - X_TENANT_ID=frinx
       - SHELL_HOST=localhost
       - TOPOLOGY_ENABLED=false
+      - KAFKA_BROKER=127.0.0.1:9092
+      - KAFKA_TOPIC=device-ivnentory
+      - KAFKA_ENABLED=false
+      - PERFORMANCE_MONITORING_ENABLED=false
     depends_on:
       postgres:
         condition: service_healthy

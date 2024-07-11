@@ -50,6 +50,11 @@ class SortDeviceBy(ENUM):
     SERVICESTATE = 'serviceState'
 
 
+class SortStreamBy(ENUM):
+    STREAMNAME = 'streamName'
+    CREATEDAT = 'createdAt'
+
+
 class GraphEdgeStatus(ENUM):
     OK = 'ok'
     UNKNOWN = 'unknown'
@@ -129,6 +134,29 @@ class BulkInstallDevicesInput(Input):
 
 class BulkUninstallDevicesInput(Input):
     device_ids: typing.Optional[list[String]] = Field(default=None, alias='deviceIds')
+
+
+class FilterStreamsInput(Input):
+    stream_name: typing.Optional[String] = Field(default=None, alias='streamName')
+
+
+class StreamOrderByInput(Input):
+    sort_key: SortStreamBy = Field(alias='sortKey')
+    direction: SortDirection
+
+
+class AddStreamInput(Input):
+    stream_name: String = Field(alias='streamName')
+    device_name: String = Field(alias='deviceName')
+    stream_parameters: typing.Optional[String] = Field(default=None, alias='streamParameters')
+    blueprint_id: typing.Optional[String] = Field(default=None, alias='blueprintId')
+
+
+class UpdateStreamInput(Input):
+    stream_name: String = Field(alias='streamName')
+    device_name: String = Field(alias='deviceName')
+    blueprint_id: typing.Optional[String] = Field(default=None, alias='blueprintId')
+    stream_parameters: typing.Optional[String] = Field(default=None, alias='streamParameters')
 
 
 class FilterZonesInput(Input):
@@ -232,6 +260,7 @@ class Device(Payload):
     model: typing.Optional[Boolean] = Field(default=False)
     vendor: typing.Optional[Boolean] = Field(default=False)
     version: typing.Optional[Boolean] = Field(default=False)
+    software: typing.Optional[Boolean] = Field(default=False)
     port: typing.Optional[Boolean] = Field(default=False)
     address: typing.Optional[Boolean] = Field(default=False)
     mount_parameters: typing.Optional[Boolean] = Field(default=False, alias='mountParameters')
@@ -253,6 +282,7 @@ class DevicePayload(BaseModel):
     model: typing.Optional[typing.Optional[String]] = Field(default=None)
     vendor: typing.Optional[typing.Optional[String]] = Field(default=None)
     version: typing.Optional[typing.Optional[String]] = Field(default=None)
+    software: typing.Optional[typing.Optional[String]] = Field(default=None)
     port: typing.Optional[typing.Optional[Int]] = Field(default=None)
     address: typing.Optional[typing.Optional[String]] = Field(default=None)
     mount_parameters: typing.Optional[typing.Optional[String]] = Field(default=None, alias='mountParameters')
@@ -358,6 +388,90 @@ class BulkUninstallDevicePayload(Payload):
 
 class BulkUninstallDevicePayloadPayload(BaseModel):
     uninstalled_devices: typing.Optional[typing.Optional[list[DevicePayload]]] = Field(default=None, alias='uninstalledDevices')
+
+
+class Stream(Payload):
+    id: typing.Optional[Boolean] = Field(default=False)
+    created_at: typing.Optional[Boolean] = Field(default=False, alias='createdAt')
+    updated_at: typing.Optional[Boolean] = Field(default=False, alias='updatedAt')
+    stream_name: typing.Optional[Boolean] = Field(default=False, alias='streamName')
+    device_name: typing.Optional[Boolean] = Field(default=False, alias='deviceName')
+    is_active: typing.Optional[Boolean] = Field(default=False, alias='isActive')
+    stream_parameters: typing.Optional[Boolean] = Field(default=False, alias='streamParameters')
+    blueprint: typing.Optional[Blueprint] = Field(default=None)
+
+
+class StreamPayload(BaseModel):
+    id: typing.Optional[typing.Optional[ID]] = Field(default=None)
+    created_at: typing.Optional[typing.Optional[String]] = Field(default=None, alias='createdAt')
+    updated_at: typing.Optional[typing.Optional[String]] = Field(default=None, alias='updatedAt')
+    stream_name: typing.Optional[typing.Optional[String]] = Field(default=None, alias='streamName')
+    device_name: typing.Optional[typing.Optional[String]] = Field(default=None, alias='deviceName')
+    is_active: typing.Optional[typing.Optional[Boolean]] = Field(default=None, alias='isActive')
+    stream_parameters: typing.Optional[typing.Optional[String]] = Field(default=None, alias='streamParameters')
+    blueprint: typing.Optional[BlueprintPayload] = Field(default=None)
+
+
+class StreamEdge(Payload):
+    node: typing.Optional[Stream] = Field(default=None)
+    cursor: typing.Optional[Boolean] = Field(default=False)
+
+
+class StreamEdgePayload(BaseModel):
+    node: typing.Optional[StreamPayload] = Field(default=None)
+    cursor: typing.Optional[typing.Optional[String]] = Field(default=None)
+
+
+class StreamConnection(Payload):
+    edges: typing.Optional[StreamEdge] = Field(default=None)
+    page_info: typing.Optional[PageInfo] = Field(default=None, alias='pageInfo')
+    total_count: typing.Optional[Boolean] = Field(default=False, alias='totalCount')
+
+
+class StreamConnectionPayload(BaseModel):
+    edges: typing.Optional[typing.Optional[list[StreamEdgePayload]]] = Field(default=None)
+    page_info: typing.Optional[PageInfoPayload] = Field(default=None, alias='pageInfo')
+    total_count: typing.Optional[typing.Optional[Int]] = Field(default=None, alias='totalCount')
+
+
+class AddStreamPayload(Payload):
+    stream: typing.Optional[Stream] = Field(default=None)
+
+
+class AddStreamPayloadPayload(BaseModel):
+    stream: typing.Optional[StreamPayload] = Field(default=None)
+
+
+class ActivateStreamPayload(Payload):
+    stream: typing.Optional[Stream] = Field(default=None)
+
+
+class ActivateStreamPayloadPayload(BaseModel):
+    stream: typing.Optional[StreamPayload] = Field(default=None)
+
+
+class DeactivateStreamPayload(Payload):
+    stream: typing.Optional[Stream] = Field(default=None)
+
+
+class DeactivateStreamPayloadPayload(BaseModel):
+    stream: typing.Optional[StreamPayload] = Field(default=None)
+
+
+class DeleteStreamPayload(Payload):
+    stream: typing.Optional[Stream] = Field(default=None)
+
+
+class DeleteStreamPayloadPayload(BaseModel):
+    stream: typing.Optional[StreamPayload] = Field(default=None)
+
+
+class UpdateStreamPayload(Payload):
+    stream: typing.Optional[Stream] = Field(default=None)
+
+
+class UpdateStreamPayloadPayload(BaseModel):
+    stream: typing.Optional[StreamPayload] = Field(default=None)
 
 
 class Zone(Payload):
@@ -1044,6 +1158,16 @@ class SynceTopologyVersionDataPayload(BaseModel):
     edges: typing.Optional[typing.Optional[list[GraphVersionEdgePayload]]] = Field(default=None)
 
 
+class NetInterface(Payload):
+    id: typing.Optional[Boolean] = Field(default=False)
+    name: typing.Optional[Boolean] = Field(default=False)
+
+
+class NetInterfacePayload(BaseModel):
+    id: typing.Optional[typing.Optional[String]] = Field(default=None)
+    name: typing.Optional[typing.Optional[String]] = Field(default=None)
+
+
 class TopologyCommonNodes(Payload):
     common_nodes: typing.Optional[Boolean] = Field(default=False, alias='commonNodes')
 
@@ -1082,16 +1206,6 @@ class UpdateGraphNodeCoordinatesPayload(Payload):
 
 class UpdateGraphNodeCoordinatesPayloadPayload(BaseModel):
     device_names: typing.Optional[typing.Optional[list[typing.Optional[String]]]] = Field(default=None, alias='deviceNames')
-
-
-class NetInterface(Payload):
-    id: typing.Optional[Boolean] = Field(default=False)
-    name: typing.Optional[Boolean] = Field(default=False)
-
-
-class NetInterfacePayload(BaseModel):
-    id: typing.Optional[typing.Optional[String]] = Field(default=None)
-    name: typing.Optional[typing.Optional[String]] = Field(default=None)
 
 
 class NetNetwork(Payload):
@@ -1134,6 +1248,16 @@ class NetTopologyPayload(BaseModel):
     nodes: typing.Optional[typing.Optional[list[NetNodePayload]]] = Field(default=None)
 
 
+class NetTopologyVersionData(Payload):
+    nodes: typing.Optional[NetNode] = Field(default=None)
+    edges: typing.Optional[GraphVersionEdge] = Field(default=None)
+
+
+class NetTopologyVersionDataPayload(BaseModel):
+    nodes: typing.Optional[typing.Optional[list[NetNodePayload]]] = Field(default=None)
+    edges: typing.Optional[typing.Optional[list[GraphVersionEdgePayload]]] = Field(default=None)
+
+
 class NetRoutingPathNodeInfo(Payload):
     weight: typing.Optional[Boolean] = Field(default=False)
     name: typing.Optional[Boolean] = Field(default=False)
@@ -1174,6 +1298,54 @@ class SynceTopologyPayload(BaseModel):
     nodes: typing.Optional[typing.Optional[list[SynceGraphNodePayload]]] = Field(default=None)
 
 
+class DeviceStatus(Payload):
+    status: typing.Optional[Boolean] = Field(default=False)
+    device_name: typing.Optional[Boolean] = Field(default=False, alias='deviceName')
+
+
+class DeviceStatusPayload(BaseModel):
+    status: typing.Optional[typing.Optional[String]] = Field(default=None)
+    device_name: typing.Optional[typing.Optional[String]] = Field(default=None, alias='deviceName')
+
+
+class DevicesConnection(Payload):
+    device_statuses: typing.Optional[DeviceStatus] = Field(default=None, alias='deviceStatuses')
+
+
+class DevicesConnectionPayload(BaseModel):
+    device_statuses: typing.Optional[typing.Optional[list[DeviceStatusPayload]]] = Field(default=None, alias='deviceStatuses')
+
+
+class DeviceUsage(Payload):
+    cpu_load: typing.Optional[Boolean] = Field(default=False, alias='cpuLoad')
+    memory_load: typing.Optional[Boolean] = Field(default=False, alias='memoryLoad')
+
+
+class DeviceUsagePayload(BaseModel):
+    cpu_load: typing.Optional[typing.Optional[Float]] = Field(default=None, alias='cpuLoad')
+    memory_load: typing.Optional[typing.Optional[Float]] = Field(default=None, alias='memoryLoad')
+
+
+class DevicesUsage(Payload):
+    device_name: typing.Optional[Boolean] = Field(default=False, alias='deviceName')
+    cpu_load: typing.Optional[Boolean] = Field(default=False, alias='cpuLoad')
+    memory_load: typing.Optional[Boolean] = Field(default=False, alias='memoryLoad')
+
+
+class DevicesUsagePayload(BaseModel):
+    device_name: typing.Optional[typing.Optional[String]] = Field(default=None, alias='deviceName')
+    cpu_load: typing.Optional[typing.Optional[Float]] = Field(default=None, alias='cpuLoad')
+    memory_load: typing.Optional[typing.Optional[Float]] = Field(default=None, alias='memoryLoad')
+
+
+class DeviceListUsage(Payload):
+    devices_usage: typing.Optional[DevicesUsage] = Field(default=None, alias='devicesUsage')
+
+
+class DeviceListUsagePayload(BaseModel):
+    devices_usage: typing.Optional[typing.Optional[list[DevicesUsagePayload]]] = Field(default=None, alias='devicesUsage')
+
+
 class GraphVersionNode(Payload):
     id: typing.Optional[Boolean] = Field(default=False)
     interfaces: typing.Optional[GraphNodeInterface] = Field(default=None)
@@ -1198,6 +1370,10 @@ class NodeQuery(Query):
     payload: Node
 
 
+class KafkaHealthCheckQuery(Query):
+    _name: str = PrivateAttr('kafkaHealthCheck')
+
+
 class DevicesQuery(Query):
     _name: str = PrivateAttr('devices')
     first: typing.Optional[Int] = Field(default=None, json_schema_extra={'type': 'Int'})
@@ -1211,6 +1387,17 @@ class DevicesQuery(Query):
 
 class UniconfigShellSessionQuery(Query):
     _name: str = PrivateAttr('uniconfigShellSession')
+
+
+class StreamsQuery(Query):
+    _name: str = PrivateAttr('streams')
+    first: typing.Optional[Int] = Field(default=None, json_schema_extra={'type': 'Int'})
+    after: typing.Optional[String] = Field(default=None, json_schema_extra={'type': 'String'})
+    last: typing.Optional[Int] = Field(default=None, json_schema_extra={'type': 'Int'})
+    before: typing.Optional[String] = Field(default=None, json_schema_extra={'type': 'String'})
+    filter: typing.Optional[FilterStreamsInput] = Field(default=None, json_schema_extra={'type': 'FilterStreamsInput'})
+    order_by: typing.Optional[StreamOrderByInput] = Field(default=None, alias='orderBy', json_schema_extra={'type': 'StreamOrderByInput'})
+    payload: StreamConnection
 
 
 class ZonesQuery(Query):
@@ -1320,9 +1507,15 @@ class NetTopologyQuery(Query):
     _name: str = PrivateAttr('netTopology')
 
 
+class NetTopologyVersionDataQuery(Query):
+    _name: str = PrivateAttr('netTopologyVersionData')
+    version: String = Field(json_schema_extra={'type': 'String!'})
+    payload: NetTopologyVersionData
+
+
 class ShortestPathQuery(Query):
     _name: str = PrivateAttr('shortestPath')
-    from_path: String = Field(alias='from', json_schema_extra={'type': 'String!'})
+    from_: String = Field(alias='from', json_schema_extra={'type': 'String!'})
     to: String = Field(json_schema_extra={'type': 'String!'})
     payload: NetRoutingPathNode
 
@@ -1359,6 +1552,15 @@ class DevicesQueryResponse(BaseModel):
 
 class DevicesData(BaseModel):
     devices: DeviceConnectionPayload
+
+
+class StreamsQueryResponse(BaseModel):
+    data: typing.Optional[StreamsData] = Field(default=None)
+    errors: typing.Optional[typing.Any] = Field(default=None)
+
+
+class StreamsData(BaseModel):
+    streams: StreamConnectionPayload
 
 
 class ZonesQueryResponse(BaseModel):
@@ -1469,6 +1671,15 @@ class SynceTopologyVersionDataData(BaseModel):
     synce_topology_version_data: SynceTopologyVersionDataPayload = Field(alias='synceTopologyVersionData')
 
 
+class NetTopologyVersionDataQueryResponse(BaseModel):
+    data: typing.Optional[NetTopologyVersionDataData] = Field(default=None)
+    errors: typing.Optional[typing.Any] = Field(default=None)
+
+
+class NetTopologyVersionDataData(BaseModel):
+    net_topology_version_data: NetTopologyVersionDataPayload = Field(alias='netTopologyVersionData')
+
+
 class ShortestPathQueryResponse(BaseModel):
     data: typing.Optional[ShortestPathData] = Field(default=None)
     errors: typing.Optional[typing.Any] = Field(default=None)
@@ -1494,6 +1705,10 @@ class SyncePathToGrandMasterQueryResponse(BaseModel):
 
 class SyncePathToGrandMasterData(BaseModel):
     synce_path_to_grand_master: typing.Optional[list[typing.Optional[String]]] = Field(alias='syncePathToGrandMaster')
+
+
+class ReconnectKafkaMutation(Mutation):
+    _name: str = PrivateAttr('reconnectKafka')
 
 
 class AddDeviceMutation(Mutation):
@@ -1543,6 +1758,37 @@ class BulkUninstallDevicesMutation(Mutation):
     _name: str = PrivateAttr('bulkUninstallDevices')
     input: BulkUninstallDevicesInput = Field(json_schema_extra={'type': 'BulkUninstallDevicesInput!'})
     payload: BulkUninstallDevicePayload
+
+
+class AddStreamMutation(Mutation):
+    _name: str = PrivateAttr('addStream')
+    input: AddStreamInput = Field(json_schema_extra={'type': 'AddStreamInput!'})
+    payload: AddStreamPayload
+
+
+class ActivateStreamMutation(Mutation):
+    _name: str = PrivateAttr('activateStream')
+    id: String = Field(json_schema_extra={'type': 'String!'})
+    payload: ActivateStreamPayload
+
+
+class DeactivateStreamMutation(Mutation):
+    _name: str = PrivateAttr('deactivateStream')
+    id: String = Field(json_schema_extra={'type': 'String!'})
+    payload: DeactivateStreamPayload
+
+
+class DeleteStreamMutation(Mutation):
+    _name: str = PrivateAttr('deleteStream')
+    id: String = Field(json_schema_extra={'type': 'String!'})
+    payload: DeleteStreamPayload
+
+
+class UpdateStreamMutation(Mutation):
+    _name: str = PrivateAttr('updateStream')
+    id: String = Field(json_schema_extra={'type': 'String!'})
+    input: UpdateStreamInput = Field(json_schema_extra={'type': 'UpdateStreamInput!'})
+    payload: UpdateStreamPayload
 
 
 class AddZoneMutation(Mutation):
@@ -1734,6 +1980,51 @@ class BulkUninstallDevicesData(BaseModel):
     bulk_uninstall_devices: BulkUninstallDevicePayloadPayload = Field(alias='bulkUninstallDevices')
 
 
+class AddStreamMutationResponse(BaseModel):
+    data: typing.Optional[AddStreamData] = Field(default=None)
+    errors: typing.Optional[typing.Any] = Field(default=None)
+
+
+class AddStreamData(BaseModel):
+    add_stream: AddStreamPayloadPayload = Field(alias='addStream')
+
+
+class ActivateStreamMutationResponse(BaseModel):
+    data: typing.Optional[ActivateStreamData] = Field(default=None)
+    errors: typing.Optional[typing.Any] = Field(default=None)
+
+
+class ActivateStreamData(BaseModel):
+    activate_stream: ActivateStreamPayloadPayload = Field(alias='activateStream')
+
+
+class DeactivateStreamMutationResponse(BaseModel):
+    data: typing.Optional[DeactivateStreamData] = Field(default=None)
+    errors: typing.Optional[typing.Any] = Field(default=None)
+
+
+class DeactivateStreamData(BaseModel):
+    deactivate_stream: DeactivateStreamPayloadPayload = Field(alias='deactivateStream')
+
+
+class DeleteStreamMutationResponse(BaseModel):
+    data: typing.Optional[DeleteStreamData] = Field(default=None)
+    errors: typing.Optional[typing.Any] = Field(default=None)
+
+
+class DeleteStreamData(BaseModel):
+    delete_stream: DeleteStreamPayloadPayload = Field(alias='deleteStream')
+
+
+class UpdateStreamMutationResponse(BaseModel):
+    data: typing.Optional[UpdateStreamData] = Field(default=None)
+    errors: typing.Optional[typing.Any] = Field(default=None)
+
+
+class UpdateStreamData(BaseModel):
+    update_stream: UpdateStreamPayloadPayload = Field(alias='updateStream')
+
+
 class AddZoneMutationResponse(BaseModel):
     data: typing.Optional[AddZoneData] = Field(default=None)
     errors: typing.Optional[typing.Any] = Field(default=None)
@@ -1904,6 +2195,27 @@ class UniconfigShellSubscription(Subscription):
     payload: Boolean
 
 
+class DevicesConnectionSubscription(Subscription):
+    _name: str = PrivateAttr('devicesConnection')
+    target_devices: typing.Optional[list[String]] = Field(default=None, alias='targetDevices', json_schema_extra={'type': '[String!]!'})
+    connection_timeout: typing.Optional[Int] = Field(default=None, alias='connectionTimeout', json_schema_extra={'type': 'Int'})
+    payload: DevicesConnection
+
+
+class DeviceUsageSubscription(Subscription):
+    _name: str = PrivateAttr('deviceUsage')
+    device_name: String = Field(alias='deviceName', json_schema_extra={'type': 'String!'})
+    refresh_every_sec: typing.Optional[Int] = Field(default=None, alias='refreshEverySec', json_schema_extra={'type': 'Int'})
+    payload: DeviceUsage
+
+
+class DevicesUsageSubscription(Subscription):
+    _name: str = PrivateAttr('devicesUsage')
+    device_names: typing.Optional[list[String]] = Field(default=None, alias='deviceNames', json_schema_extra={'type': '[String!]!'})
+    refresh_every_sec: typing.Optional[Int] = Field(default=None, alias='refreshEverySec', json_schema_extra={'type': 'Int'})
+    payload: DeviceListUsage
+
+
 class UniconfigShellSubscriptionResponse(BaseModel):
     data: typing.Optional[UniconfigShellData] = Field(default=None)
     errors: typing.Optional[typing.Any] = Field(default=None)
@@ -1911,6 +2223,33 @@ class UniconfigShellSubscriptionResponse(BaseModel):
 
 class UniconfigShellData(BaseModel):
     uniconfig_shell: typing.Optional[typing.Optional[String]] = Field(alias='uniconfigShell')
+
+
+class DevicesConnectionSubscriptionResponse(BaseModel):
+    data: typing.Optional[DevicesConnectionData] = Field(default=None)
+    errors: typing.Optional[typing.Any] = Field(default=None)
+
+
+class DevicesConnectionData(BaseModel):
+    devices_connection: typing.Optional[DevicesConnectionPayload] = Field(alias='devicesConnection')
+
+
+class DeviceUsageSubscriptionResponse(BaseModel):
+    data: typing.Optional[DeviceUsageData] = Field(default=None)
+    errors: typing.Optional[typing.Any] = Field(default=None)
+
+
+class DeviceUsageData(BaseModel):
+    device_usage: typing.Optional[DeviceUsagePayload] = Field(alias='deviceUsage')
+
+
+class DevicesUsageSubscriptionResponse(BaseModel):
+    data: typing.Optional[DevicesUsageData] = Field(default=None)
+    errors: typing.Optional[typing.Any] = Field(default=None)
+
+
+class DevicesUsageData(BaseModel):
+    devices_usage: typing.Optional[DeviceListUsagePayload] = Field(alias='devicesUsage')
 
 
 Node.model_rebuild()
@@ -1922,6 +2261,10 @@ UpdateDeviceInput.model_rebuild()
 CSVImportInput.model_rebuild()
 BulkInstallDevicesInput.model_rebuild()
 BulkUninstallDevicesInput.model_rebuild()
+FilterStreamsInput.model_rebuild()
+StreamOrderByInput.model_rebuild()
+AddStreamInput.model_rebuild()
+UpdateStreamInput.model_rebuild()
 FilterZonesInput.model_rebuild()
 AddZoneInput.model_rebuild()
 UpdateDataStoreInput.model_rebuild()
@@ -1965,6 +2308,22 @@ BulkInstallDevicePayload.model_rebuild()
 BulkInstallDevicePayloadPayload.model_rebuild()
 BulkUninstallDevicePayload.model_rebuild()
 BulkUninstallDevicePayloadPayload.model_rebuild()
+Stream.model_rebuild()
+StreamPayload.model_rebuild()
+StreamEdge.model_rebuild()
+StreamEdgePayload.model_rebuild()
+StreamConnection.model_rebuild()
+StreamConnectionPayload.model_rebuild()
+AddStreamPayload.model_rebuild()
+AddStreamPayloadPayload.model_rebuild()
+ActivateStreamPayload.model_rebuild()
+ActivateStreamPayloadPayload.model_rebuild()
+DeactivateStreamPayload.model_rebuild()
+DeactivateStreamPayloadPayload.model_rebuild()
+DeleteStreamPayload.model_rebuild()
+DeleteStreamPayloadPayload.model_rebuild()
+UpdateStreamPayload.model_rebuild()
+UpdateStreamPayloadPayload.model_rebuild()
 Zone.model_rebuild()
 ZonePayload.model_rebuild()
 ZoneEdge.model_rebuild()
@@ -2085,6 +2444,8 @@ PtpTopologyVersionData.model_rebuild()
 PtpTopologyVersionDataPayload.model_rebuild()
 SynceTopologyVersionData.model_rebuild()
 SynceTopologyVersionDataPayload.model_rebuild()
+NetInterface.model_rebuild()
+NetInterfacePayload.model_rebuild()
 TopologyCommonNodes.model_rebuild()
 TopologyCommonNodesPayload.model_rebuild()
 PtpDiffSynceNode.model_rebuild()
@@ -2095,14 +2456,14 @@ PtpDiffSynce.model_rebuild()
 PtpDiffSyncePayload.model_rebuild()
 UpdateGraphNodeCoordinatesPayload.model_rebuild()
 UpdateGraphNodeCoordinatesPayloadPayload.model_rebuild()
-NetInterface.model_rebuild()
-NetInterfacePayload.model_rebuild()
 NetNetwork.model_rebuild()
 NetNetworkPayload.model_rebuild()
 NetNode.model_rebuild()
 NetNodePayload.model_rebuild()
 NetTopology.model_rebuild()
 NetTopologyPayload.model_rebuild()
+NetTopologyVersionData.model_rebuild()
+NetTopologyVersionDataPayload.model_rebuild()
 NetRoutingPathNodeInfo.model_rebuild()
 NetRoutingPathNodeInfoPayload.model_rebuild()
 NetRoutingPathNode.model_rebuild()
@@ -2111,11 +2472,23 @@ PtpTopology.model_rebuild()
 PtpTopologyPayload.model_rebuild()
 SynceTopology.model_rebuild()
 SynceTopologyPayload.model_rebuild()
+DeviceStatus.model_rebuild()
+DeviceStatusPayload.model_rebuild()
+DevicesConnection.model_rebuild()
+DevicesConnectionPayload.model_rebuild()
+DeviceUsage.model_rebuild()
+DeviceUsagePayload.model_rebuild()
+DevicesUsage.model_rebuild()
+DevicesUsagePayload.model_rebuild()
+DeviceListUsage.model_rebuild()
+DeviceListUsagePayload.model_rebuild()
 GraphVersionNode.model_rebuild()
 GraphVersionNodePayload.model_rebuild()
 NodeQuery.model_rebuild()
+KafkaHealthCheckQuery.model_rebuild()
 DevicesQuery.model_rebuild()
 UniconfigShellSessionQuery.model_rebuild()
+StreamsQuery.model_rebuild()
 ZonesQuery.model_rebuild()
 DataStoreQuery.model_rebuild()
 CalculatedDiffQuery.model_rebuild()
@@ -2132,6 +2505,7 @@ PhyTopologyVersionDataQuery.model_rebuild()
 PtpTopologyVersionDataQuery.model_rebuild()
 SynceTopologyVersionDataQuery.model_rebuild()
 NetTopologyQuery.model_rebuild()
+NetTopologyVersionDataQuery.model_rebuild()
 ShortestPathQuery.model_rebuild()
 PtpPathToGrandMasterQuery.model_rebuild()
 PtpTopologyQuery.model_rebuild()
@@ -2140,6 +2514,8 @@ SyncePathToGrandMasterQuery.model_rebuild()
 NodeQueryResponse.model_rebuild()
 DevicesQueryResponse.model_rebuild()
 DevicesData.model_rebuild()
+StreamsQueryResponse.model_rebuild()
+StreamsData.model_rebuild()
 ZonesQueryResponse.model_rebuild()
 ZonesData.model_rebuild()
 DataStoreQueryResponse.model_rebuild()
@@ -2164,12 +2540,15 @@ PtpTopologyVersionDataQueryResponse.model_rebuild()
 PtpTopologyVersionDataData.model_rebuild()
 SynceTopologyVersionDataQueryResponse.model_rebuild()
 SynceTopologyVersionDataData.model_rebuild()
+NetTopologyVersionDataQueryResponse.model_rebuild()
+NetTopologyVersionDataData.model_rebuild()
 ShortestPathQueryResponse.model_rebuild()
 ShortestPathData.model_rebuild()
 PtpPathToGrandMasterQueryResponse.model_rebuild()
 PtpPathToGrandMasterData.model_rebuild()
 SyncePathToGrandMasterQueryResponse.model_rebuild()
 SyncePathToGrandMasterData.model_rebuild()
+ReconnectKafkaMutation.model_rebuild()
 AddDeviceMutation.model_rebuild()
 UpdateDeviceMutation.model_rebuild()
 DeleteDeviceMutation.model_rebuild()
@@ -2178,6 +2557,11 @@ UninstallDeviceMutation.model_rebuild()
 ImportCSVMutation.model_rebuild()
 BulkInstallDevicesMutation.model_rebuild()
 BulkUninstallDevicesMutation.model_rebuild()
+AddStreamMutation.model_rebuild()
+ActivateStreamMutation.model_rebuild()
+DeactivateStreamMutation.model_rebuild()
+DeleteStreamMutation.model_rebuild()
+UpdateStreamMutation.model_rebuild()
 AddZoneMutation.model_rebuild()
 UpdateDataStoreMutation.model_rebuild()
 CommitConfigMutation.model_rebuild()
@@ -2212,6 +2596,16 @@ BulkInstallDevicesMutationResponse.model_rebuild()
 BulkInstallDevicesData.model_rebuild()
 BulkUninstallDevicesMutationResponse.model_rebuild()
 BulkUninstallDevicesData.model_rebuild()
+AddStreamMutationResponse.model_rebuild()
+AddStreamData.model_rebuild()
+ActivateStreamMutationResponse.model_rebuild()
+ActivateStreamData.model_rebuild()
+DeactivateStreamMutationResponse.model_rebuild()
+DeactivateStreamData.model_rebuild()
+DeleteStreamMutationResponse.model_rebuild()
+DeleteStreamData.model_rebuild()
+UpdateStreamMutationResponse.model_rebuild()
+UpdateStreamData.model_rebuild()
 AddZoneMutationResponse.model_rebuild()
 AddZoneData.model_rebuild()
 UpdateDataStoreMutationResponse.model_rebuild()
@@ -2249,5 +2643,14 @@ RevertChangesData.model_rebuild()
 UpdateGraphNodeCoordinatesMutationResponse.model_rebuild()
 UpdateGraphNodeCoordinatesData.model_rebuild()
 UniconfigShellSubscription.model_rebuild()
+DevicesConnectionSubscription.model_rebuild()
+DeviceUsageSubscription.model_rebuild()
+DevicesUsageSubscription.model_rebuild()
 UniconfigShellSubscriptionResponse.model_rebuild()
 UniconfigShellData.model_rebuild()
+DevicesConnectionSubscriptionResponse.model_rebuild()
+DevicesConnectionData.model_rebuild()
+DeviceUsageSubscriptionResponse.model_rebuild()
+DeviceUsageData.model_rebuild()
+DevicesUsageSubscriptionResponse.model_rebuild()
+DevicesUsageData.model_rebuild()

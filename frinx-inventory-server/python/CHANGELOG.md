@@ -9,3 +9,6 @@
 
 # 2.0.1
 - graphql-pydantic-converter v ^1.2
+
+# 2.1.0
+- Updated Python classes from device-inventory v6.1.0.
