@@ -32,6 +32,10 @@ class TopologyType(ENUM):
     NETWORKTOPOLOGY = 'NetworkTopology'
 
 
+class GeometryType(ENUM):
+    POINT = 'Point'
+
+
 class NetRoutingPathOutputCollections(ENUM):
     NETDEVICE = 'NetDevice'
     NETINTERFACE = 'NetInterface'
@@ -61,6 +65,10 @@ class CoordinatesInput(Input):
     node_name: String
     x: Float
     y: Float
+
+
+class DeviceMetadataFilter(Input):
+    device_name: typing.Optional[String] = Field(default=None, alias='deviceName')
 
 
 class NetDeviceFilter(Input):
@@ -187,11 +195,15 @@ class ProviderResponsePayload(BaseModel):
 class SyncResponse(Payload):
     labels: typing.Optional[Boolean] = Field(default=False)
     loaded_devices: typing.Optional[Boolean] = Field(default=False)
+    devices_missing_in_inventory: typing.Optional[Boolean] = Field(default=False)
+    devices_missing_in_uniconfig: typing.Optional[Boolean] = Field(default=False)
 
 
 class SyncResponsePayload(BaseModel):
     labels: typing.Optional[typing.Optional[list[typing.Optional[String]]]] = Field(default=None)
     loaded_devices: typing.Optional[typing.Optional[JSON]] = Field(default=None)
+    devices_missing_in_inventory: typing.Optional[typing.Optional[list[typing.Optional[String]]]] = Field(default=None)
+    devices_missing_in_uniconfig: typing.Optional[typing.Optional[list[typing.Optional[String]]]] = Field(default=None)
 
 
 class NodeQuery(Query):
@@ -290,6 +302,14 @@ class ProviderQuery(Query):
     _name: str = PrivateAttr('provider')
     name: String = Field(json_schema_extra={'type': 'String!'})
     payload: ProviderResponse
+
+
+class DeviceMetadataQuery(Query):
+    _name: str = PrivateAttr('deviceMetadata')
+    filters: typing.Optional[DeviceMetadataFilter] = Field(default=None, json_schema_extra={'type': 'DeviceMetadataFilter'})
+    first: typing.Optional[Int] = Field(default=None, json_schema_extra={'type': 'Int'})
+    cursor: typing.Optional[String] = Field(default=None, json_schema_extra={'type': 'String'})
+    payload: MetadataConnection
 
 
 class NodeQueryResponse(BaseModel):
@@ -396,6 +416,15 @@ class ProviderData(BaseModel):
     provider: ProviderResponsePayload
 
 
+class DeviceMetadataQueryResponse(BaseModel):
+    data: typing.Optional[DeviceMetadataData] = Field(default=None)
+    errors: typing.Optional[typing.Any] = Field(default=None)
+
+
+class DeviceMetadataData(BaseModel):
+    device_metadata: MetadataConnectionPayload = Field(alias='deviceMetadata')
+
+
 class CreateBackupMutation(Mutation):
     _name: str = PrivateAttr('createBackup')
 
@@ -492,6 +521,60 @@ class Coordinates(Payload):
 class CoordinatesPayload(BaseModel):
     x: typing.Optional[typing.Optional[Float]] = Field(default=None)
     y: typing.Optional[typing.Optional[Float]] = Field(default=None)
+
+
+class DeviceMetadata(Payload):
+    id: typing.Optional[Boolean] = Field(default=False)
+    device_name: typing.Optional[Boolean] = Field(default=False, alias='deviceName')
+    device_type: typing.Optional[Boolean] = Field(default=False, alias='deviceType')
+    vendor: typing.Optional[Boolean] = Field(default=False)
+    model: typing.Optional[Boolean] = Field(default=False)
+    version: typing.Optional[Boolean] = Field(default=False)
+    protocol_type: typing.Optional[Boolean] = Field(default=False, alias='protocolType')
+    geo_location: typing.Optional[DeviceGeoLocation] = Field(default=None, alias='geoLocation')
+
+
+class DeviceMetadataPayload(BaseModel):
+    id: typing.Optional[typing.Optional[ID]] = Field(default=None)
+    device_name: typing.Optional[typing.Optional[String]] = Field(default=None, alias='deviceName')
+    device_type: typing.Optional[typing.Optional[String]] = Field(default=None, alias='deviceType')
+    vendor: typing.Optional[typing.Optional[String]] = Field(default=None)
+    model: typing.Optional[typing.Optional[String]] = Field(default=None)
+    version: typing.Optional[typing.Optional[String]] = Field(default=None)
+    protocol_type: typing.Optional[typing.Optional[String]] = Field(default=None, alias='protocolType')
+    geo_location: typing.Optional[DeviceGeoLocationPayload] = Field(default=None, alias='geoLocation')
+
+
+class DeviceMetadataEdge(Payload):
+    cursor: typing.Optional[Boolean] = Field(default=False)
+    node: typing.Optional[DeviceMetadata] = Field(default=None)
+
+
+class DeviceMetadataEdgePayload(BaseModel):
+    cursor: typing.Optional[typing.Optional[String]] = Field(default=None)
+    node: typing.Optional[DeviceMetadataPayload] = Field(default=None)
+
+
+class MetadataConnection(Payload):
+    page_info: typing.Optional[PageInfo] = Field(default=None, alias='pageInfo')
+    edges: typing.Optional[DeviceMetadataEdge] = Field(default=None)
+
+
+class MetadataConnectionPayload(BaseModel):
+    page_info: typing.Optional[PageInfoPayload] = Field(default=None, alias='pageInfo')
+    edges: typing.Optional[typing.Optional[list[DeviceMetadataEdgePayload]]] = Field(default=None)
+
+
+class DeviceGeoLocation(Payload):
+    type: typing.Optional[Boolean] = Field(default=False)
+    coordinates: typing.Optional[Boolean] = Field(default=False)
+    bbox: typing.Optional[Boolean] = Field(default=False)
+
+
+class DeviceGeoLocationPayload(BaseModel):
+    type: typing.Optional[typing.Optional[GeometryType]] = Field(default=None)
+    coordinates: typing.Optional[typing.Optional[list[typing.Optional[Float]]]] = Field(default=None)
+    bbox: typing.Optional[typing.Optional[list[typing.Optional[Float]]]] = Field(default=None)
 
 
 class NetDevice(Payload):
@@ -1100,6 +1183,7 @@ class SyncePathPayload(BaseModel):
 
 Node.model_rebuild()
 CoordinatesInput.model_rebuild()
+DeviceMetadataFilter.model_rebuild()
 NetDeviceFilter.model_rebuild()
 NetInterfaceFilter.model_rebuild()
 NetNetworkFilter.model_rebuild()
@@ -1139,6 +1223,7 @@ TopologyDiffQuery.model_rebuild()
 CommonNodesQuery.model_rebuild()
 ProvidersQuery.model_rebuild()
 ProviderQuery.model_rebuild()
+DeviceMetadataQuery.model_rebuild()
 NodeQueryResponse.model_rebuild()
 PhyDevicesQueryResponse.model_rebuild()
 PhyDevicesData.model_rebuild()
@@ -1162,6 +1247,8 @@ CommonNodesQueryResponse.model_rebuild()
 CommonNodesData.model_rebuild()
 ProviderQueryResponse.model_rebuild()
 ProviderData.model_rebuild()
+DeviceMetadataQueryResponse.model_rebuild()
+DeviceMetadataData.model_rebuild()
 CreateBackupMutation.model_rebuild()
 DeleteBackupsMutation.model_rebuild()
 UpdateCoordinatesMutation.model_rebuild()
@@ -1180,6 +1267,14 @@ EnableRemoteDebugSessionMutationResponse.model_rebuild()
 EnableRemoteDebugSessionData.model_rebuild()
 Coordinates.model_rebuild()
 CoordinatesPayload.model_rebuild()
+DeviceMetadata.model_rebuild()
+DeviceMetadataPayload.model_rebuild()
+DeviceMetadataEdge.model_rebuild()
+DeviceMetadataEdgePayload.model_rebuild()
+MetadataConnection.model_rebuild()
+MetadataConnectionPayload.model_rebuild()
+DeviceGeoLocation.model_rebuild()
+DeviceGeoLocationPayload.model_rebuild()
 NetDevice.model_rebuild()
 NetDevicePayload.model_rebuild()
 NetDeviceEdge.model_rebuild()
