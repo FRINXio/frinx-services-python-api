@@ -38,7 +38,7 @@ services:
       start_period: 40s
 
   converter:
-    image: frinx/graphql-pydantic-converter:1.2.0
+    image: frinx/graphql-pydantic-converter:1.2.2
     depends_on:
       inventory:
         condition: service_healthy

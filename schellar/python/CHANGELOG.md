@@ -6,3 +6,6 @@
 # 1.0.0
 - Pydantic v2
 - graphql-pydantic-converter v 1.1.0
+
+# 1.0.1
+- Package dependency update

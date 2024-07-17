@@ -33,7 +33,7 @@ services:
       start_period: 20s
 
   converter:
-    image: frinx/graphql-pydantic-converter:1.2.0
+    image: frinx/graphql-pydantic-converter:1.2.2
     depends_on:
       schellar:
         condition: service_healthy

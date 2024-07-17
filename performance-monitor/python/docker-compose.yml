@@ -42,7 +42,7 @@ services:
       - ./env_files/.env_performance_monitor
   
   converter:
-    image: frinx/graphql-pydantic-converter:1.2.0
+    image: frinx/graphql-pydantic-converter:1.2.2
     restart: on-failure
     depends_on:
       kafka:

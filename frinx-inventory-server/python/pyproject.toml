@@ -18,7 +18,7 @@ packages = [{ include = "frinx_api" }]
 name = "frinx-inventory-api"
 description = "Frinx Inventory graphql schema transformed to pydantic basemodels"
 authors = ["Jozef Volak <jozef.volak@elisapolystar.com>"]
-version = "2.1.0"
+version = "2.1.1"
 readme = ["README.md", "CHANGELOG.md", "RELEASE.md"]
 keywords = ["frinx-machine", "inventory", "api"]
 license = "Apache 2.0"
