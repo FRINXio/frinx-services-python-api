@@ -40,6 +40,8 @@ jobs:
               - 'schellar/python/**'
             topology-discovery/python:
               - 'topology-discovery/python/**'
+            performance-monitor/python:
+              - 'performance-monitor/python/**'
             uniconfig/python:
               - 'uniconfig/python/**'
             utils/graphql-pydantic-converter:

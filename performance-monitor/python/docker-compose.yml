@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  monitor-postgres:
+    image: timescale/timescaledb:latest-pg16
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  kafka:
+    image: bitnami/kafka:3.5.1
+    env_file:
+      - ./env_files/.env_kafka
+    healthcheck:
+      test: kafka-topics.sh --bootstrap-server kafka:9092 --topic hc --create --if-not-exists && kafka-topics.sh --bootstrap-server kafka:9092 --topic hc --describe
+      start_period: 50s
+      interval: 10s
+      timeout: 10s
+      retries: 10
+    depends_on:
+      monitor-postgres:
+        condition: service_healthy
+
+  performance-monitor:
+    image: frinx/performance-monitor:${IMAGE_TAG:?}
+    depends_on:
+      kafka:
+        condition: service_healthy
+    healthcheck:
+      test: curl --fail -s -X GET http://localhost:8000/api/liveness-healthcheck
+      interval: 5s
+      timeout: 10s
+      retries: 10
+    env_file:
+      - ./env_files/.env_performance_monitor
+  
+  converter:
+    image: frinx/graphql-pydantic-converter:1.2.0
+    restart: on-failure
+    depends_on:
+      kafka:
+        condition: service_healthy
+    volumes:
+      - ./frinx_api/performance_monitor/:/home/
+    command: '--url http://performance-monitor:8000/api/graphql -o /home/__init__.py'
