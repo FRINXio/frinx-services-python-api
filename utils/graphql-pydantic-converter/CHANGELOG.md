@@ -22,3 +22,8 @@
 
 # 1.2.1
 - Fix rendering issue when payload is bool
+
+# 1.2.1
+- Security updates
+- Disable pyright check for reportCallIssue
+- Disable pyright check for reportIncompatibleVariableOverride
