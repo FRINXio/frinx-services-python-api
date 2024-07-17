@@ -21,6 +21,8 @@ jobs:
               - 'frinx-inventory-server/python/RELEASE.md'
             resource-manager/python:
               - 'resource-manager/python/RELEASE.md'
+            performance-monitor/python:
+              - 'performance-monitor/python/RELEASE.md'
             schellar/python:
               - 'schellar/python/RELEASE.md'
             topology-discovery/python:
