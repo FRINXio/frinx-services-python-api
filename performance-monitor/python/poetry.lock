@@ -123,13 +123,13 @@ files = [
 
 [[package]]
 name = "graphql-pydantic-converter"
-version = "1.2.1"
+version = "1.2.2"
 description = "Convert pydantic schema to pydantic datamodel and build request from it"
 optional = false
 python-versions = "<4.0,>=3.10"
 files = [
-    {file = "graphql_pydantic_converter-1.2.1-py3-none-any.whl", hash = "sha256:d72c16c8881096d7d00e32c89340a51b0ea3edcf7d04b07d01b08197c1c2e772"},
-    {file = "graphql_pydantic_converter-1.2.1.tar.gz", hash = "sha256:56d3fd375dfdceece66c37a7b654ff6b323dce8073331d7246d5151bb4a48e9e"},
+    {file = "graphql_pydantic_converter-1.2.2-py3-none-any.whl", hash = "sha256:6fe78e92bc2659b0f1849cbf044601a482652f0576c1e234bb7559c10ab7dc5f"},
+    {file = "graphql_pydantic_converter-1.2.2.tar.gz", hash = "sha256:97f9e8c70a63c63054048969fcfc96f143d8f7cb8499c6f3abd06d2a616bdbd8"},
 ]
 
 [package.dependencies]

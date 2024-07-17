@@ -25,3 +25,6 @@
 
 # 1.2.0
 - Update models based on new OpenAPI fixed in UniConfig 6.1.x
+
+# 1.2.1
+- Package dependency update

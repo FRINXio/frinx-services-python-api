@@ -12,3 +12,6 @@
 
 # 2.1.0
 - Updated Python classes from device-inventory v6.1.0.
+
+# 2.1.0
+- Package dependency update
