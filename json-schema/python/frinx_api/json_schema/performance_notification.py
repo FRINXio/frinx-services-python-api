@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from typing import Any
+from typing import Optional
 
 from pydantic import BaseModel
 from pydantic import ConfigDict
@@ -31,6 +32,10 @@ class PerformanceMonitoringNotification(BaseModel):
     )
     """
     The timestamp when notification arrived.
+    """
+    path: Optional[str] = None
+    """
+    The path to data.
     """
     body: dict[str, Any]
     """

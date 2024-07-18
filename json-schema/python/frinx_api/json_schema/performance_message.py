@@ -28,7 +28,7 @@ class PerformanceMessage(BaseModel):
     """
     The timestamp when notification arrived.
     """
-    metrics: Any
+    metrics: dict[str, Any]
     """
     The measured metrics.
     """
