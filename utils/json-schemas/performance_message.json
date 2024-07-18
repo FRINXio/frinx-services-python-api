@@ -21,7 +21,7 @@
     },
     "metrics": {
       "description": "The measured metrics.",
-      "type": "any"
+      "type": "object"
     }
   }
 }

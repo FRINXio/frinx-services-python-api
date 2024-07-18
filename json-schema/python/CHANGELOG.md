@@ -23,3 +23,8 @@
 
 # 0.3.1
 - Package dependency update
+
+# 0.4.0
+- Added a 'path' field into performance-notifications json schema.
+- Changed a 'metrics' field type in performance-message json schema from Any to Dict.
+- Added a new Kafka header constant 'interface-utilization' to the header_constants module.
