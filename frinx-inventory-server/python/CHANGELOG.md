@@ -15,3 +15,6 @@
 
 # 2.1.0
 - Package dependency update
+
+# 2.2.0
+- Updated API from device-inventory v6.1.1 GraphQL schema.

@@ -46,12 +46,13 @@ class DeviceSize(ENUM):
 
 class SortDeviceBy(ENUM):
     NAME = 'name'
-    CREATEDAT = 'createdAt'
-    SERVICESTATE = 'serviceState'
+    DISCOVEREDAT = 'discoveredAt'
+    MODELVERSION = 'modelVersion'
 
 
 class SortStreamBy(ENUM):
     STREAMNAME = 'streamName'
+    DEVICENAME = 'deviceName'
     CREATEDAT = 'createdAt'
 
 
@@ -137,6 +138,8 @@ class BulkUninstallDevicesInput(Input):
 
 
 class FilterStreamsInput(Input):
+    labels: typing.Optional[list[String]] = Field(default=None)
+    device_name: typing.Optional[String] = Field(default=None, alias='deviceName')
     stream_name: typing.Optional[String] = Field(default=None, alias='streamName')
 
 
@@ -157,6 +160,14 @@ class UpdateStreamInput(Input):
     device_name: String = Field(alias='deviceName')
     blueprint_id: typing.Optional[String] = Field(default=None, alias='blueprintId')
     stream_parameters: typing.Optional[String] = Field(default=None, alias='streamParameters')
+
+
+class BulkInstallStreamsInput(Input):
+    stream_ids: typing.Optional[list[String]] = Field(default=None, alias='streamIds')
+
+
+class BulkUninstallStreamsInput(Input):
+    stream_ids: typing.Optional[list[String]] = Field(default=None, alias='streamIds')
 
 
 class FilterZonesInput(Input):
@@ -257,6 +268,7 @@ class Device(Payload):
     name: typing.Optional[Boolean] = Field(default=False)
     created_at: typing.Optional[Boolean] = Field(default=False, alias='createdAt')
     updated_at: typing.Optional[Boolean] = Field(default=False, alias='updatedAt')
+    discovered_at: typing.Optional[Boolean] = Field(default=False, alias='discoveredAt')
     model: typing.Optional[Boolean] = Field(default=False)
     vendor: typing.Optional[Boolean] = Field(default=False)
     version: typing.Optional[Boolean] = Field(default=False)
@@ -279,6 +291,7 @@ class DevicePayload(BaseModel):
     name: typing.Optional[typing.Optional[String]] = Field(default=None)
     created_at: typing.Optional[typing.Optional[String]] = Field(default=None, alias='createdAt')
     updated_at: typing.Optional[typing.Optional[String]] = Field(default=None, alias='updatedAt')
+    discovered_at: typing.Optional[typing.Optional[String]] = Field(default=None, alias='discoveredAt')
     model: typing.Optional[typing.Optional[String]] = Field(default=None)
     vendor: typing.Optional[typing.Optional[String]] = Field(default=None)
     version: typing.Optional[typing.Optional[String]] = Field(default=None)
@@ -340,6 +353,16 @@ class UpdateDeviceMetadataPayload(Payload):
 
 class UpdateDeviceMetadataPayloadPayload(BaseModel):
     devices: typing.Optional[typing.Optional[list[DevicePayload]]] = Field(default=None)
+
+
+class DeviceDiscoveryPayload(Payload):
+    device_id: typing.Optional[Boolean] = Field(default=False, alias='deviceId')
+    discovered_at: typing.Optional[Boolean] = Field(default=False, alias='discoveredAt')
+
+
+class DeviceDiscoveryPayloadPayload(BaseModel):
+    device_id: typing.Optional[typing.Optional[String]] = Field(default=None, alias='deviceId')
+    discovered_at: typing.Optional[typing.Optional[String]] = Field(default=None, alias='discoveredAt')
 
 
 class DeleteDevicePayload(Payload):
@@ -472,6 +495,22 @@ class UpdateStreamPayload(Payload):
 
 class UpdateStreamPayloadPayload(BaseModel):
     stream: typing.Optional[StreamPayload] = Field(default=None)
+
+
+class BulkInstallStreamPayload(Payload):
+    installed_streams: typing.Optional[Stream] = Field(default=None, alias='installedStreams')
+
+
+class BulkInstallStreamPayloadPayload(BaseModel):
+    installed_streams: typing.Optional[typing.Optional[list[StreamPayload]]] = Field(default=None, alias='installedStreams')
+
+
+class BulkUninstallStreamPayload(Payload):
+    uninstalled_streams: typing.Optional[Stream] = Field(default=None, alias='uninstalledStreams')
+
+
+class BulkUninstallStreamPayloadPayload(BaseModel):
+    uninstalled_streams: typing.Optional[typing.Optional[list[StreamPayload]]] = Field(default=None, alias='uninstalledStreams')
 
 
 class Zone(Payload):
@@ -1724,6 +1763,12 @@ class UpdateDeviceMutation(Mutation):
     payload: UpdateDevicePayload
 
 
+class UpdateDiscoveredAtMutation(Mutation):
+    _name: str = PrivateAttr('updateDiscoveredAt')
+    device_ids: typing.Optional[list[String]] = Field(default=None, alias='deviceIds', json_schema_extra={'type': '[String!]!'})
+    payload: DeviceDiscoveryPayload
+
+
 class DeleteDeviceMutation(Mutation):
     _name: str = PrivateAttr('deleteDevice')
     id: String = Field(json_schema_extra={'type': 'String!'})
@@ -1789,6 +1834,18 @@ class UpdateStreamMutation(Mutation):
     id: String = Field(json_schema_extra={'type': 'String!'})
     input: UpdateStreamInput = Field(json_schema_extra={'type': 'UpdateStreamInput!'})
     payload: UpdateStreamPayload
+
+
+class BulkInstallStreamsMutation(Mutation):
+    _name: str = PrivateAttr('bulkInstallStreams')
+    input: BulkInstallStreamsInput = Field(json_schema_extra={'type': 'BulkInstallStreamsInput!'})
+    payload: BulkInstallStreamPayload
+
+
+class BulkUninstallStreamsMutation(Mutation):
+    _name: str = PrivateAttr('bulkUninstallStreams')
+    input: BulkUninstallStreamsInput = Field(json_schema_extra={'type': 'BulkUninstallStreamsInput!'})
+    payload: BulkUninstallStreamPayload
 
 
 class AddZoneMutation(Mutation):
@@ -1926,6 +1983,15 @@ class UpdateDeviceData(BaseModel):
     update_device: UpdateDevicePayloadPayload = Field(alias='updateDevice')
 
 
+class UpdateDiscoveredAtMutationResponse(BaseModel):
+    data: typing.Optional[UpdateDiscoveredAtData] = Field(default=None)
+    errors: typing.Optional[typing.Any] = Field(default=None)
+
+
+class UpdateDiscoveredAtData(BaseModel):
+    update_discovered_at: typing.Optional[list[DeviceDiscoveryPayloadPayload]] = Field(alias='updateDiscoveredAt')
+
+
 class DeleteDeviceMutationResponse(BaseModel):
     data: typing.Optional[DeleteDeviceData] = Field(default=None)
     errors: typing.Optional[typing.Any] = Field(default=None)
@@ -2023,6 +2089,24 @@ class UpdateStreamMutationResponse(BaseModel):
 
 class UpdateStreamData(BaseModel):
     update_stream: UpdateStreamPayloadPayload = Field(alias='updateStream')
+
+
+class BulkInstallStreamsMutationResponse(BaseModel):
+    data: typing.Optional[BulkInstallStreamsData] = Field(default=None)
+    errors: typing.Optional[typing.Any] = Field(default=None)
+
+
+class BulkInstallStreamsData(BaseModel):
+    bulk_install_streams: BulkInstallStreamPayloadPayload = Field(alias='bulkInstallStreams')
+
+
+class BulkUninstallStreamsMutationResponse(BaseModel):
+    data: typing.Optional[BulkUninstallStreamsData] = Field(default=None)
+    errors: typing.Optional[typing.Any] = Field(default=None)
+
+
+class BulkUninstallStreamsData(BaseModel):
+    bulk_uninstall_streams: BulkUninstallStreamPayloadPayload = Field(alias='bulkUninstallStreams')
 
 
 class AddZoneMutationResponse(BaseModel):
@@ -2265,6 +2349,8 @@ FilterStreamsInput.model_rebuild()
 StreamOrderByInput.model_rebuild()
 AddStreamInput.model_rebuild()
 UpdateStreamInput.model_rebuild()
+BulkInstallStreamsInput.model_rebuild()
+BulkUninstallStreamsInput.model_rebuild()
 FilterZonesInput.model_rebuild()
 AddZoneInput.model_rebuild()
 UpdateDataStoreInput.model_rebuild()
@@ -2296,6 +2382,8 @@ UpdateDevicePayload.model_rebuild()
 UpdateDevicePayloadPayload.model_rebuild()
 UpdateDeviceMetadataPayload.model_rebuild()
 UpdateDeviceMetadataPayloadPayload.model_rebuild()
+DeviceDiscoveryPayload.model_rebuild()
+DeviceDiscoveryPayloadPayload.model_rebuild()
 DeleteDevicePayload.model_rebuild()
 DeleteDevicePayloadPayload.model_rebuild()
 InstallDevicePayload.model_rebuild()
@@ -2324,6 +2412,10 @@ DeleteStreamPayload.model_rebuild()
 DeleteStreamPayloadPayload.model_rebuild()
 UpdateStreamPayload.model_rebuild()
 UpdateStreamPayloadPayload.model_rebuild()
+BulkInstallStreamPayload.model_rebuild()
+BulkInstallStreamPayloadPayload.model_rebuild()
+BulkUninstallStreamPayload.model_rebuild()
+BulkUninstallStreamPayloadPayload.model_rebuild()
 Zone.model_rebuild()
 ZonePayload.model_rebuild()
 ZoneEdge.model_rebuild()
@@ -2551,6 +2643,7 @@ SyncePathToGrandMasterData.model_rebuild()
 ReconnectKafkaMutation.model_rebuild()
 AddDeviceMutation.model_rebuild()
 UpdateDeviceMutation.model_rebuild()
+UpdateDiscoveredAtMutation.model_rebuild()
 DeleteDeviceMutation.model_rebuild()
 InstallDeviceMutation.model_rebuild()
 UninstallDeviceMutation.model_rebuild()
@@ -2562,6 +2655,8 @@ ActivateStreamMutation.model_rebuild()
 DeactivateStreamMutation.model_rebuild()
 DeleteStreamMutation.model_rebuild()
 UpdateStreamMutation.model_rebuild()
+BulkInstallStreamsMutation.model_rebuild()
+BulkUninstallStreamsMutation.model_rebuild()
 AddZoneMutation.model_rebuild()
 UpdateDataStoreMutation.model_rebuild()
 CommitConfigMutation.model_rebuild()
@@ -2584,6 +2679,8 @@ AddDeviceMutationResponse.model_rebuild()
 AddDeviceData.model_rebuild()
 UpdateDeviceMutationResponse.model_rebuild()
 UpdateDeviceData.model_rebuild()
+UpdateDiscoveredAtMutationResponse.model_rebuild()
+UpdateDiscoveredAtData.model_rebuild()
 DeleteDeviceMutationResponse.model_rebuild()
 DeleteDeviceData.model_rebuild()
 InstallDeviceMutationResponse.model_rebuild()
@@ -2606,6 +2703,10 @@ DeleteStreamMutationResponse.model_rebuild()
 DeleteStreamData.model_rebuild()
 UpdateStreamMutationResponse.model_rebuild()
 UpdateStreamData.model_rebuild()
+BulkInstallStreamsMutationResponse.model_rebuild()
+BulkInstallStreamsData.model_rebuild()
+BulkUninstallStreamsMutationResponse.model_rebuild()
+BulkUninstallStreamsData.model_rebuild()
 AddZoneMutationResponse.model_rebuild()
 AddZoneData.model_rebuild()
 UpdateDataStoreMutationResponse.model_rebuild()
