@@ -8,4 +8,5 @@ device_removal = 'device_removal'
 # Constants for recognizing the type of performance_message
 cpu_usage = 'cpu_usage'
 memory_usage = 'memory_usage'
-interface_utilization = 'interface_utilization'
+interface_ipv4_utilization = 'interface_ipv4_utilization'
+interface_ipv6_utilization = 'interface_ipv6_utilization'
