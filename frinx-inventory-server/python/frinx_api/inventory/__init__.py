@@ -61,10 +61,16 @@ class GraphEdgeStatus(ENUM):
     UNKNOWN = 'unknown'
 
 
+class Signalization(ENUM):
+    RSVP = 'RSVP'
+    LDP = 'LDP'
+
+
 class TopologyLayer(ENUM):
     PHYSICALTOPOLOGY = 'PhysicalTopology'
     PTPTOPOLOGY = 'PtpTopology'
     ETHTOPOLOGY = 'EthTopology'
+    MPLSTOPOLOGY = 'MplsTopology'
 
 
 class Node(Interface):
@@ -105,6 +111,7 @@ class AddDeviceInput(Input):
     port: typing.Optional[Int] = Field(default=None)
     device_type: typing.Optional[String] = Field(default=None, alias='deviceType')
     version: typing.Optional[String] = Field(default=None)
+    location_id: typing.Optional[String] = Field(default=None, alias='locationId')
 
 
 class UpdateDeviceInput(Input):
@@ -207,9 +214,21 @@ class FilterLabelsInput(Input):
     name: String
 
 
+class Coordinates(Input):
+    latitude: Float
+    longitude: Float
+
+
 class AddLocationInput(Input):
     name: String
-    country_id: String = Field(alias='countryId')
+    country_id: typing.Optional[String] = Field(default=None, alias='countryId')
+    coordinates: Coordinates
+
+
+class UpdateLocationInput(Input):
+    name: String
+    country_id: typing.Optional[String] = Field(default=None, alias='countryId')
+    coordinates: Coordinates
 
 
 class AddBlueprintInput(Input):
@@ -417,6 +436,8 @@ class Stream(Payload):
     id: typing.Optional[Boolean] = Field(default=False)
     created_at: typing.Optional[Boolean] = Field(default=False, alias='createdAt')
     updated_at: typing.Optional[Boolean] = Field(default=False, alias='updatedAt')
+    started_at: typing.Optional[Boolean] = Field(default=False, alias='startedAt')
+    stopped_at: typing.Optional[Boolean] = Field(default=False, alias='stoppedAt')
     stream_name: typing.Optional[Boolean] = Field(default=False, alias='streamName')
     device_name: typing.Optional[Boolean] = Field(default=False, alias='deviceName')
     is_active: typing.Optional[Boolean] = Field(default=False, alias='isActive')
@@ -428,6 +449,8 @@ class StreamPayload(BaseModel):
     id: typing.Optional[typing.Optional[ID]] = Field(default=None)
     created_at: typing.Optional[typing.Optional[String]] = Field(default=None, alias='createdAt')
     updated_at: typing.Optional[typing.Optional[String]] = Field(default=None, alias='updatedAt')
+    started_at: typing.Optional[typing.Optional[String]] = Field(default=None, alias='startedAt')
+    stopped_at: typing.Optional[typing.Optional[String]] = Field(default=None, alias='stoppedAt')
     stream_name: typing.Optional[typing.Optional[String]] = Field(default=None, alias='streamName')
     device_name: typing.Optional[typing.Optional[String]] = Field(default=None, alias='deviceName')
     is_active: typing.Optional[typing.Optional[Boolean]] = Field(default=None, alias='isActive')
@@ -747,6 +770,8 @@ class Location(Payload):
     created_at: typing.Optional[Boolean] = Field(default=False, alias='createdAt')
     updated_at: typing.Optional[Boolean] = Field(default=False, alias='updatedAt')
     country: typing.Optional[Boolean] = Field(default=False)
+    latitude: typing.Optional[Boolean] = Field(default=False)
+    longitude: typing.Optional[Boolean] = Field(default=False)
 
 
 class LocationPayload(BaseModel):
@@ -755,6 +780,8 @@ class LocationPayload(BaseModel):
     created_at: typing.Optional[typing.Optional[String]] = Field(default=None, alias='createdAt')
     updated_at: typing.Optional[typing.Optional[String]] = Field(default=None, alias='updatedAt')
     country: typing.Optional[typing.Optional[String]] = Field(default=None)
+    latitude: typing.Optional[typing.Optional[Float]] = Field(default=None)
+    longitude: typing.Optional[typing.Optional[Float]] = Field(default=None)
 
 
 class Country(Payload):
@@ -818,6 +845,22 @@ class AddLocationPayload(Payload):
 
 
 class AddLocationPayloadPayload(BaseModel):
+    location: typing.Optional[LocationPayload] = Field(default=None)
+
+
+class UpdateLocationPayload(Payload):
+    location: typing.Optional[Location] = Field(default=None)
+
+
+class UpdateLocationPayloadPayload(BaseModel):
+    location: typing.Optional[LocationPayload] = Field(default=None)
+
+
+class DeleteLocationPayload(Payload):
+    location: typing.Optional[Location] = Field(default=None)
+
+
+class DeleteLocationPayloadPayload(BaseModel):
     location: typing.Optional[LocationPayload] = Field(default=None)
 
 
@@ -1009,6 +1052,30 @@ class GraphNodePayload(BaseModel):
     device: typing.Optional[DevicePayload] = Field(default=None)
 
 
+class Geolocation(Payload):
+    latitude: typing.Optional[Boolean] = Field(default=False)
+    longitude: typing.Optional[Boolean] = Field(default=False)
+
+
+class GeolocationPayload(BaseModel):
+    latitude: typing.Optional[typing.Optional[Float]] = Field(default=None)
+    longitude: typing.Optional[typing.Optional[Float]] = Field(default=None)
+
+
+class GeoMapDevice(Payload):
+    id: typing.Optional[Boolean] = Field(default=False)
+    device_name: typing.Optional[Boolean] = Field(default=False, alias='deviceName')
+    location_name: typing.Optional[Boolean] = Field(default=False, alias='locationName')
+    geolocation: typing.Optional[Geolocation] = Field(default=None)
+
+
+class GeoMapDevicePayload(BaseModel):
+    id: typing.Optional[typing.Optional[ID]] = Field(default=None)
+    device_name: typing.Optional[typing.Optional[String]] = Field(default=None, alias='deviceName')
+    location_name: typing.Optional[typing.Optional[String]] = Field(default=None, alias='locationName')
+    geolocation: typing.Optional[GeolocationPayload] = Field(default=None)
+
+
 class EdgeSourceTarget(Payload):
     node_id: typing.Optional[Boolean] = Field(default=False, alias='nodeId')
     interface: typing.Optional[Boolean] = Field(default=False)
@@ -1164,6 +1231,82 @@ class SynceGraphNodePayload(BaseModel):
     status: typing.Optional[typing.Optional[GraphEdgeStatus]] = Field(default=None)
     labels: typing.Optional[typing.Optional[list[typing.Optional[String]]]] = Field(default=None)
     interfaces: typing.Optional[typing.Optional[list[SynceGraphNodeInterfacePayload]]] = Field(default=None)
+    coordinates: typing.Optional[GraphNodeCoordinatesPayload] = Field(default=None)
+
+
+class MplsData(Payload):
+    lsp_id: typing.Optional[Boolean] = Field(default=False, alias='lspId')
+    input_label: typing.Optional[Boolean] = Field(default=False, alias='inputLabel')
+    input_interface: typing.Optional[Boolean] = Field(default=False, alias='inputInterface')
+    output_label: typing.Optional[Boolean] = Field(default=False, alias='outputLabel')
+    output_interface: typing.Optional[Boolean] = Field(default=False, alias='outputInterface')
+
+
+class MplsDataPayload(BaseModel):
+    lsp_id: typing.Optional[typing.Optional[String]] = Field(default=None, alias='lspId')
+    input_label: typing.Optional[typing.Optional[Int]] = Field(default=None, alias='inputLabel')
+    input_interface: typing.Optional[typing.Optional[String]] = Field(default=None, alias='inputInterface')
+    output_label: typing.Optional[typing.Optional[Int]] = Field(default=None, alias='outputLabel')
+    output_interface: typing.Optional[typing.Optional[String]] = Field(default=None, alias='outputInterface')
+
+
+class LspTunnel(Payload):
+    lsp_id: typing.Optional[Boolean] = Field(default=False, alias='lspId')
+    from_device: typing.Optional[Boolean] = Field(default=False, alias='fromDevice')
+    to_device: typing.Optional[Boolean] = Field(default=False, alias='toDevice')
+    uptime: typing.Optional[Boolean] = Field(default=False)
+    signalization: typing.Optional[Boolean] = Field(default=False)
+
+
+class LspTunnelPayload(BaseModel):
+    lsp_id: typing.Optional[typing.Optional[String]] = Field(default=None, alias='lspId')
+    from_device: typing.Optional[typing.Optional[String]] = Field(default=None, alias='fromDevice')
+    to_device: typing.Optional[typing.Optional[String]] = Field(default=None, alias='toDevice')
+    uptime: typing.Optional[typing.Optional[Int]] = Field(default=None)
+    signalization: typing.Optional[typing.Optional[Signalization]] = Field(default=None)
+
+
+class MplsDeviceDetails(Payload):
+    mpls_data: typing.Optional[MplsData] = Field(default=None, alias='mplsData')
+    lsp_tunnels: typing.Optional[LspTunnel] = Field(default=None, alias='lspTunnels')
+
+
+class MplsDeviceDetailsPayload(BaseModel):
+    mpls_data: typing.Optional[typing.Optional[list[MplsDataPayload]]] = Field(default=None, alias='mplsData')
+    lsp_tunnels: typing.Optional[typing.Optional[list[LspTunnelPayload]]] = Field(default=None, alias='lspTunnels')
+
+
+class MplsGraphNodeInterface(Payload):
+    id: typing.Optional[Boolean] = Field(default=False)
+    status: typing.Optional[Boolean] = Field(default=False)
+    name: typing.Optional[Boolean] = Field(default=False)
+
+
+class MplsGraphNodeInterfacePayload(BaseModel):
+    id: typing.Optional[typing.Optional[String]] = Field(default=None)
+    status: typing.Optional[typing.Optional[GraphEdgeStatus]] = Field(default=None)
+    name: typing.Optional[typing.Optional[String]] = Field(default=None)
+
+
+class MplsGraphNode(Payload):
+    id: typing.Optional[Boolean] = Field(default=False)
+    node_id: typing.Optional[Boolean] = Field(default=False, alias='nodeId')
+    name: typing.Optional[Boolean] = Field(default=False)
+    mpls_device_details: typing.Optional[MplsDeviceDetails] = Field(default=None, alias='mplsDeviceDetails')
+    status: typing.Optional[Boolean] = Field(default=False)
+    labels: typing.Optional[Boolean] = Field(default=False)
+    interfaces: typing.Optional[MplsGraphNodeInterface] = Field(default=None)
+    coordinates: typing.Optional[GraphNodeCoordinates] = Field(default=None)
+
+
+class MplsGraphNodePayload(BaseModel):
+    id: typing.Optional[typing.Optional[ID]] = Field(default=None)
+    node_id: typing.Optional[typing.Optional[String]] = Field(default=None, alias='nodeId')
+    name: typing.Optional[typing.Optional[String]] = Field(default=None)
+    mpls_device_details: typing.Optional[MplsDeviceDetailsPayload] = Field(default=None, alias='mplsDeviceDetails')
+    status: typing.Optional[typing.Optional[GraphEdgeStatus]] = Field(default=None)
+    labels: typing.Optional[typing.Optional[list[typing.Optional[String]]]] = Field(default=None)
+    interfaces: typing.Optional[typing.Optional[list[MplsGraphNodeInterfacePayload]]] = Field(default=None)
     coordinates: typing.Optional[GraphNodeCoordinatesPayload] = Field(default=None)
 
 
@@ -1335,6 +1478,24 @@ class SynceTopology(Payload):
 class SynceTopologyPayload(BaseModel):
     edges: typing.Optional[typing.Optional[list[GraphEdgePayload]]] = Field(default=None)
     nodes: typing.Optional[typing.Optional[list[SynceGraphNodePayload]]] = Field(default=None)
+
+
+class DeviceMetadata(Payload):
+    nodes: typing.Optional[GeoMapDevice] = Field(default=None)
+
+
+class DeviceMetadataPayload(BaseModel):
+    nodes: typing.Optional[typing.Optional[list[GeoMapDevicePayload]]] = Field(default=None)
+
+
+class MplsTopology(Payload):
+    edges: typing.Optional[GraphEdge] = Field(default=None)
+    nodes: typing.Optional[MplsGraphNode] = Field(default=None)
+
+
+class MplsTopologyPayload(BaseModel):
+    edges: typing.Optional[typing.Optional[list[GraphEdgePayload]]] = Field(default=None)
+    nodes: typing.Optional[typing.Optional[list[MplsGraphNodePayload]]] = Field(default=None)
 
 
 class DeviceStatus(Payload):
@@ -1577,6 +1738,14 @@ class SyncePathToGrandMasterQuery(Query):
     _name: str = PrivateAttr('syncePathToGrandMaster')
     device_from: String = Field(alias='deviceFrom', json_schema_extra={'type': 'String!'})
     payload: Boolean
+
+
+class DeviceMetadataQuery(Query):
+    _name: str = PrivateAttr('deviceMetadata')
+
+
+class MplsTopologyQuery(Query):
+    _name: str = PrivateAttr('mplsTopology')
 
 
 class NodeQueryResponse(BaseModel):
@@ -1921,6 +2090,19 @@ class AddLocationMutation(Mutation):
     payload: AddLocationPayload
 
 
+class UpdateLocationMutation(Mutation):
+    _name: str = PrivateAttr('updateLocation')
+    id: String = Field(json_schema_extra={'type': 'String!'})
+    input: UpdateLocationInput = Field(json_schema_extra={'type': 'UpdateLocationInput!'})
+    payload: UpdateLocationPayload
+
+
+class DeleteLocationMutation(Mutation):
+    _name: str = PrivateAttr('deleteLocation')
+    id: String = Field(json_schema_extra={'type': 'String!'})
+    payload: DeleteLocationPayload
+
+
 class AddBlueprintMutation(Mutation):
     _name: str = PrivateAttr('addBlueprint')
     input: AddBlueprintInput = Field(json_schema_extra={'type': 'AddBlueprintInput!'})
@@ -2208,6 +2390,24 @@ class AddLocationData(BaseModel):
     add_location: AddLocationPayloadPayload = Field(alias='addLocation')
 
 
+class UpdateLocationMutationResponse(BaseModel):
+    data: typing.Optional[UpdateLocationData] = Field(default=None)
+    errors: typing.Optional[typing.Any] = Field(default=None)
+
+
+class UpdateLocationData(BaseModel):
+    update_location: UpdateLocationPayloadPayload = Field(alias='updateLocation')
+
+
+class DeleteLocationMutationResponse(BaseModel):
+    data: typing.Optional[DeleteLocationData] = Field(default=None)
+    errors: typing.Optional[typing.Any] = Field(default=None)
+
+
+class DeleteLocationData(BaseModel):
+    delete_location: DeleteLocationPayloadPayload = Field(alias='deleteLocation')
+
+
 class AddBlueprintMutationResponse(BaseModel):
     data: typing.Optional[AddBlueprintData] = Field(default=None)
     errors: typing.Optional[typing.Any] = Field(default=None)
@@ -2359,7 +2559,9 @@ AddSnapshotInput.model_rebuild()
 DeleteSnapshotInput.model_rebuild()
 ApplySnapshotInput.model_rebuild()
 FilterLabelsInput.model_rebuild()
+Coordinates.model_rebuild()
 AddLocationInput.model_rebuild()
+UpdateLocationInput.model_rebuild()
 AddBlueprintInput.model_rebuild()
 UpdateBlueprintInput.model_rebuild()
 FilterTopologyInput.model_rebuild()
@@ -2476,6 +2678,10 @@ LocationConnection.model_rebuild()
 LocationConnectionPayload.model_rebuild()
 AddLocationPayload.model_rebuild()
 AddLocationPayloadPayload.model_rebuild()
+UpdateLocationPayload.model_rebuild()
+UpdateLocationPayloadPayload.model_rebuild()
+DeleteLocationPayload.model_rebuild()
+DeleteLocationPayloadPayload.model_rebuild()
 Blueprint.model_rebuild()
 BlueprintPayload.model_rebuild()
 BlueprintEdge.model_rebuild()
@@ -2510,6 +2716,10 @@ GraphNodeCoordinates.model_rebuild()
 GraphNodeCoordinatesPayload.model_rebuild()
 GraphNode.model_rebuild()
 GraphNodePayload.model_rebuild()
+Geolocation.model_rebuild()
+GeolocationPayload.model_rebuild()
+GeoMapDevice.model_rebuild()
+GeoMapDevicePayload.model_rebuild()
 EdgeSourceTarget.model_rebuild()
 EdgeSourceTargetPayload.model_rebuild()
 GraphEdge.model_rebuild()
@@ -2530,6 +2740,16 @@ SynceGraphNodeInterface.model_rebuild()
 SynceGraphNodeInterfacePayload.model_rebuild()
 SynceGraphNode.model_rebuild()
 SynceGraphNodePayload.model_rebuild()
+MplsData.model_rebuild()
+MplsDataPayload.model_rebuild()
+LspTunnel.model_rebuild()
+LspTunnelPayload.model_rebuild()
+MplsDeviceDetails.model_rebuild()
+MplsDeviceDetailsPayload.model_rebuild()
+MplsGraphNodeInterface.model_rebuild()
+MplsGraphNodeInterfacePayload.model_rebuild()
+MplsGraphNode.model_rebuild()
+MplsGraphNodePayload.model_rebuild()
 PhyTopologyVersionData.model_rebuild()
 PhyTopologyVersionDataPayload.model_rebuild()
 PtpTopologyVersionData.model_rebuild()
@@ -2564,6 +2784,10 @@ PtpTopology.model_rebuild()
 PtpTopologyPayload.model_rebuild()
 SynceTopology.model_rebuild()
 SynceTopologyPayload.model_rebuild()
+DeviceMetadata.model_rebuild()
+DeviceMetadataPayload.model_rebuild()
+MplsTopology.model_rebuild()
+MplsTopologyPayload.model_rebuild()
 DeviceStatus.model_rebuild()
 DeviceStatusPayload.model_rebuild()
 DevicesConnection.model_rebuild()
@@ -2603,6 +2827,8 @@ PtpPathToGrandMasterQuery.model_rebuild()
 PtpTopologyQuery.model_rebuild()
 SynceTopologyQuery.model_rebuild()
 SyncePathToGrandMasterQuery.model_rebuild()
+DeviceMetadataQuery.model_rebuild()
+MplsTopologyQuery.model_rebuild()
 NodeQueryResponse.model_rebuild()
 DevicesQueryResponse.model_rebuild()
 DevicesData.model_rebuild()
@@ -2668,6 +2894,8 @@ SyncFromNetworkMutation.model_rebuild()
 CreateLabelMutation.model_rebuild()
 DeleteLabelMutation.model_rebuild()
 AddLocationMutation.model_rebuild()
+UpdateLocationMutation.model_rebuild()
+DeleteLocationMutation.model_rebuild()
 AddBlueprintMutation.model_rebuild()
 UpdateBlueprintMutation.model_rebuild()
 DeleteBlueprintMutation.model_rebuild()
@@ -2729,6 +2957,10 @@ DeleteLabelMutationResponse.model_rebuild()
 DeleteLabelData.model_rebuild()
 AddLocationMutationResponse.model_rebuild()
 AddLocationData.model_rebuild()
+UpdateLocationMutationResponse.model_rebuild()
+UpdateLocationData.model_rebuild()
+DeleteLocationMutationResponse.model_rebuild()
+DeleteLocationData.model_rebuild()
 AddBlueprintMutationResponse.model_rebuild()
 AddBlueprintData.model_rebuild()
 UpdateBlueprintMutationResponse.model_rebuild()

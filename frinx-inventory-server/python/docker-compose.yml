@@ -24,7 +24,7 @@ services:
       - SHELL_HOST=localhost
       - TOPOLOGY_ENABLED=false
       - KAFKA_BROKER=127.0.0.1:9092
-      - KAFKA_TOPIC=device-ivnentory
+      - KAFKA_TOPIC=device-inventory
       - KAFKA_ENABLED=false
       - PERFORMANCE_MONITORING_ENABLED=false
     depends_on:
