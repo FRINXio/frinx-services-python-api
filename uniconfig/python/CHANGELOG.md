@@ -28,3 +28,6 @@
 
 # 1.2.1
 - Package dependency update
+
+# 2.0.0
+- Update models based on the UniConfig 7.0.0 OpenAPI.

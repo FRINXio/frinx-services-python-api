@@ -18,15 +18,7 @@ from ...snmp import topology as topology_3
 from ...uniconfig import config
 
 
-class Credentials(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    cli_topology_username: Optional[str] = Field(None, alias='cli-topology:username')
-    cli_topology_password: Optional[str] = Field(None, alias='cli-topology:password')
-
-
-class KeepaliveStrategy(BaseModel):
+class CliTopologyKeepaliveStrategy(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -41,7 +33,7 @@ class KeepaliveStrategy(BaseModel):
     )
 
 
-class KeepaliveStrategyModel(BaseModel):
+class CliTopologyKeepaliveStrategyModel(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -65,51 +57,6 @@ class KeepaliveStrategyModel(BaseModel):
     """
     Maximal time (in seconds) for connection to keep alive, if no activity was detected
     in the session and the timeout has been reached, connection will be stopped
-    """
-
-
-class PrivilegedModeCredentials(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    cli_topology_secret: Optional[str] = Field(None, alias='cli-topology:secret')
-    """
-    Privileged EXEC mode password for Cisco IOS devices. If not set credentials
-    password will be used
-    """
-
-
-class CliTopologyDefaultErrorPatterns(BaseModel):
-    """
-    Device specific list of error patterns. This list is the primary source
-    of error checking on the device. This list can be overridden from the code.
-    """
-
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    cli_topology_error_pattern: Optional[list[str]] = Field(
-        None, alias='cli-topology:error-pattern'
-    )
-    """
-    Device specific error patterns.
-    """
-
-
-class CliTopologyDefaultCommitErrorPatterns(BaseModel):
-    """
-    Device specific list of commit error patterns. The following list
-    of patterns is checked in the input after 'commit' command is sent.
-    """
-
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    cli_topology_commit_error_pattern: Optional[list[str]] = Field(
-        None, alias='cli-topology:commit-error-pattern'
-    )
-    """
-    Device specific commit error patterns.
     """
 
 
@@ -138,7 +85,7 @@ class UniconfigConfigBlacklist(BaseModel):
     """
 
 
-class Nodes(BaseModel):
+class UniconfigConfigNodes(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -177,7 +124,7 @@ class UniconfigConfigWhitelist(BaseModel):
     """
 
 
-class NodesModel(BaseModel):
+class UniconfigConfigNodesModel(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -189,6 +136,59 @@ class NodesModel(BaseModel):
     """
     Reads which are invoked for sync-from-network and initial config read.
     """
+
+
+class CliTopologyDefaultErrorPatterns(BaseModel):
+    """
+    Device specific list of error patterns. This list is the primary source
+    of error checking on the device. This list can be overridden from the code.
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    cli_topology_error_pattern: Optional[list[str]] = Field(
+        None, alias='cli-topology:error-pattern'
+    )
+    """
+    Device specific error patterns.
+    """
+
+
+class CliTopologyPrivilegedModeCredentials(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    cli_topology_secret: Optional[str] = Field(None, alias='cli-topology:secret')
+    """
+    Privileged EXEC mode password for Cisco IOS devices. If not set credentials
+    password will be used
+    """
+
+
+class CliTopologyDefaultCommitErrorPatterns(BaseModel):
+    """
+    Device specific list of commit error patterns. The following list
+    of patterns is checked in the input after 'commit' command is sent.
+    """
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    cli_topology_commit_error_pattern: Optional[list[str]] = Field(
+        None, alias='cli-topology:commit-error-pattern'
+    )
+    """
+    Device specific commit error patterns.
+    """
+
+
+class CliTopologyCredentials(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    cli_topology_username: Optional[str] = Field(None, alias='cli-topology:username')
+    cli_topology_password: Optional[str] = Field(None, alias='cli-topology:password')
 
 
 class NetconfNodeTopologyNonModuleCapabilities(BaseModel):
@@ -231,89 +231,35 @@ class NetconfNodeTopologyYangModuleCapabilities(BaseModel):
     """
 
 
-class NetconfNodeTopologyKeyBased(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    netconf_node_topology_key_id: Optional[str] = Field(
-        None, alias='netconf-node-topology:key-id'
-    )
-    netconf_node_topology_username: Optional[str] = Field(
-        None, alias='netconf-node-topology:username'
-    )
-
-
-class CredentialsModel(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    netconf_node_topology_key_based: Optional[NetconfNodeTopologyKeyBased] = Field(
-        None,
-        alias='netconf-node-topology:key-based',
-        title='netconf.node.topology.netconfnodecredentials.credentials.keyauth.KeyBased',
-    )
-
-
-class CredentialsModel1(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    netconf_node_topology_username: Optional[str] = Field(
-        None, alias='netconf-node-topology:username'
-    )
-    netconf_node_topology_password: Optional[str] = Field(
-        None, alias='netconf-node-topology:password'
-    )
-
-
-class NetconfNodeTopologyLoginPassword(BaseModel):
+class NetconfNodeTopologyYangLibrary(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
     netconf_node_topology_password: Optional[str] = Field(
         None, alias='netconf-node-topology:password'
     )
+    netconf_node_topology_yang_library_url: Optional[str] = Field(
+        None, alias='netconf-node-topology:yang-library-url'
+    )
+    """
+    Yang library to be plugged as additional source provider into the shared schema repository
+    """
     netconf_node_topology_username: Optional[str] = Field(
         None, alias='netconf-node-topology:username'
     )
 
 
-class CredentialsModel2(BaseModel):
+class NetconfNodeTopologyOdlHelloMessageCapabilities(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    netconf_node_topology_login_password: Optional[NetconfNodeTopologyLoginPassword] = (
-        Field(
-            None,
-            alias='netconf-node-topology:login-password',
-            title='netconf.node.topology.netconfnodecredentials.credentials.loginpw.LoginPassword',
-        )
+    netconf_node_topology_capability: Optional[list[str]] = Field(
+        None, alias='netconf-node-topology:capability'
     )
-
-
-class NetconfNodeTopologyLoginPasswordUnencrypted(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    netconf_node_topology_password: Optional[str] = Field(
-        None, alias='netconf-node-topology:password'
-    )
-    netconf_node_topology_username: Optional[str] = Field(
-        None, alias='netconf-node-topology:username'
-    )
-
-
-class CredentialsModel3(BaseModel):
-    model_config = ConfigDict(
-        populate_by_name=True,
-    )
-    netconf_node_topology_login_password_unencrypted: Optional[
-        NetconfNodeTopologyLoginPasswordUnencrypted
-    ] = Field(
-        None,
-        alias='netconf-node-topology:login-password-unencrypted',
-        title='netconf.node.topology.netconfnodecredentials.credentials.loginpwunencrypted.LoginPasswordUnencrypted',
-    )
+    """
+    Certain devices are non-accepting of ODL's hello message.  This allows specification of
+    a custom ODL hello message based on a list of supported capabilities.
+    """
 
 
 class NetconfNodeTopologySessionTimers(BaseModel):
@@ -426,38 +372,92 @@ class NetconfNodeTopologyFlags(BaseModel):
     """
 
 
-class NetconfNodeTopologyYangLibrary(BaseModel):
+class NetconfNodeTopologyKeyBased(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    netconf_node_topology_key_id: Optional[str] = Field(
+        None, alias='netconf-node-topology:key-id'
+    )
+    netconf_node_topology_username: Optional[str] = Field(
+        None, alias='netconf-node-topology:username'
+    )
+
+
+class NetconfNodeTopologyCredentials(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    netconf_node_topology_key_based: Optional[NetconfNodeTopologyKeyBased] = Field(
+        None,
+        alias='netconf-node-topology:key-based',
+        title='netconf.node.topology.netconfnodecredentials.credentials.keyauth.KeyBased',
+    )
+
+
+class NetconfNodeTopologyCredentialsModel(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    netconf_node_topology_username: Optional[str] = Field(
+        None, alias='netconf-node-topology:username'
+    )
+    netconf_node_topology_password: Optional[str] = Field(
+        None, alias='netconf-node-topology:password'
+    )
+
+
+class NetconfNodeTopologyLoginPassword(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
     netconf_node_topology_password: Optional[str] = Field(
         None, alias='netconf-node-topology:password'
     )
-    netconf_node_topology_yang_library_url: Optional[str] = Field(
-        None, alias='netconf-node-topology:yang-library-url'
-    )
-    """
-    Yang library to be plugged as additional source provider into the shared schema repository
-    """
     netconf_node_topology_username: Optional[str] = Field(
         None, alias='netconf-node-topology:username'
     )
 
 
-class NetconfNodeTopologyOdlHelloMessageCapabilities(BaseModel):
+class NetconfNodeTopologyCredentialsModel1(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    netconf_node_topology_capability: Optional[list[str]] = Field(
-        None, alias='netconf-node-topology:capability'
+    netconf_node_topology_login_password: Optional[NetconfNodeTopologyLoginPassword] = (
+        Field(
+            None,
+            alias='netconf-node-topology:login-password',
+            title='netconf.node.topology.netconfnodecredentials.credentials.loginpw.LoginPassword',
+        )
     )
-    """
-    Certain devices are non-accepting of ODL's hello message.  This allows specification of
-    a custom ODL hello message based on a list of supported capabilities.
-    """
 
 
-class NodesModel1(BaseModel):
+class NetconfNodeTopologyLoginPasswordUnencrypted(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    netconf_node_topology_password: Optional[str] = Field(
+        None, alias='netconf-node-topology:password'
+    )
+    netconf_node_topology_username: Optional[str] = Field(
+        None, alias='netconf-node-topology:username'
+    )
+
+
+class NetconfNodeTopologyCredentialsModel2(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    netconf_node_topology_login_password_unencrypted: Optional[
+        NetconfNodeTopologyLoginPasswordUnencrypted
+    ] = Field(
+        None,
+        alias='netconf-node-topology:login-password-unencrypted',
+        title='netconf.node.topology.netconfnodecredentials.credentials.loginpwunencrypted.LoginPasswordUnencrypted',
+    )
+
+
+class UniconfigConfigNodesModel1(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -471,7 +471,7 @@ class NodesModel1(BaseModel):
     """
 
 
-class NodesModel2(BaseModel):
+class UniconfigConfigNodesModel2(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -512,7 +512,7 @@ class GnmiTopologyOtherParameters(BaseModel):
     """
 
 
-class SecurityChoice(BaseModel):
+class GnmiTopologySecurityChoice(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -608,7 +608,7 @@ class GnmiTopologyGnmiParameters(BaseModel):
     """
 
 
-class Force(BaseModel):
+class GnmiForceCapabilitiesForce(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -643,7 +643,7 @@ class GnmiForceCapabilitiesForceCapabilityItem(BaseModel):
     """
 
 
-class ForceModel(BaseModel):
+class GnmiForceCapabilitiesForceModel(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -675,10 +675,12 @@ class GnmiTopologyExtensionsParameters(BaseModel):
         alias='gnmi-topology:gnmi-parameters',
         title='gnmi.topology.gnmiconnectionparameters.extensionsparameters.GnmiParameters',
     )
-    force: Optional[Union[Force, ForceModel]] = None
+    gnmi_force_capabilities_force: Optional[
+        Union[GnmiForceCapabilitiesForce, GnmiForceCapabilitiesForceModel]
+    ] = Field(None, alias='gnmi-force-capabilities:force')
 
 
-class NodesModel3(BaseModel):
+class UniconfigConfigNodesModel3(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -692,7 +694,7 @@ class NodesModel3(BaseModel):
     """
 
 
-class NodesModel4(BaseModel):
+class UniconfigConfigNodesModel4(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -720,7 +722,7 @@ class SnmpTopologyNoAuthNoPriv(BaseModel):
     """
 
 
-class SecurityModel(BaseModel):
+class SnmpTopologySecurityModel(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -774,16 +776,12 @@ class Cli(BaseModel):
     """
     Replace paths that point to config that should be handled as a one replace request
     """
-    credentials: Optional[Credentials] = None
     cli_topology_resend_command_delay: Optional[int] = Field(
         None, alias='cli-topology:resend-command-delay', ge=0, le=65535
     )
     """
     Delay between re-send commands.
     """
-    keepalive_strategy: Optional[Union[KeepaliveStrategy, KeepaliveStrategyModel]] = (
-        Field(None, alias='keepalive-strategy')
-    )
     cli_topology_dry_run_journal_size: Optional[int] = Field(
         None, alias='cli-topology:dry-run-journal-size', ge=0, le=65535
     )
@@ -805,9 +803,12 @@ class Cli(BaseModel):
     Maximum number of connection attempts used during installation of device.
     Value 0 disables the limit
     """
-    privileged_mode_credentials: Optional[PrivilegedModeCredentials] = Field(
-        None, alias='privileged-mode-credentials'
-    )
+    cli_topology_keepalive_strategy: Optional[
+        Union[CliTopologyKeepaliveStrategy, CliTopologyKeepaliveStrategyModel]
+    ] = Field(None, alias='cli-topology:keepalive-strategy')
+    uniconfig_config_nodes: Optional[
+        Union[UniconfigConfigNodes, UniconfigConfigNodesModel]
+    ] = Field(None, alias='uniconfig-config:nodes')
     cli_topology_max_resend_command_attempt: Optional[int] = Field(
         None, alias='cli-topology:max-resend-command-attempt', ge=0, le=4294967295
     )
@@ -872,6 +873,9 @@ class Cli(BaseModel):
     """
     In case we just want to store node metadata in the database without creating of mountpoint.
     """
+    cli_topology_privileged_mode_credentials: Optional[
+        CliTopologyPrivilegedModeCredentials
+    ] = Field(None, alias='cli-topology:privileged-mode-credentials')
     uniconfig_config_validation_enabled: Optional[bool] = Field(
         None, alias='uniconfig-config:validation-enabled'
     )
@@ -914,12 +918,14 @@ class Cli(BaseModel):
     Size of the cli mountpoint jounral. Journal keeps track of executed commands and makes
     them available for users/apps for debugging purposes. Value 0 disables journaling
     """
-    nodes: Optional[Union[Nodes, NodesModel]] = None
     uniconfig_config_uniconfig_native_enabled: Optional[bool] = Field(
         None, alias='uniconfig-config:uniconfig-native-enabled'
     )
     cli_topology_port: Optional[int] = Field(
         None, alias='cli-topology:port', ge=0, le=65535
+    )
+    cli_topology_credentials: Optional[CliTopologyCredentials] = Field(
+        None, alias='cli-topology:credentials'
     )
     cli_topology_parsing_engine: Optional[topology.ParsingEngine] = Field(
         None, alias='cli-topology:parsing-engine'
@@ -958,7 +964,7 @@ class NetconfNodeTopologyOtherParameters(BaseModel):
     """
 
 
-class NetconfParameters(BaseModel):
+class NetconfNodeTopologyNetconfParameters(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -983,7 +989,7 @@ class NetconfParameters(BaseModel):
     )
 
 
-class NetconfParametersModel(BaseModel):
+class NetconfNodeTopologyNetconfParametersModel(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -1205,12 +1211,6 @@ class Netconf(BaseModel):
     uniconfig_config_admin_state: Optional[config.AdminState] = Field(
         None, alias='uniconfig-config:admin-state'
     )
-    credentials: Optional[
-        Union[CredentialsModel, CredentialsModel1, CredentialsModel2, CredentialsModel3]
-    ] = None
-    netconf_parameters: Optional[Union[NetconfParameters, NetconfParametersModel]] = (
-        Field(None, alias='netconf-parameters')
-    )
     uniconfig_config_store_without_mount: Optional[bool] = Field(
         None, alias='uniconfig-config:store-without-mount'
     )
@@ -1261,16 +1261,32 @@ class Netconf(BaseModel):
     """
     In case UniConfig fails to install the device, it will still populate the database.
     """
-    nodes: Optional[Union[NodesModel1, NodesModel2]] = None
     netconf_node_topology_host: Optional[str] = Field(
         None, alias='netconf-node-topology:host'
     )
+    netconf_node_topology_netconf_parameters: Optional[
+        Union[
+            NetconfNodeTopologyNetconfParameters,
+            NetconfNodeTopologyNetconfParametersModel,
+        ]
+    ] = Field(None, alias='netconf-node-topology:netconf-parameters')
+    netconf_node_topology_credentials: Optional[
+        Union[
+            NetconfNodeTopologyCredentials,
+            NetconfNodeTopologyCredentialsModel,
+            NetconfNodeTopologyCredentialsModel1,
+            NetconfNodeTopologyCredentialsModel2,
+        ]
+    ] = Field(None, alias='netconf-node-topology:credentials')
     subscriptions_stream: Optional[list[SubscriptionsStreamItem]] = Field(
         None, alias='subscriptions:stream'
     )
     """
     List of available streams to which subscription can be created.
     """
+    uniconfig_config_nodes: Optional[
+        Union[UniconfigConfigNodesModel1, UniconfigConfigNodesModel2]
+    ] = Field(None, alias='uniconfig-config:nodes')
     uniconfig_config_uniconfig_native_enabled: Optional[bool] = Field(
         None, alias='uniconfig-config:uniconfig-native-enabled'
     )
@@ -1286,7 +1302,7 @@ class Netconf(BaseModel):
     """
 
 
-class SecurityChoiceModel(BaseModel):
+class GnmiTopologySecurityChoiceModel(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -1303,15 +1319,15 @@ class GnmiTopologyConnectionParameters(BaseModel):
     """
     IP address or hostname of the target
     """
+    gnmi_topology_security_choice: Optional[
+        Union[GnmiTopologySecurityChoiceModel, GnmiTopologySecurityChoice]
+    ] = Field(None, alias='gnmi-topology:security-choice')
     gnmi_topology_device_type: Optional[str] = Field(
         None, alias='gnmi-topology:device-type'
     )
     """
     Specific type of gNMI device
     """
-    security_choice: Optional[Union[SecurityChoiceModel, SecurityChoice]] = Field(
-        None, alias='security-choice'
-    )
     gnmi_topology_port: Optional[int] = Field(
         None, alias='gnmi-topology:port', ge=0, le=65535
     )
@@ -1357,13 +1373,13 @@ class Gnmi(BaseModel):
     uniconfig_config_admin_state: Optional[config.AdminState] = Field(
         None, alias='uniconfig-config:admin-state'
     )
+    gnmi_topology_update_paths: Optional[list[str]] = Field(
+        None, alias='gnmi-topology:update-paths'
+    )
     gnmi_topology_other_parameters: Optional[GnmiTopologyOtherParameters] = Field(
         None,
         alias='gnmi-topology:other-parameters',
         title='gnmi.topology.otherparametersgrouping.OtherParameters',
-    )
-    gnmi_topology_update_paths: Optional[list[str]] = Field(
-        None, alias='gnmi-topology:update-paths'
     )
     gnmi_topology_connection_parameters: Optional[GnmiTopologyConnectionParameters] = (
         Field(
@@ -1430,7 +1446,6 @@ class Gnmi(BaseModel):
     """
     In case UniConfig fails to install the device, it will still populate the database.
     """
-    nodes: Optional[Union[NodesModel3, NodesModel4]] = None
     gnmi_topology_schema_cache_directory: Optional[str] = Field(
         None, alias='gnmi-topology:schema-cache-directory'
     )
@@ -1443,6 +1458,9 @@ class Gnmi(BaseModel):
     """
     List of available streams to which subscription can be created.
     """
+    uniconfig_config_nodes: Optional[
+        Union[UniconfigConfigNodesModel3, UniconfigConfigNodesModel4]
+    ] = Field(None, alias='uniconfig-config:nodes')
     gnmi_topology_remove_module_names_paths: Optional[list[str]] = Field(
         None, alias='gnmi-topology:remove-module-names-paths'
     )
@@ -1475,7 +1493,7 @@ class SnmpTopologyAuthNoPriv(BaseModel):
     ] = Field(None, alias='snmp-topology:authentication-protocol')
 
 
-class SecurityModelModel(BaseModel):
+class SnmpTopologySecurityModelModel(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -1516,7 +1534,7 @@ class SnmpTopologyAuthPriv(BaseModel):
     ] = Field(None, alias='snmp-topology:authentication-protocol')
 
 
-class SecurityModelModel1(BaseModel):
+class SnmpTopologySecurityModelModel1(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -1549,9 +1567,6 @@ class Snmp(BaseModel):
     """
     The host of the target.
     """
-    security_model: Optional[
-        Union[SecurityModelModel, SecurityModelModel1, SecurityModel]
-    ] = Field(None, alias='security-model')
     snmp_topology_request_timeout: Optional[int] = Field(
         None, alias='snmp-topology:request-timeout', ge=0, le=4294967295
     )
@@ -1569,6 +1584,13 @@ class Snmp(BaseModel):
     """
     The port of the target.
     """
+    snmp_topology_security_model: Optional[
+        Union[
+            SnmpTopologySecurityModelModel,
+            SnmpTopologySecurityModelModel1,
+            SnmpTopologySecurityModel,
+        ]
+    ] = Field(None, alias='snmp-topology:security-model')
     snmp_topology_mib_repository: Optional[str] = Field(
         None, alias='snmp-topology:mib-repository'
     )

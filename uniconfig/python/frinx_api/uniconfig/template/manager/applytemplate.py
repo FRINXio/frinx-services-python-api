@@ -10,7 +10,7 @@ from pydantic import ConfigDict
 from pydantic import Field
 
 
-class Type(BaseModel):
+class TemplateManagerType(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -20,7 +20,7 @@ class Type(BaseModel):
     """
 
 
-class TypeModel(BaseModel):
+class TemplateManagerTypeModel(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -30,7 +30,7 @@ class TypeModel(BaseModel):
     """
 
 
-class Value(BaseModel):
+class TemplateManagerValue(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -40,7 +40,7 @@ class Value(BaseModel):
     """
 
 
-class ValueModel(BaseModel):
+class TemplateManagerValueModel(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -59,10 +59,12 @@ class TypedLeafValue(BaseModel):
     Type qualifier for this value.
     Used in case the same variable is used under different types
     """
-    value: Optional[Union[Value, ValueModel]] = None
+    template_manager_value: Optional[
+        Union[TemplateManagerValue, TemplateManagerValueModel]
+    ] = Field(None, alias='template-manager:value')
 
 
-class TypeModel1(BaseModel):
+class TemplateManagerTypeModel1(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -75,11 +77,13 @@ class VariableItem(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    type: Optional[Union[Type, TypeModel, TypeModel1]] = None
     variable_id: Optional[str] = Field(None, alias='variable-id')
     """
     Variable identifier.
     """
+    template_manager_type: Optional[
+        Union[TemplateManagerType, TemplateManagerTypeModel, TemplateManagerTypeModel1]
+    ] = Field(None, alias='template-manager:type')
 
 
 class UniconfigNodeItem(BaseModel):
