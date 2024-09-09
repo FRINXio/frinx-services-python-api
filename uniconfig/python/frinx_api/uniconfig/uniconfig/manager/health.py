@@ -6,11 +6,22 @@ from typing import Optional
 
 from pydantic import BaseModel
 from pydantic import ConfigDict
+from pydantic import Field
+
+
+class Details(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    reason: Optional[str] = None
+    state: Optional[str] = None
 
 
 class Output(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    message: Optional[str] = None
-    healthy: bool
+    details: Optional[Details] = Field(
+        None, title='uniconfig.manager.health.output.Details'
+    )
+    status: str

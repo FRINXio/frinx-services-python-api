@@ -70,6 +70,7 @@ from .template.manager import gettemplateinfo
 from .template.manager import gettemplatenodes
 from .template.manager import upgradetemplate
 from .transaction.log import revertchanges
+from .uniconfig.manager import bulkget
 from .uniconfig.manager import calculatediff
 from .uniconfig.manager import calculategitlikediff
 from .uniconfig.manager import checkedcommit
@@ -859,3 +860,17 @@ class OperationsCreateMultipleTemplatesPostRequest(BaseModel):
         populate_by_name=True,
     )
     input: Optional[createmultipletemplates.Input] = None
+
+
+class OperationsBulkGetPostRequest(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    input: Optional[bulkget.Input] = None
+
+
+class OperationsBulkGetPostResponse(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    output: Optional[bulkget.Output] = None

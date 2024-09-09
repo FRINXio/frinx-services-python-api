@@ -7,6 +7,8 @@ from . import OperationsAddPrivateKeyPostRequest
 from . import OperationsAddTrustedCertificatePostRequest
 from . import OperationsApplyTemplatePostRequest
 from . import OperationsBulkEditPostRequest
+from . import OperationsBulkGetPostRequest
+from . import OperationsBulkGetPostResponse
 from . import OperationsCalculateDiffPostRequest
 from . import OperationsCalculateDiffPostResponse
 from . import OperationsCalculateGitLikeDiffPostRequest
@@ -935,6 +937,13 @@ class SyncFromNetwork(UniconfigRest):
     method = 'POST'
     request = OperationsSyncFromNetworkPostRequest
     response = None
+
+
+class BulkGet(UniconfigRest):
+    uri = '/operations/bulk-get'
+    method = 'POST'
+    request = OperationsBulkGetPostRequest
+    response = OperationsBulkGetPostResponse
 
 
 class CloseTransaction(UniconfigRest):

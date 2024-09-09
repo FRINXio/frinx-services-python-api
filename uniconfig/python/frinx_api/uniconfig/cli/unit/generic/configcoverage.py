@@ -29,7 +29,7 @@ class ComplexOutputItem(BaseModel):
     covered: Optional[bool] = None
 
 
-class Result(BaseModel):
+class CliUnitGenericResult(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -41,7 +41,7 @@ class Result(BaseModel):
     """
 
 
-class ResultModel(BaseModel):
+class CliUnitGenericResultModel(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
@@ -55,4 +55,6 @@ class Output(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    result: Optional[Union[Result, ResultModel]] = None
+    cli_unit_generic_result: Optional[
+        Union[CliUnitGenericResult, CliUnitGenericResultModel]
+    ] = Field(None, alias='cli-unit-generic:result')
