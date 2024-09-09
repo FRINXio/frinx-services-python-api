@@ -31,3 +31,6 @@
 
 # 2.0.0
 - Update models based on the UniConfig 7.0.0 OpenAPI.
+
+# 2.0.1
+- Fix version in the RELEASE.md.
