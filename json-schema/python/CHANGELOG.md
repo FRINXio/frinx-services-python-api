@@ -31,3 +31,6 @@
 
 # 0.4.1
 - split a Kafka header constant 'interface-utilization' to 'interface-ipv4-utilization' and 'interface-ipv6-utilization'
+
+# 0.4.2
+- Bump dependencies.
