@@ -57,8 +57,8 @@ class SortStreamBy(ENUM):
 
 
 class GraphEdgeStatus(ENUM):
-    OK = 'ok'
-    UNKNOWN = 'unknown'
+    OK = 'OK'
+    UNKNOWN = 'UNKNOWN'
 
 
 class Signalization(ENUM):
@@ -67,10 +67,18 @@ class Signalization(ENUM):
 
 
 class TopologyLayer(ENUM):
-    PHYSICALTOPOLOGY = 'PhysicalTopology'
-    PTPTOPOLOGY = 'PtpTopology'
-    ETHTOPOLOGY = 'EthTopology'
-    MPLSTOPOLOGY = 'MplsTopology'
+    PHYSICAL_TOPOLOGY = 'PHYSICAL_TOPOLOGY'
+    PTP_TOPOLOGY = 'PTP_TOPOLOGY'
+    ETH_TOPOLOGY = 'ETH_TOPOLOGY'
+    MPLS_TOPOLOGY = 'MPLS_TOPOLOGY'
+
+
+class TopologyType(ENUM):
+    PHYSICAL_TOPOLOGY = 'PHYSICAL_TOPOLOGY'
+    PTP_TOPOLOGY = 'PTP_TOPOLOGY'
+    ETH_TOPOLOGY = 'ETH_TOPOLOGY'
+    NETWORK_TOPOLOGY = 'NETWORK_TOPOLOGY'
+    MPLS_TOPOLOGY = 'MPLS_TOPOLOGY'
 
 
 class Node(Interface):
@@ -254,6 +262,21 @@ class GraphNodeCoordinatesInput(Input):
 class UpdateGraphNodeCoordinatesInput(Input):
     coordinates: typing.Optional[list[GraphNodeCoordinatesInput]] = Field(default=None)
     layer: typing.Optional[TopologyLayer] = Field(default=None)
+
+
+class PolygonInput(Input):
+    polygon: typing.Optional[list[list[None]]] = Field(default=None)
+
+
+class FilterDevicesMetadatasInput(Input):
+    device_name: typing.Optional[String] = Field(default=None, alias='deviceName')
+    topology_type: typing.Optional[TopologyType] = Field(default=None, alias='topologyType')
+    polygon: typing.Optional[PolygonInput] = Field(default=None)
+
+
+class FilterNeighborInput(Input):
+    device_name: String = Field(alias='deviceName')
+    topology_type: TopologyType = Field(alias='topologyType')
 
 
 class CreateLabelInput(Input):
@@ -1240,6 +1263,9 @@ class MplsData(Payload):
     input_interface: typing.Optional[Boolean] = Field(default=False, alias='inputInterface')
     output_label: typing.Optional[Boolean] = Field(default=False, alias='outputLabel')
     output_interface: typing.Optional[Boolean] = Field(default=False, alias='outputInterface')
+    oper_state: typing.Optional[Boolean] = Field(default=False, alias='operState')
+    ldp_prefix: typing.Optional[Boolean] = Field(default=False, alias='ldpPrefix')
+    mpls_operation: typing.Optional[Boolean] = Field(default=False, alias='mplsOperation')
 
 
 class MplsDataPayload(BaseModel):
@@ -1248,6 +1274,9 @@ class MplsDataPayload(BaseModel):
     input_interface: typing.Optional[typing.Optional[String]] = Field(default=None, alias='inputInterface')
     output_label: typing.Optional[typing.Optional[Int]] = Field(default=None, alias='outputLabel')
     output_interface: typing.Optional[typing.Optional[String]] = Field(default=None, alias='outputInterface')
+    oper_state: typing.Optional[typing.Optional[String]] = Field(default=None, alias='operState')
+    ldp_prefix: typing.Optional[typing.Optional[String]] = Field(default=None, alias='ldpPrefix')
+    mpls_operation: typing.Optional[typing.Optional[String]] = Field(default=None, alias='mplsOperation')
 
 
 class LspTunnel(Payload):
@@ -1340,6 +1369,16 @@ class SynceTopologyVersionDataPayload(BaseModel):
     edges: typing.Optional[typing.Optional[list[GraphVersionEdgePayload]]] = Field(default=None)
 
 
+class MplsTopologyVersionData(Payload):
+    nodes: typing.Optional[MplsGraphNode] = Field(default=None)
+    edges: typing.Optional[GraphVersionEdge] = Field(default=None)
+
+
+class MplsTopologyVersionDataPayload(BaseModel):
+    nodes: typing.Optional[typing.Optional[list[MplsGraphNodePayload]]] = Field(default=None)
+    edges: typing.Optional[typing.Optional[list[GraphVersionEdgePayload]]] = Field(default=None)
+
+
 class NetInterface(Payload):
     id: typing.Optional[Boolean] = Field(default=False)
     name: typing.Optional[Boolean] = Field(default=False)
@@ -1406,6 +1445,7 @@ class NetNode(Payload):
     id: typing.Optional[Boolean] = Field(default=False)
     node_id: typing.Optional[Boolean] = Field(default=False, alias='nodeId')
     name: typing.Optional[Boolean] = Field(default=False)
+    phy_device_name: typing.Optional[Boolean] = Field(default=False, alias='phyDeviceName')
     interfaces: typing.Optional[NetInterface] = Field(default=None)
     networks: typing.Optional[NetNetwork] = Field(default=None)
     coordinates: typing.Optional[GraphNodeCoordinates] = Field(default=None)
@@ -1415,6 +1455,7 @@ class NetNodePayload(BaseModel):
     id: typing.Optional[typing.Optional[ID]] = Field(default=None)
     node_id: typing.Optional[typing.Optional[String]] = Field(default=None, alias='nodeId')
     name: typing.Optional[typing.Optional[String]] = Field(default=None)
+    phy_device_name: typing.Optional[typing.Optional[String]] = Field(default=None, alias='phyDeviceName')
     interfaces: typing.Optional[typing.Optional[list[NetInterfacePayload]]] = Field(default=None)
     networks: typing.Optional[typing.Optional[list[NetNetworkPayload]]] = Field(default=None)
     coordinates: typing.Optional[GraphNodeCoordinatesPayload] = Field(default=None)
@@ -1488,6 +1529,24 @@ class DeviceMetadataPayload(BaseModel):
     nodes: typing.Optional[typing.Optional[list[GeoMapDevicePayload]]] = Field(default=None)
 
 
+class Neighbor(Payload):
+    device_name: typing.Optional[Boolean] = Field(default=False, alias='deviceName')
+    device_id: typing.Optional[Boolean] = Field(default=False, alias='deviceId')
+
+
+class NeighborPayload(BaseModel):
+    device_name: typing.Optional[typing.Optional[String]] = Field(default=None, alias='deviceName')
+    device_id: typing.Optional[typing.Optional[String]] = Field(default=None, alias='deviceId')
+
+
+class DeviceNeighbors(Payload):
+    neighbors: typing.Optional[Neighbor] = Field(default=None)
+
+
+class DeviceNeighborsPayload(BaseModel):
+    neighbors: typing.Optional[typing.Optional[list[NeighborPayload]]] = Field(default=None)
+
+
 class MplsTopology(Payload):
     edges: typing.Optional[GraphEdge] = Field(default=None)
     nodes: typing.Optional[MplsGraphNode] = Field(default=None)
@@ -1496,6 +1555,50 @@ class MplsTopology(Payload):
 class MplsTopologyPayload(BaseModel):
     edges: typing.Optional[typing.Optional[list[GraphEdgePayload]]] = Field(default=None)
     nodes: typing.Optional[typing.Optional[list[MplsGraphNodePayload]]] = Field(default=None)
+
+
+class MplsLspCountItem(Payload):
+    target: typing.Optional[Boolean] = Field(default=False)
+    incoming_lsps: typing.Optional[Boolean] = Field(default=False, alias='incomingLsps')
+    outcoming_lsps: typing.Optional[Boolean] = Field(default=False, alias='outcomingLsps')
+
+
+class MplsLspCountItemPayload(BaseModel):
+    target: typing.Optional[typing.Optional[String]] = Field(default=None)
+    incoming_lsps: typing.Optional[typing.Optional[Int]] = Field(default=None, alias='incomingLsps')
+    outcoming_lsps: typing.Optional[typing.Optional[Int]] = Field(default=None, alias='outcomingLsps')
+
+
+class MplsLspCount(Payload):
+    counts: typing.Optional[MplsLspCountItem] = Field(default=None)
+
+
+class MplsLspCountPayload(BaseModel):
+    counts: typing.Optional[typing.Optional[list[MplsLspCountItemPayload]]] = Field(default=None)
+
+
+class LspPathMetadata(Payload):
+    signalization: typing.Optional[Boolean] = Field(default=False)
+    from_device: typing.Optional[Boolean] = Field(default=False, alias='fromDevice')
+    to_device: typing.Optional[Boolean] = Field(default=False, alias='toDevice')
+    uptime: typing.Optional[Boolean] = Field(default=False)
+
+
+class LspPathMetadataPayload(BaseModel):
+    signalization: typing.Optional[typing.Optional[String]] = Field(default=None)
+    from_device: typing.Optional[typing.Optional[String]] = Field(default=None, alias='fromDevice')
+    to_device: typing.Optional[typing.Optional[String]] = Field(default=None, alias='toDevice')
+    uptime: typing.Optional[typing.Optional[Int]] = Field(default=None)
+
+
+class LspPath(Payload):
+    path: typing.Optional[Boolean] = Field(default=False)
+    metadata: typing.Optional[LspPathMetadata] = Field(default=None)
+
+
+class LspPathPayload(BaseModel):
+    path: typing.Optional[typing.Optional[list[typing.Optional[String]]]] = Field(default=None)
+    metadata: typing.Optional[LspPathMetadataPayload] = Field(default=None)
 
 
 class DeviceStatus(Payload):
@@ -1703,6 +1806,12 @@ class SynceTopologyVersionDataQuery(Query):
     payload: SynceTopologyVersionData
 
 
+class MplsTopologyVersionDataQuery(Query):
+    _name: str = PrivateAttr('mplsTopologyVersionData')
+    version: String = Field(json_schema_extra={'type': 'String!'})
+    payload: MplsTopologyVersionData
+
+
 class NetTopologyQuery(Query):
     _name: str = PrivateAttr('netTopology')
 
@@ -1742,10 +1851,31 @@ class SyncePathToGrandMasterQuery(Query):
 
 class DeviceMetadataQuery(Query):
     _name: str = PrivateAttr('deviceMetadata')
+    filter: typing.Optional[FilterDevicesMetadatasInput] = Field(default=None, json_schema_extra={'type': 'FilterDevicesMetadatasInput'})
+    payload: DeviceMetadata
+
+
+class DeviceNeighborQuery(Query):
+    _name: str = PrivateAttr('deviceNeighbor')
+    filter: typing.Optional[FilterNeighborInput] = Field(default=None, json_schema_extra={'type': 'FilterNeighborInput'})
+    payload: DeviceNeighbors
 
 
 class MplsTopologyQuery(Query):
     _name: str = PrivateAttr('mplsTopology')
+
+
+class MplsLspCountQuery(Query):
+    _name: str = PrivateAttr('mplsLspCount')
+    device_id: String = Field(alias='deviceId', json_schema_extra={'type': 'String!'})
+    payload: MplsLspCount
+
+
+class LspPathQuery(Query):
+    _name: str = PrivateAttr('lspPath')
+    device_id: String = Field(alias='deviceId', json_schema_extra={'type': 'String!'})
+    lsp_id: String = Field(alias='lspId', json_schema_extra={'type': 'String!'})
+    payload: LspPath
 
 
 class NodeQueryResponse(BaseModel):
@@ -1879,6 +2009,15 @@ class SynceTopologyVersionDataData(BaseModel):
     synce_topology_version_data: SynceTopologyVersionDataPayload = Field(alias='synceTopologyVersionData')
 
 
+class MplsTopologyVersionDataQueryResponse(BaseModel):
+    data: typing.Optional[MplsTopologyVersionDataData] = Field(default=None)
+    errors: typing.Optional[typing.Any] = Field(default=None)
+
+
+class MplsTopologyVersionDataData(BaseModel):
+    mpls_topology_version_data: MplsTopologyVersionDataPayload = Field(alias='mplsTopologyVersionData')
+
+
 class NetTopologyVersionDataQueryResponse(BaseModel):
     data: typing.Optional[NetTopologyVersionDataData] = Field(default=None)
     errors: typing.Optional[typing.Any] = Field(default=None)
@@ -1913,6 +2052,42 @@ class SyncePathToGrandMasterQueryResponse(BaseModel):
 
 class SyncePathToGrandMasterData(BaseModel):
     synce_path_to_grand_master: typing.Optional[list[typing.Optional[String]]] = Field(alias='syncePathToGrandMaster')
+
+
+class DeviceMetadataQueryResponse(BaseModel):
+    data: typing.Optional[DeviceMetadataData] = Field(default=None)
+    errors: typing.Optional[typing.Any] = Field(default=None)
+
+
+class DeviceMetadataData(BaseModel):
+    device_metadata: typing.Optional[DeviceMetadataPayload] = Field(alias='deviceMetadata')
+
+
+class DeviceNeighborQueryResponse(BaseModel):
+    data: typing.Optional[DeviceNeighborData] = Field(default=None)
+    errors: typing.Optional[typing.Any] = Field(default=None)
+
+
+class DeviceNeighborData(BaseModel):
+    device_neighbor: typing.Optional[DeviceNeighborsPayload] = Field(alias='deviceNeighbor')
+
+
+class MplsLspCountQueryResponse(BaseModel):
+    data: typing.Optional[MplsLspCountData] = Field(default=None)
+    errors: typing.Optional[typing.Any] = Field(default=None)
+
+
+class MplsLspCountData(BaseModel):
+    mpls_lsp_count: typing.Optional[MplsLspCountPayload] = Field(alias='mplsLspCount')
+
+
+class LspPathQueryResponse(BaseModel):
+    data: typing.Optional[LspPathData] = Field(default=None)
+    errors: typing.Optional[typing.Any] = Field(default=None)
+
+
+class LspPathData(BaseModel):
+    lsp_path: typing.Optional[LspPathPayload] = Field(alias='lspPath')
 
 
 class ReconnectKafkaMutation(Mutation):
@@ -2567,6 +2742,9 @@ UpdateBlueprintInput.model_rebuild()
 FilterTopologyInput.model_rebuild()
 GraphNodeCoordinatesInput.model_rebuild()
 UpdateGraphNodeCoordinatesInput.model_rebuild()
+PolygonInput.model_rebuild()
+FilterDevicesMetadatasInput.model_rebuild()
+FilterNeighborInput.model_rebuild()
 CreateLabelInput.model_rebuild()
 PageInfo.model_rebuild()
 PageInfoPayload.model_rebuild()
@@ -2756,6 +2934,8 @@ PtpTopologyVersionData.model_rebuild()
 PtpTopologyVersionDataPayload.model_rebuild()
 SynceTopologyVersionData.model_rebuild()
 SynceTopologyVersionDataPayload.model_rebuild()
+MplsTopologyVersionData.model_rebuild()
+MplsTopologyVersionDataPayload.model_rebuild()
 NetInterface.model_rebuild()
 NetInterfacePayload.model_rebuild()
 TopologyCommonNodes.model_rebuild()
@@ -2786,8 +2966,20 @@ SynceTopology.model_rebuild()
 SynceTopologyPayload.model_rebuild()
 DeviceMetadata.model_rebuild()
 DeviceMetadataPayload.model_rebuild()
+Neighbor.model_rebuild()
+NeighborPayload.model_rebuild()
+DeviceNeighbors.model_rebuild()
+DeviceNeighborsPayload.model_rebuild()
 MplsTopology.model_rebuild()
 MplsTopologyPayload.model_rebuild()
+MplsLspCountItem.model_rebuild()
+MplsLspCountItemPayload.model_rebuild()
+MplsLspCount.model_rebuild()
+MplsLspCountPayload.model_rebuild()
+LspPathMetadata.model_rebuild()
+LspPathMetadataPayload.model_rebuild()
+LspPath.model_rebuild()
+LspPathPayload.model_rebuild()
 DeviceStatus.model_rebuild()
 DeviceStatusPayload.model_rebuild()
 DevicesConnection.model_rebuild()
@@ -2820,6 +3012,7 @@ TopologyCommonNodesQuery.model_rebuild()
 PhyTopologyVersionDataQuery.model_rebuild()
 PtpTopologyVersionDataQuery.model_rebuild()
 SynceTopologyVersionDataQuery.model_rebuild()
+MplsTopologyVersionDataQuery.model_rebuild()
 NetTopologyQuery.model_rebuild()
 NetTopologyVersionDataQuery.model_rebuild()
 ShortestPathQuery.model_rebuild()
@@ -2828,7 +3021,10 @@ PtpTopologyQuery.model_rebuild()
 SynceTopologyQuery.model_rebuild()
 SyncePathToGrandMasterQuery.model_rebuild()
 DeviceMetadataQuery.model_rebuild()
+DeviceNeighborQuery.model_rebuild()
 MplsTopologyQuery.model_rebuild()
+MplsLspCountQuery.model_rebuild()
+LspPathQuery.model_rebuild()
 NodeQueryResponse.model_rebuild()
 DevicesQueryResponse.model_rebuild()
 DevicesData.model_rebuild()
@@ -2858,6 +3054,8 @@ PtpTopologyVersionDataQueryResponse.model_rebuild()
 PtpTopologyVersionDataData.model_rebuild()
 SynceTopologyVersionDataQueryResponse.model_rebuild()
 SynceTopologyVersionDataData.model_rebuild()
+MplsTopologyVersionDataQueryResponse.model_rebuild()
+MplsTopologyVersionDataData.model_rebuild()
 NetTopologyVersionDataQueryResponse.model_rebuild()
 NetTopologyVersionDataData.model_rebuild()
 ShortestPathQueryResponse.model_rebuild()
@@ -2866,6 +3064,14 @@ PtpPathToGrandMasterQueryResponse.model_rebuild()
 PtpPathToGrandMasterData.model_rebuild()
 SyncePathToGrandMasterQueryResponse.model_rebuild()
 SyncePathToGrandMasterData.model_rebuild()
+DeviceMetadataQueryResponse.model_rebuild()
+DeviceMetadataData.model_rebuild()
+DeviceNeighborQueryResponse.model_rebuild()
+DeviceNeighborData.model_rebuild()
+MplsLspCountQueryResponse.model_rebuild()
+MplsLspCountData.model_rebuild()
+LspPathQueryResponse.model_rebuild()
+LspPathData.model_rebuild()
 ReconnectKafkaMutation.model_rebuild()
 AddDeviceMutation.model_rebuild()
 UpdateDeviceMutation.model_rebuild()
