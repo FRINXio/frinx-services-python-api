@@ -9,3 +9,6 @@
 
 # 2.1.1
 - Package dependency update
+
+# 3.0.0
+- Updated generated pydantic entities based on topology-discovery 7.0.1 version.
