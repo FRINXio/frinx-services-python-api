@@ -15,7 +15,7 @@ class Type(str, Enum):
     Type of geometry.
     """
 
-    Point = 'Point'
+    POINT = 'POINT'
 
 
 class DeviceGeoLocation(BaseModel):

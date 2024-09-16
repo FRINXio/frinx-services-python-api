@@ -34,3 +34,6 @@
 
 # 0.4.2
 - Bump dependencies.
+
+# 1.0.0
+- Updated API according v7.0.0 GraphQL schema.
