@@ -4,6 +4,7 @@ import typing
 
 from graphql_pydantic_converter.graphql_types import ENUM
 from graphql_pydantic_converter.graphql_types import Input
+from graphql_pydantic_converter.graphql_types import Interface
 from graphql_pydantic_converter.graphql_types import Payload
 from graphql_pydantic_converter.graphql_types import Query
 from pydantic import BaseModel
@@ -11,9 +12,9 @@ from pydantic import Field
 from pydantic import PrivateAttr
 
 Datetime: typing.TypeAlias = typing.Any
-String: typing.TypeAlias = str
 Float: typing.TypeAlias = float
 Boolean: typing.TypeAlias = bool
+String: typing.TypeAlias = str
 Int: typing.TypeAlias = int
 
 
@@ -30,39 +31,14 @@ class BucketUnit(ENUM):
     CENTURIES = 'centuries'
 
 
+class MetricsInterface(Interface):
+    cpu: typing.Optional[Boolean] = Field(default=None)
+    memory: typing.Optional[Boolean] = Field(default=None)
+
+
 class BucketWidth(Input):
     unit: BucketUnit
     value: Float
-
-
-class Percentage(Payload):
-    device: typing.Optional[Boolean] = Field(default=False)
-    usage: typing.Optional[Boolean] = Field(default=False)
-
-
-class PercentagePayload(BaseModel):
-    device: typing.Optional[typing.Optional[String]] = Field(default=None)
-    usage: typing.Optional[typing.Optional[Float]] = Field(default=None)
-
-
-class PercentageInTimeSeries(Payload):
-    device: typing.Optional[Boolean] = Field(default=False)
-    usages: typing.Optional[PercentageInTime] = Field(default=None)
-
-
-class PercentageInTimeSeriesPayload(BaseModel):
-    device: typing.Optional[typing.Optional[String]] = Field(default=None)
-    usages: typing.Optional[typing.Optional[list[PercentageInTimePayload]]] = Field(default=None)
-
-
-class PercentageInTime(Payload):
-    time: typing.Optional[Boolean] = Field(default=False)
-    usage: typing.Optional[Boolean] = Field(default=False)
-
-
-class PercentageInTimePayload(BaseModel):
-    time: typing.Optional[typing.Optional[Datetime]] = Field(default=None)
-    usage: typing.Optional[typing.Optional[Float]] = Field(default=None)
 
 
 class PageInfo(Payload):
@@ -75,300 +51,179 @@ class PageInfoPayload(BaseModel):
     end_cursor: typing.Optional[typing.Optional[String]] = Field(default=None, alias='endCursor')
 
 
-class CpuUsageConnections(Payload):
-    page_info: typing.Optional[PageInfo] = Field(default=None, alias='pageInfo')
-    edges: typing.Optional[CpuUsageEdges] = Field(default=None)
-
-
-class CpuUsageConnectionsPayload(BaseModel):
-    page_info: typing.Optional[PageInfoPayload] = Field(default=None, alias='pageInfo')
-    edges: typing.Optional[typing.Optional[list[CpuUsageEdgesPayload]]] = Field(default=None)
-
-
-class CpuUsageConnection(Payload):
-    page_info: typing.Optional[PageInfo] = Field(default=None, alias='pageInfo')
-    device: typing.Optional[Boolean] = Field(default=False)
-    edges: typing.Optional[CpuUsageEdge] = Field(default=None)
-
-
-class CpuUsageConnectionPayload(BaseModel):
-    page_info: typing.Optional[PageInfoPayload] = Field(default=None, alias='pageInfo')
-    device: typing.Optional[typing.Optional[String]] = Field(default=None)
-    edges: typing.Optional[typing.Optional[list[CpuUsageEdgePayload]]] = Field(default=None)
-
-
-class CpuUsageEdges(Payload):
-    cursor: typing.Optional[Boolean] = Field(default=False)
-    node: typing.Optional[CpuUsageNode] = Field(default=None)
-
-
-class CpuUsageEdgesPayload(BaseModel):
-    cursor: typing.Optional[typing.Optional[String]] = Field(default=None)
-    node: typing.Optional[typing.Optional[list[CpuUsageNodePayload]]] = Field(default=None)
-
-
-class CpuUsageEdge(Payload):
-    cursor: typing.Optional[Boolean] = Field(default=False)
-    node: typing.Optional[Boolean] = Field(default=False)
-
-
-class CpuUsageEdgePayload(BaseModel):
-    cursor: typing.Optional[typing.Optional[String]] = Field(default=None)
-    node: typing.Optional[typing.Optional[Float]] = Field(default=None)
-
-
-class CpuUsageNode(Payload):
-    device: typing.Optional[Boolean] = Field(default=False)
-    usage: typing.Optional[Boolean] = Field(default=False)
-
-
-class CpuUsageNodePayload(BaseModel):
-    device: typing.Optional[typing.Optional[String]] = Field(default=None)
-    usage: typing.Optional[typing.Optional[Float]] = Field(default=None)
-
-
-class CurrentCpuUsageQuery(Query):
-    _name: str = PrivateAttr('currentCpuUsage')
+class CurrentUtilizationQuery(Query):
+    _name: str = PrivateAttr('currentUtilization')
     device: String = Field(json_schema_extra={'type': 'String!'})
-    payload: Percentage
+    payload: CurrentUtilization
 
 
-class CurrentCpuUsagesQuery(Query):
-    _name: str = PrivateAttr('currentCpuUsages')
+class BulkCurrentUtilizationQuery(Query):
+    _name: str = PrivateAttr('bulkCurrentUtilization')
     devices: typing.Optional[list[String]] = Field(default=None, json_schema_extra={'type': '[String!]!'})
-    payload: Percentage
+    payload: CurrentUtilization
 
 
-class CurrentMemoryUsageQuery(Query):
-    _name: str = PrivateAttr('currentMemoryUsage')
-    device: String = Field(json_schema_extra={'type': 'String!'})
-    payload: Percentage
-
-
-class CurrentMemoryUsagesQuery(Query):
-    _name: str = PrivateAttr('currentMemoryUsages')
-    devices: typing.Optional[list[String]] = Field(default=None, json_schema_extra={'type': '[String!]!'})
-    payload: Percentage
-
-
-class CpuUsageQuery(Query):
-    _name: str = PrivateAttr('cpuUsage')
+class UtilizationQuery(Query):
+    _name: str = PrivateAttr('utilization')
     device: String = Field(json_schema_extra={'type': 'String!'})
     bucket_width: typing.Optional[BucketWidth] = Field(default=None, json_schema_extra={'type': 'BucketWidth'})
     start_time: typing.Optional[Datetime] = Field(default=None, json_schema_extra={'type': 'Datetime'})
     end_time: typing.Optional[Datetime] = Field(default=None, json_schema_extra={'type': 'Datetime'})
     first: typing.Optional[Int] = Field(default=None, json_schema_extra={'type': 'Int'})
     after: typing.Optional[String] = Field(default=None, json_schema_extra={'type': 'String'})
-    payload: CpuUsageConnection
+    payload: UtilizationConnection
 
 
-class CpuUsagesQuery(Query):
-    _name: str = PrivateAttr('cpuUsages')
+class BulkUtilizationQuery(Query):
+    _name: str = PrivateAttr('bulkUtilization')
     devices: typing.Optional[list[String]] = Field(default=None, json_schema_extra={'type': '[String!]!'})
     bucket_width: typing.Optional[BucketWidth] = Field(default=None, json_schema_extra={'type': 'BucketWidth'})
     start_time: typing.Optional[Datetime] = Field(default=None, json_schema_extra={'type': 'Datetime'})
     end_time: typing.Optional[Datetime] = Field(default=None, json_schema_extra={'type': 'Datetime'})
     first: typing.Optional[Int] = Field(default=None, json_schema_extra={'type': 'Int'})
     after: typing.Optional[String] = Field(default=None, json_schema_extra={'type': 'String'})
-    payload: CpuUsageConnections
+    payload: BulkUtilizationConnection
 
 
-class MemoryUsageQuery(Query):
-    _name: str = PrivateAttr('memoryUsage')
-    device: String = Field(json_schema_extra={'type': 'String!'})
-    bucket_width: typing.Optional[BucketWidth] = Field(default=None, json_schema_extra={'type': 'BucketWidth'})
-    start_time: typing.Optional[Datetime] = Field(default=None, json_schema_extra={'type': 'Datetime'})
-    end_time: typing.Optional[Datetime] = Field(default=None, json_schema_extra={'type': 'Datetime'})
-    first: typing.Optional[Int] = Field(default=None, json_schema_extra={'type': 'Int'})
-    after: typing.Optional[String] = Field(default=None, json_schema_extra={'type': 'String'})
-    payload: MemoryUsageConnection
-
-
-class MemoryUsagesQuery(Query):
-    _name: str = PrivateAttr('memoryUsages')
-    devices: typing.Optional[list[String]] = Field(default=None, json_schema_extra={'type': '[String!]'})
-    bucket_width: typing.Optional[BucketWidth] = Field(default=None, json_schema_extra={'type': 'BucketWidth'})
-    start_time: typing.Optional[Datetime] = Field(default=None, json_schema_extra={'type': 'Datetime'})
-    end_time: typing.Optional[Datetime] = Field(default=None, json_schema_extra={'type': 'Datetime'})
-    first: typing.Optional[Int] = Field(default=None, json_schema_extra={'type': 'Int'})
-    after: typing.Optional[String] = Field(default=None, json_schema_extra={'type': 'String'})
-    payload: MemoryUsageConnections
-
-
-class CurrentCpuUsageQueryResponse(BaseModel):
-    data: typing.Optional[CurrentCpuUsageData] = Field(default=None)
+class CurrentUtilizationQueryResponse(BaseModel):
+    data: typing.Optional[CurrentUtilizationData] = Field(default=None)
     errors: typing.Optional[typing.Any] = Field(default=None)
 
 
-class CurrentCpuUsageData(BaseModel):
-    current_cpu_usage: PercentagePayload = Field(alias='currentCpuUsage')
+class CurrentUtilizationData(BaseModel):
+    current_utilization: CurrentUtilizationPayload = Field(alias='currentUtilization')
 
 
-class CurrentCpuUsagesQueryResponse(BaseModel):
-    data: typing.Optional[CurrentCpuUsagesData] = Field(default=None)
+class BulkCurrentUtilizationQueryResponse(BaseModel):
+    data: typing.Optional[BulkCurrentUtilizationData] = Field(default=None)
     errors: typing.Optional[typing.Any] = Field(default=None)
 
 
-class CurrentCpuUsagesData(BaseModel):
-    current_cpu_usages: typing.Optional[list[PercentagePayload]] = Field(alias='currentCpuUsages')
+class BulkCurrentUtilizationData(BaseModel):
+    bulk_current_utilization: typing.Optional[list[CurrentUtilizationPayload]] = Field(alias='bulkCurrentUtilization')
 
 
-class CurrentMemoryUsageQueryResponse(BaseModel):
-    data: typing.Optional[CurrentMemoryUsageData] = Field(default=None)
+class UtilizationQueryResponse(BaseModel):
+    data: typing.Optional[UtilizationData] = Field(default=None)
     errors: typing.Optional[typing.Any] = Field(default=None)
 
 
-class CurrentMemoryUsageData(BaseModel):
-    current_memory_usage: PercentagePayload = Field(alias='currentMemoryUsage')
+class UtilizationData(BaseModel):
+    utilization: UtilizationConnectionPayload
 
 
-class CurrentMemoryUsagesQueryResponse(BaseModel):
-    data: typing.Optional[CurrentMemoryUsagesData] = Field(default=None)
+class BulkUtilizationQueryResponse(BaseModel):
+    data: typing.Optional[BulkUtilizationData] = Field(default=None)
     errors: typing.Optional[typing.Any] = Field(default=None)
 
 
-class CurrentMemoryUsagesData(BaseModel):
-    current_memory_usages: typing.Optional[list[PercentagePayload]] = Field(alias='currentMemoryUsages')
+class BulkUtilizationData(BaseModel):
+    bulk_utilization: BulkUtilizationConnectionPayload = Field(alias='bulkUtilization')
 
 
-class CpuUsageQueryResponse(BaseModel):
-    data: typing.Optional[CpuUsageData] = Field(default=None)
-    errors: typing.Optional[typing.Any] = Field(default=None)
+class MetricsNode(Payload):
+    cpu: typing.Optional[Boolean] = Field(default=False)
+    memory: typing.Optional[Boolean] = Field(default=False)
 
 
-class CpuUsageData(BaseModel):
-    cpu_usage: CpuUsageConnectionPayload = Field(alias='cpuUsage')
+class MetricsNodePayload(BaseModel):
+    cpu: typing.Optional[typing.Optional[Float]] = Field(default=None)
+    memory: typing.Optional[typing.Optional[Float]] = Field(default=None)
 
 
-class CpuUsagesQueryResponse(BaseModel):
-    data: typing.Optional[CpuUsagesData] = Field(default=None)
-    errors: typing.Optional[typing.Any] = Field(default=None)
+class MetricsWithCursorNode(Payload):
+    cursor: typing.Optional[Boolean] = Field(default=False)
+    cpu: typing.Optional[Boolean] = Field(default=False)
+    memory: typing.Optional[Boolean] = Field(default=False)
 
 
-class CpuUsagesData(BaseModel):
-    cpu_usages: CpuUsageConnectionsPayload = Field(alias='cpuUsages')
+class MetricsWithCursorNodePayload(BaseModel):
+    cursor: typing.Optional[typing.Optional[String]] = Field(default=None)
+    cpu: typing.Optional[typing.Optional[Float]] = Field(default=None)
+    memory: typing.Optional[typing.Optional[Float]] = Field(default=None)
 
 
-class MemoryUsageQueryResponse(BaseModel):
-    data: typing.Optional[MemoryUsageData] = Field(default=None)
-    errors: typing.Optional[typing.Any] = Field(default=None)
+class MetricsWithDeviceNode(Payload):
+    device: typing.Optional[Boolean] = Field(default=False)
+    cpu: typing.Optional[Boolean] = Field(default=False)
+    memory: typing.Optional[Boolean] = Field(default=False)
 
 
-class MemoryUsageData(BaseModel):
-    memory_usage: MemoryUsageConnectionPayload = Field(alias='memoryUsage')
+class MetricsWithDeviceNodePayload(BaseModel):
+    device: typing.Optional[typing.Optional[String]] = Field(default=None)
+    cpu: typing.Optional[typing.Optional[Float]] = Field(default=None)
+    memory: typing.Optional[typing.Optional[Float]] = Field(default=None)
 
 
-class MemoryUsagesQueryResponse(BaseModel):
-    data: typing.Optional[MemoryUsagesData] = Field(default=None)
-    errors: typing.Optional[typing.Any] = Field(default=None)
+class CurrentUtilization(Payload):
+    device: typing.Optional[Boolean] = Field(default=False)
+    device_metrics: typing.Optional[MetricsNode] = Field(default=None, alias='deviceMetrics')
 
 
-class MemoryUsagesData(BaseModel):
-    memory_usages: MemoryUsageConnectionsPayload = Field(alias='memoryUsages')
+class CurrentUtilizationPayload(BaseModel):
+    device: typing.Optional[typing.Optional[String]] = Field(default=None)
+    device_metrics: typing.Optional[MetricsNodePayload] = Field(default=None, alias='deviceMetrics')
 
 
-class MemoryUsageConnections(Payload):
-    page_info: typing.Optional[PageInfo] = Field(default=None, alias='pageInfo')
-    edges: typing.Optional[MemoryUsageEdges] = Field(default=None)
-
-
-class MemoryUsageConnectionsPayload(BaseModel):
-    page_info: typing.Optional[PageInfoPayload] = Field(default=None, alias='pageInfo')
-    edges: typing.Optional[typing.Optional[list[MemoryUsageEdgesPayload]]] = Field(default=None)
-
-
-class MemoryUsageConnection(Payload):
+class UtilizationConnection(Payload):
     page_info: typing.Optional[PageInfo] = Field(default=None, alias='pageInfo')
     device: typing.Optional[Boolean] = Field(default=False)
-    edges: typing.Optional[MemoryUsageEdge] = Field(default=None)
+    device_metrics: typing.Optional[MetricsWithCursorNode] = Field(default=None, alias='deviceMetrics')
 
 
-class MemoryUsageConnectionPayload(BaseModel):
+class UtilizationConnectionPayload(BaseModel):
     page_info: typing.Optional[PageInfoPayload] = Field(default=None, alias='pageInfo')
     device: typing.Optional[typing.Optional[String]] = Field(default=None)
-    edges: typing.Optional[typing.Optional[list[MemoryUsageEdgePayload]]] = Field(default=None)
+    device_metrics: typing.Optional[typing.Optional[list[MetricsWithCursorNodePayload]]] = Field(default=None, alias='deviceMetrics')
 
 
-class MemoryUsageEdges(Payload):
+class BulkUtilizationConnection(Payload):
+    page_info: typing.Optional[PageInfo] = Field(default=None, alias='pageInfo')
+    metrics: typing.Optional[MetricsEdge] = Field(default=None)
+
+
+class BulkUtilizationConnectionPayload(BaseModel):
+    page_info: typing.Optional[PageInfoPayload] = Field(default=None, alias='pageInfo')
+    metrics: typing.Optional[typing.Optional[list[MetricsEdgePayload]]] = Field(default=None)
+
+
+class MetricsEdge(Payload):
     cursor: typing.Optional[Boolean] = Field(default=False)
-    node: typing.Optional[MemoryUsageNode] = Field(default=None)
+    device_metrics: typing.Optional[MetricsWithDeviceNode] = Field(default=None, alias='deviceMetrics')
 
 
-class MemoryUsageEdgesPayload(BaseModel):
+class MetricsEdgePayload(BaseModel):
     cursor: typing.Optional[typing.Optional[String]] = Field(default=None)
-    node: typing.Optional[typing.Optional[list[MemoryUsageNodePayload]]] = Field(default=None)
+    device_metrics: typing.Optional[typing.Optional[list[MetricsWithDeviceNodePayload]]] = Field(default=None, alias='deviceMetrics')
 
 
-class MemoryUsageEdge(Payload):
-    cursor: typing.Optional[Boolean] = Field(default=False)
-    node: typing.Optional[Boolean] = Field(default=False)
-
-
-class MemoryUsageEdgePayload(BaseModel):
-    cursor: typing.Optional[typing.Optional[String]] = Field(default=None)
-    node: typing.Optional[typing.Optional[Float]] = Field(default=None)
-
-
-class MemoryUsageNode(Payload):
-    device: typing.Optional[Boolean] = Field(default=False)
-    usage: typing.Optional[Boolean] = Field(default=False)
-
-
-class MemoryUsageNodePayload(BaseModel):
-    device: typing.Optional[typing.Optional[String]] = Field(default=None)
-    usage: typing.Optional[typing.Optional[Float]] = Field(default=None)
-
-
+MetricsInterface.model_rebuild()
 BucketWidth.model_rebuild()
-Percentage.model_rebuild()
-PercentagePayload.model_rebuild()
-PercentageInTimeSeries.model_rebuild()
-PercentageInTimeSeriesPayload.model_rebuild()
-PercentageInTime.model_rebuild()
-PercentageInTimePayload.model_rebuild()
 PageInfo.model_rebuild()
 PageInfoPayload.model_rebuild()
-CpuUsageConnections.model_rebuild()
-CpuUsageConnectionsPayload.model_rebuild()
-CpuUsageConnection.model_rebuild()
-CpuUsageConnectionPayload.model_rebuild()
-CpuUsageEdges.model_rebuild()
-CpuUsageEdgesPayload.model_rebuild()
-CpuUsageEdge.model_rebuild()
-CpuUsageEdgePayload.model_rebuild()
-CpuUsageNode.model_rebuild()
-CpuUsageNodePayload.model_rebuild()
-CurrentCpuUsageQuery.model_rebuild()
-CurrentCpuUsagesQuery.model_rebuild()
-CurrentMemoryUsageQuery.model_rebuild()
-CurrentMemoryUsagesQuery.model_rebuild()
-CpuUsageQuery.model_rebuild()
-CpuUsagesQuery.model_rebuild()
-MemoryUsageQuery.model_rebuild()
-MemoryUsagesQuery.model_rebuild()
-CurrentCpuUsageQueryResponse.model_rebuild()
-CurrentCpuUsageData.model_rebuild()
-CurrentCpuUsagesQueryResponse.model_rebuild()
-CurrentCpuUsagesData.model_rebuild()
-CurrentMemoryUsageQueryResponse.model_rebuild()
-CurrentMemoryUsageData.model_rebuild()
-CurrentMemoryUsagesQueryResponse.model_rebuild()
-CurrentMemoryUsagesData.model_rebuild()
-CpuUsageQueryResponse.model_rebuild()
-CpuUsageData.model_rebuild()
-CpuUsagesQueryResponse.model_rebuild()
-CpuUsagesData.model_rebuild()
-MemoryUsageQueryResponse.model_rebuild()
-MemoryUsageData.model_rebuild()
-MemoryUsagesQueryResponse.model_rebuild()
-MemoryUsagesData.model_rebuild()
-MemoryUsageConnections.model_rebuild()
-MemoryUsageConnectionsPayload.model_rebuild()
-MemoryUsageConnection.model_rebuild()
-MemoryUsageConnectionPayload.model_rebuild()
-MemoryUsageEdges.model_rebuild()
-MemoryUsageEdgesPayload.model_rebuild()
-MemoryUsageEdge.model_rebuild()
-MemoryUsageEdgePayload.model_rebuild()
-MemoryUsageNode.model_rebuild()
-MemoryUsageNodePayload.model_rebuild()
+CurrentUtilizationQuery.model_rebuild()
+BulkCurrentUtilizationQuery.model_rebuild()
+UtilizationQuery.model_rebuild()
+BulkUtilizationQuery.model_rebuild()
+CurrentUtilizationQueryResponse.model_rebuild()
+CurrentUtilizationData.model_rebuild()
+BulkCurrentUtilizationQueryResponse.model_rebuild()
+BulkCurrentUtilizationData.model_rebuild()
+UtilizationQueryResponse.model_rebuild()
+UtilizationData.model_rebuild()
+BulkUtilizationQueryResponse.model_rebuild()
+BulkUtilizationData.model_rebuild()
+MetricsNode.model_rebuild()
+MetricsNodePayload.model_rebuild()
+MetricsWithCursorNode.model_rebuild()
+MetricsWithCursorNodePayload.model_rebuild()
+MetricsWithDeviceNode.model_rebuild()
+MetricsWithDeviceNodePayload.model_rebuild()
+CurrentUtilization.model_rebuild()
+CurrentUtilizationPayload.model_rebuild()
+UtilizationConnection.model_rebuild()
+UtilizationConnectionPayload.model_rebuild()
+BulkUtilizationConnection.model_rebuild()
+BulkUtilizationConnectionPayload.model_rebuild()
+MetricsEdge.model_rebuild()
+MetricsEdgePayload.model_rebuild()

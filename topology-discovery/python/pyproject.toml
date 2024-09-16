@@ -12,13 +12,12 @@ ruff = "^0.0.263"
 mypy = "1.3.0"
 pyright = "^1.1.317"
 
-
 [tool.poetry]
 packages = [{ include = "frinx_api" }]
 name = "frinx-topology-discovery-api"
 description = "Frinx Topology Discovery graphql schema transformed to pydantic basemodels"
 authors = ["Jozef Volak <jozef.volak@elisapolystar.com>"]
-version = "2.1.1"
+version = "3.0.0"
 readme = ["README.md", "CHANGELOG.md", "RELEASE.md"]
 keywords = ["frinx-machine", "topology-discovery", "api"]
 license = "Apache 2.0"
