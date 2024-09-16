@@ -12,3 +12,6 @@
 
 # 3.0.0
 - Updated generated pydantic entities based on topology-discovery 7.0.1 version.
+
+# 3.0.1
+- Update versions in poetry.lock.
