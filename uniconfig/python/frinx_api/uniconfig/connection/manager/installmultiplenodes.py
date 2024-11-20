@@ -1052,23 +1052,29 @@ class NetconfNodeTopologyNetconfParametersModel(BaseModel):
     if device doesn't support candidate data-store, this parameter
     should be set to 'netconf-customization-alu-ignore-candidate' string.
     """
-    netconf_node_topology_concurrent_rpc_limit: Optional[int] = Field(
-        None, alias='netconf-node-topology:concurrent-rpc-limit', ge=0, le=65535
+    netconf_node_topology_enabled_notifications: Optional[bool] = Field(
+        None, alias='netconf-node-topology:enabled-notifications'
     )
     """
-    Limit of concurrent messages that can be send before reply messages are received.
-    If value <1 is provided, no limit will be enforced
+    If it is set to 'true' and NETCONF device supports notifications, NETCONF mountpoint will
+    expose NETCONF notification and subscription services.
     """
-    netconf_node_topology_edit_config_test_option: Optional[
-        topology_1.EditConfigTestOption
-    ] = Field(None, alias='netconf-node-topology:edit-config-test-option')
-    netconf_node_topology_dry_run_journal_size: Optional[int] = Field(
-        None, alias='netconf-node-topology:dry-run-journal-size', ge=0, le=65535
+    netconf_node_topology_reconnect_on_changed_schema: Optional[bool] = Field(
+        None, alias='netconf-node-topology:reconnect-on-changed-schema'
     )
     """
-    Size of the DRY RUN netconf mountpoint journal. DRY RUN journal captures netconf RPCs that
-    would be executed when reading/writing some configuration. However the RPCs are not actually
-    sent to the device
+    If it is set to 'true', NETCONF notifications are supported by device, and NETCONF
+    notifications are enabled ('enabled-notifications' flag), the connector would auto
+    disconnect/reconnect when schemas are changed in the remote device. The connector subscribes
+    (right after connect) to base netconf notifications and listens
+    for netconf-capability-change notification
+    """
+    netconf_node_topology_streaming_session: Optional[bool] = Field(
+        None, alias='netconf-node-topology:streaming-session'
+    )
+    """
+    NETCONF session is created and optimized for receiving of NETCONF notifications
+    from remote server.
     """
     netconf_node_topology_max_connection_attempts: Optional[int] = Field(
         None, alias='netconf-node-topology:max-connection-attempts', ge=0, le=4294967295
@@ -1095,29 +1101,23 @@ class NetconfNodeTopologyNetconfParametersModel(BaseModel):
     Netconf connector sends keepalive RPCs while the session is idle, this delay specifies the delay between keepalive RPC in seconds
     If a value <1 is provided, no keepalives will be sent
     """
-    netconf_node_topology_enabled_notifications: Optional[bool] = Field(
-        None, alias='netconf-node-topology:enabled-notifications'
+    netconf_node_topology_concurrent_rpc_limit: Optional[int] = Field(
+        None, alias='netconf-node-topology:concurrent-rpc-limit', ge=0, le=65535
     )
     """
-    If it is set to 'true' and NETCONF device supports notifications, NETCONF mountpoint will
-    expose NETCONF notification and subscription services.
+    Limit of concurrent messages that can be send before reply messages are received.
+    If value <1 is provided, no limit will be enforced
     """
-    netconf_node_topology_reconnect_on_changed_schema: Optional[bool] = Field(
-        None, alias='netconf-node-topology:reconnect-on-changed-schema'
+    netconf_node_topology_edit_config_test_option: Optional[
+        topology_1.EditConfigTestOption
+    ] = Field(None, alias='netconf-node-topology:edit-config-test-option')
+    netconf_node_topology_dry_run_journal_size: Optional[int] = Field(
+        None, alias='netconf-node-topology:dry-run-journal-size', ge=0, le=65535
     )
     """
-    If it is set to 'true', NETCONF notifications are supported by device, and NETCONF
-    notifications are enabled ('enabled-notifications' flag), the connector would auto
-    disconnect/reconnect when schemas are changed in the remote device. The connector subscribes
-    (right after connect) to base netconf notifications and listens
-    for netconf-capability-change notification
-    """
-    netconf_node_topology_streaming_session: Optional[bool] = Field(
-        None, alias='netconf-node-topology:streaming-session'
-    )
-    """
-    NETCONF session is created and optimized for receiving of NETCONF notifications
-    from remote server.
+    Size of the DRY RUN netconf mountpoint journal. DRY RUN journal captures netconf RPCs that
+    would be executed when reading/writing some configuration. However the RPCs are not actually
+    sent to the device
     """
 
 
