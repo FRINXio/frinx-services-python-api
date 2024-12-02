@@ -103,13 +103,13 @@ class BlueprintConnection(Connection):
 
     edges: List[BlueprintEdge] = Field(
         ..., description='List of edges within the blueprint connection.'
-    )
+    ) # type: ignore
     pageInfo: PageInfo = Field(
         ..., description='Pagination information for the blueprint connection.'
     )
     typename__: Optional[Literal['BlueprintConnection']] = Field(
         'BlueprintConnection', alias='__typename'
-    )
+    ) # type: ignore
 
 
 class BlueprintEdge(Edge):
@@ -123,7 +123,7 @@ class BlueprintEdge(Edge):
     )
     typename__: Optional[Literal['BlueprintEdge']] = Field(
         'BlueprintEdge', alias='__typename'
-    )
+    ) # type: ignore
 
 
 class BlueprintMetadata(BaseModel):

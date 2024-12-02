@@ -254,7 +254,7 @@ class DeviceMetadata(Node):
     )
     typename__: Optional[Literal['DeviceMetadata']] = Field(
         'DeviceMetadata', alias='__typename'
-    )
+    ) # type: ignore
 
 
 class DeviceMetadataEdge(BaseModel):
@@ -357,7 +357,7 @@ class MplsDevice(Node):
     )
     typename__: Optional[Literal['MplsDevice']] = Field(
         'MplsDevice', alias='__typename'
-    )
+    ) # type: ignore
 
 
 class MplsDeviceConnection(BaseModel):
@@ -420,7 +420,7 @@ class MplsInterface(Node):
     )
     typename__: Optional[Literal['MplsInterface']] = Field(
         'MplsInterface', alias='__typename'
-    )
+    ) # type: ignore
 
 
 class MplsInterfaceConnection(BaseModel):
@@ -559,7 +559,7 @@ class NetDevice(Node):
         ...,
         description='Identifier of the routing entity (usually IPv4 address). RouterId and ospfAreaId together compose a unique key.',
     )
-    typename__: Optional[Literal['NetDevice']] = Field('NetDevice', alias='__typename')
+    typename__: Optional[Literal['NetDevice']] = Field('NetDevice', alias='__typename') # type: ignore
 
 
 class NetDeviceConnection(BaseModel):
@@ -610,7 +610,7 @@ class NetInterface(Node):
     )
     typename__: Optional[Literal['NetInterface']] = Field(
         'NetInterface', alias='__typename'
-    )
+    ) # type: ignore
 
 
 class NetInterfaceConnection(BaseModel):
@@ -719,7 +719,7 @@ class NetNetwork(Node):
     )
     typename__: Optional[Literal['NetNetwork']] = Field(
         'NetNetwork', alias='__typename'
-    )
+    ) # type: ignore
 
 
 class NetNetworkConnection(BaseModel):
@@ -834,7 +834,7 @@ class PhyDevice(Node):
     status: NodeStatus = Field(
         ..., description='Status of the device from the view of the synced topology.'
     )
-    typename__: Optional[Literal['PhyDevice']] = Field('PhyDevice', alias='__typename')
+    typename__: Optional[Literal['PhyDevice']] = Field('PhyDevice', alias='__typename') # type: ignore
 
 
 class PhyDeviceConnection(BaseModel):
@@ -905,7 +905,7 @@ class PhyInterface(Node):
     )
     typename__: Optional[Literal['PhyInterface']] = Field(
         'PhyInterface', alias='__typename'
-    )
+    ) # type: ignore
 
 
 class PhyInterfaceConnection(BaseModel):
@@ -1012,7 +1012,7 @@ class PtpDevice(Node):
     status: NodeStatus = Field(
         ..., description='Status of the device from the view of the synced topology.'
     )
-    typename__: Optional[Literal['PtpDevice']] = Field('PtpDevice', alias='__typename')
+    typename__: Optional[Literal['PtpDevice']] = Field('PtpDevice', alias='__typename') # type: ignore
 
 
 class PtpDeviceConnection(BaseModel):
@@ -1116,7 +1116,7 @@ class PtpDiffSynce(Node):
     )
     typename__: Optional[Literal['PtpDiffSynce']] = Field(
         'PtpDiffSynce', alias='__typename'
-    )
+    ) # type: ignore
 
 
 class PtpDiffSynceConnection(BaseModel):
@@ -1169,7 +1169,7 @@ class PtpInterface(Node):
     )
     typename__: Optional[Literal['PtpInterface']] = Field(
         'PtpInterface', alias='__typename'
-    )
+    ) # type: ignore
 
 
 class PtpInterfaceConnection(BaseModel):
@@ -1346,7 +1346,7 @@ class SynceDevice(Node):
     )
     typename__: Optional[Literal['SynceDevice']] = Field(
         'SynceDevice', alias='__typename'
-    )
+    ) # type: ignore
 
 
 class SynceDeviceConnection(BaseModel):
@@ -1413,7 +1413,7 @@ class SynceInterface(Node):
     )
     typename__: Optional[Literal['SynceInterface']] = Field(
         'SynceInterface', alias='__typename'
-    )
+    ) # type: ignore
 
 
 class SynceInterfaceConnection(BaseModel):

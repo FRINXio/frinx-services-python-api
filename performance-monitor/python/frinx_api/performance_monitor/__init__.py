@@ -124,7 +124,7 @@ class MetricsNode(MetricsInterface):
     memory: Optional[Float] = None
     typename__: Optional[Literal['MetricsNode']] = Field(
         'MetricsNode', alias='__typename'
-    )
+    ) # type: ignore
 
 
 class MetricsWithCursorNode(MetricsInterface):
@@ -139,7 +139,7 @@ class MetricsWithCursorNode(MetricsInterface):
     memory: Optional[Float] = None
     typename__: Optional[Literal['MetricsWithCursorNode']] = Field(
         'MetricsWithCursorNode', alias='__typename'
-    )
+    ) # type: ignore
 
 
 class MetricsWithDeviceNode(MetricsInterface):
@@ -152,7 +152,7 @@ class MetricsWithDeviceNode(MetricsInterface):
     memory: Optional[Float] = None
     typename__: Optional[Literal['MetricsWithDeviceNode']] = Field(
         'MetricsWithDeviceNode', alias='__typename'
-    )
+    ) # type: ignore
 
 
 class PageInfo(BaseModel):
