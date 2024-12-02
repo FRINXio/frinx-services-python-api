@@ -26,6 +26,7 @@ def generate(input_path: str, output_path: str):
         input_file_type=InputFileType.GraphQL,
         output=Path(output_path),
         output_model_type=DataModelType.PydanticV2BaseModel,
+        snake_case_field=True,
     )
     click.echo(f'Successful')
 
