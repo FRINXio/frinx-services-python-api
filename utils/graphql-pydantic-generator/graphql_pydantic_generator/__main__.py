@@ -27,6 +27,7 @@ def generate(input_path: str, output_path: str):
         output=Path(output_path),
         output_model_type=DataModelType.PydanticV2BaseModel,
         snake_case_field=True,
+        use_standard_collections=True,
     )
     click.echo(f'Successful')
 

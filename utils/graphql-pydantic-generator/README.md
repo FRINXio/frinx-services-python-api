@@ -24,9 +24,14 @@ user@ntb:~/frinx-services-python-api/utils/graphql-pydantic-generator$ poetry in
 user@ntb:~/frinx-services-python-api/utils/graphql-pydantic-generator$ poetry run generate --input_path ~/topology-discovery/topology_discovery/api/graphql/schemas/ --output_path ~/frinx-services-python-api/topology-discovery/python/frinx_api/topology_discovery/__init__.py
 ```
 
+4. Find generated file (--output_path from previous step) and run mypy
+```bash
+user@ntb:~/frinx-services-python-api/utils/graphql-pydantic-generator$ poetry run mypy .
+```
+
 4. Fix 'Incompatible types in assignment' mypy error
 ```example
 typename__: Optional[Literal['SynceDevice']] = Field(
     'SynceDevice', alias='__typename'
-) # type: ignore
+) # type: ignore[assignment]
 ```
