@@ -5,6 +5,7 @@ build-backend = "poetry.core.masonry.api"
 [tool.poetry.dependencies]
 python = "^3.10"
 pydantic = "^2"
+graphql-pydantic-converter = "^1.2"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.0.263"
