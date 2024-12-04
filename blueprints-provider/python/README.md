@@ -19,5 +19,5 @@ This package has been tested with Python 3.10.
 ### Install the package
 
 ```bash
-poetry add git+https://github.com/FRINXio/frinx-services-python-api.git@main#subdirectory=inventory/python
+poetry add git+https://github.com/FRINXio/frinx-services-python-api.git@main#subdirectory=blueprints-provider/python
 ```
