@@ -29,6 +29,8 @@ jobs:
               - 'topology-discovery/python/RELEASE.md'
             uniconfig/python:
               - 'uniconfig/python/RELEASE.md'
+            blueprints-provider/python:
+             - 'blueprints-provider/python/RELEASE.md'
 
   build-n-publish-pypi:
     needs: changes

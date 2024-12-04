@@ -42,6 +42,8 @@ jobs:
               - 'topology-discovery/python/**'
             performance-monitor/python:
               - 'performance-monitor/python/**'
+            blueprints-provider/python:
+              - 'blueprints-provider/python/**'
             uniconfig/python:
               - 'uniconfig/python/**'
             utils/graphql-pydantic-converter:
