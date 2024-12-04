@@ -47,6 +47,10 @@ class Edge(Interface):
     node: typing.Optional[Node] = Field(default=None)
 
 
+class Node(Interface):
+    name: typing.Optional[Boolean] = Field(default=None)
+
+
 class BlueprintNodeInput(Input):
     blueprint_type: BlueprintType = Field(alias='blueprintType')
     connection_type: ConnectionType = Field(alias='connectionType')
@@ -199,6 +203,7 @@ class BlueprintsData(BaseModel):
 
 Connection.model_rebuild()
 Edge.model_rebuild()
+Node.model_rebuild()
 BlueprintNodeInput.model_rebuild()
 BlueprintConnection.model_rebuild()
 BlueprintConnectionPayload.model_rebuild()
