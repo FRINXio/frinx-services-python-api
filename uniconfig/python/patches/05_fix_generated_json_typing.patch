@@ -1,0 +1,29 @@
+diff --git a/uniconfig/python/frinx_api/uniconfig/schema/resources/findschemaresources.py b/uniconfig/python/frinx_api/uniconfig/schema/resources/findschemaresources.py
+index 348875a..bdcd9ef 100644
+--- a/uniconfig/python/frinx_api/uniconfig/schema/resources/findschemaresources.py
++++ b/uniconfig/python/frinx_api/uniconfig/schema/resources/findschemaresources.py
+@@ -2,5 +2,5 @@
+ 
+ from __future__ import annotations
+ 
+-from typing import Optional
++from typing import Optional, Any
+ 
+@@ -24,7 +24,7 @@ class OperPath(BaseModel):
+     model_config = ConfigDict(
+         populate_by_name=True,
+     )
+-    generated_json: Optional[str] = Field(None, alias='generated-json')
++    generated_json: Optional[dict[str, Any]] = Field(None, alias='generated-json')
+     path: Optional[str] = None
+ 
+ 
+@@ -32,7 +32,7 @@ class ConfigPath(BaseModel):
+     model_config = ConfigDict(
+         populate_by_name=True,
+     )
+-    generated_json: Optional[str] = Field(None, alias='generated-json')
++    generated_json: Optional[dict[str, Any]] = Field(None, alias='generated-json')
+     path: Optional[str] = None
+ 
+ 

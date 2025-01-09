@@ -58,6 +58,8 @@ from . import OperationsDryrunUnmountNodePostRequest
 from . import OperationsEnableDefaultDeviceLoggingPostRequest
 from . import OperationsEnableDeviceLoggingPostRequest
 from . import OperationsEnableLoggingPostRequest
+from . import OperationsFindSchemaResourcesPostRequest
+from . import OperationsFindSchemaResourcesPostResponse
 from . import OperationsGetInstalledNodesPostRequest
 from . import OperationsGetInstalledNodesPostResponse
 from . import OperationsGetTemplateInfoPostRequest
@@ -699,6 +701,13 @@ class RegisterRepository(UniconfigRest):
     method = 'POST'
     request = OperationsRegisterRepositoryPostRequest
     response = OperationsRegisterRepositoryPostResponse
+
+
+class FindSchemaResources(UniconfigRest):
+    uri = '/operations/find-schema-resources'
+    method = 'POST'
+    request = OperationsFindSchemaResourcesPostRequest
+    response = OperationsFindSchemaResourcesPostResponse
 
 
 class SnapshotsMetadataGet(UniconfigRest):

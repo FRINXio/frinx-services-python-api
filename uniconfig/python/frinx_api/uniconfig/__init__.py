@@ -54,6 +54,7 @@ from .netconf.keystore import removetrustedcertificate
 from .notifications import createsubscription
 from .restconf.logging import sethiddenhttpheaders
 from .restconf.logging import sethiddenhttpmethods
+from .schema.resources import findschemaresources
 from .schema.resources import registerrepository
 from .snapshot.manager import createsnapshot
 from .snapshot.manager import deletesnapshot
@@ -468,6 +469,20 @@ class OperationsRegisterRepositoryPostRequest(BaseModel):
         populate_by_name=True,
     )
     input: Optional[registerrepository.Input] = None
+
+
+class OperationsFindSchemaResourcesPostRequest(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    input: Optional[findschemaresources.Input] = None
+
+
+class OperationsFindSchemaResourcesPostResponse(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+    output: Optional[findschemaresources.Output] = None
 
 
 class OperationsDeleteSnapshotPostRequest(BaseModel):
