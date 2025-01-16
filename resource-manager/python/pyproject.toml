@@ -1,6 +1,24 @@
+[project]
+name = "frinx-resource-manager-api"
+version = "3.0.2"
+description = "Frinx Resource Manager graphql schema transformed to pydantic BaseModels"
+authors = [
+    {name = "Jozef Volak",email = "jozef.volak@elisapolystar.com"}
+]
+readme = "README.md"
+keywords = ["frinx-machine", "resource-manager", "api"]
+license = {text = "Apache-2.0"}
+
+[project.urls]
+Homepage = 'https://github.com/FRINXio/frinx-python-sdk'
+Source = 'https://github.com/FRINXio/frinx-python-sdk'
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+packages = [{ include = "frinx_api" }]
 
 [tool.poetry.dependencies]
 python = "^3.10"
@@ -11,21 +29,6 @@ graphql-pydantic-converter = "^1.2"
 ruff = "^0.0.263"
 pyright = "^1.1.317"
 mypy = "1.3.0"
-
-
-[tool.poetry]
-packages = [{ include = "frinx_api" }]
-name = "frinx-resource-manager-api"
-description = "Frinx Resource Manager graphql schema transformed to pydantic BaseModels"
-authors = ["Jozef Volak <jozef.volak@elisapolystar.com>"]
-version = "3.0.1"
-readme = ["README.md", "CHANGELOG.md", "RELEASE.md"]
-keywords = ["frinx-machine", "resource-manager", "api"]
-license = "Apache 2.0"
-
-[project.urls]
-Homepage = 'https://github.com/FRINXio/frinx-python-sdk'
-Source = 'https://github.com/FRINXio/frinx-python-sdk'
 
 [tool.pyright]
 include = ['frinx_api']

@@ -9,3 +9,6 @@
 
 # 1.0.1
 - Package dependency update
+
+# 1.0.2
+- Update pyproject.toml for Poetry 2.0, adopting PEP 621 standards
