@@ -54,7 +54,7 @@ jobs:
 
       - uses: abatilo/actions-poetry@v2
         with:
-          poetry-version: "1.4.2"
+          poetry-version: "2.0.1"
 
       - name: Formatting and validating
         run: |
