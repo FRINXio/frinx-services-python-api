@@ -22,5 +22,5 @@
 # 3.0.0
 - Updated API from device-inventory v7.0.0 GraphQL schema.
 
-# 3.0.1
+# 4.0.0
 - Update pyproject.toml for Poetry 2.0, adopting PEP 621 standards

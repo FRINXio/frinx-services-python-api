@@ -1,6 +1,6 @@
 [project]
 name = "frinx-json-schemas"
-version = "1.0.1"
+version = "2.0.0"
 description = "JSON schemas to pydantic basemodel converter"
 authors = [
     {name = "Jakub Bogusciak ",email = "jakub.bogusciak@elisapolystar.com"}
@@ -14,7 +14,7 @@ Homepage = 'https://github.com/FRINXio/frinx-python-sdk'
 Source = 'https://github.com/FRINXio/frinx-python-sdk'
 
 [build-system]
-requires = ["poetry-core"]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]

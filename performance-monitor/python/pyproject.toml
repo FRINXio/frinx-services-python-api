@@ -1,6 +1,6 @@
 [project]
 name = "frinx-performance-monitor-api"
-version = "1.0.2"
+version = "2.0.0"
 description = "Frinx Performance Monitor graphql schema transformed to pydantic basemodels"
 authors = [
     {name = "Jozef Volak",email = "jozef.volak@elisapolystar.com"}
@@ -14,7 +14,7 @@ Homepage = 'https://github.com/FRINXio/frinx-python-sdk'
 Source = 'https://github.com/FRINXio/frinx-python-sdk'
 
 [build-system]
-requires = ["poetry-core"]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]

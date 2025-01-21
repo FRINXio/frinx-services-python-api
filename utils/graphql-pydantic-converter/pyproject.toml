@@ -1,6 +1,6 @@
 [project]
 name = "graphql-pydantic-converter"
-version = '1.2.3'
+version = '2.0.0'
 description = "Convert pydantic schema to pydantic datamodel and build request from it"
 authors = [
     {name = "Jozef Volak",email = "jozef.volak@elisapolystar.com"}
@@ -10,7 +10,7 @@ keywords = ["graphql", "pydantic"]
 license = {text = "Apache-2.0"}
 
 [build-system]
-requires = ["poetry-core"]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
