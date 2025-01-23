@@ -1,6 +1,20 @@
+[project]
+name = "graphql-pydantic-converter"
+version = '2.0.0'
+description = "Convert pydantic schema to pydantic datamodel and build request from it"
+authors = [
+    {name = "Jozef Volak",email = "jozef.volak@elisapolystar.com"}
+]
+readme = "README.md"
+keywords = ["graphql", "pydantic"]
+license = {text = "Apache-2.0"}
+
 [build-system]
-requires = ["poetry-core"]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+packages = [{ include = "graphql_pydantic_converter" }]
 
 [tool.poetry.dependencies]
 python = "^3.10"
@@ -13,16 +27,6 @@ mypy = "1.3.0"
 types-requests = "^2.31.0.2"
 pyright = "^1.1.323"
 pytest = "^7.4.1"
-
-[tool.poetry]
-packages = [{ include = "graphql_pydantic_converter" }]
-name = "graphql-pydantic-converter"
-description = "Convert pydantic schema to pydantic datamodel and build request from it"
-authors = ["Jozef Volak <jozef.volak@elisapolystar.com>"]
-version = '1.2.2'
-readme = ["README.md", "CHANGELOG.md"]
-keywords = ["graphql", "pydantic"]
-license = "Apache 2.0"
 
 [tool.poetry.scripts]
 graphql-pydantic-converter = "graphql_pydantic_converter.__main__:main"

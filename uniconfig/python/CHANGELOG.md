@@ -34,3 +34,7 @@
 
 # 2.0.1
 - Fix version in the RELEASE.md.
+
+# 3.0.0
+- Update pyproject.toml for Poetry 2.0, adopting PEP 621 standards
+
